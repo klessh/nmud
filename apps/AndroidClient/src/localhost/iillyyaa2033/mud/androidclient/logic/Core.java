@@ -10,6 +10,9 @@ import org.keplerproject.luajava.LuaStateFactory;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import java.util.ArrayList;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Core extends Thread {
 
@@ -304,9 +307,10 @@ public class Core extends Thread {
 		sb.append("Точка зрения: "+"("+x0+","+y0+")");
 		sb.append("Объектов: "+db.objects.size()+"\n");
 		
+		int idhlp = 0;
 		for(WorldObject o : db.objects){
 	
-			DescribedWorldObject obj = new DescribedWorldObject(o);
+			DescribedWorldObject obj = new DescribedWorldObject(++idhlp, o);
 			
 			obj.xc = (obj.x+obj.x2)/2;
 			obj.yc = (obj.y+obj.y2)/2;
@@ -320,11 +324,34 @@ public class Core extends Thread {
 			obj.deg_min = Math.min(Math.min(deg00,deg01),Math.min(deg10,deg11));
 			obj.deg_max = Math.max(Math.max(deg00,deg01),Math.max(deg10,deg11));
 	
+			obj.deg_center = getDegree(x0,y0,obj.xc,obj.yc);
+			
 			objs.add(obj);
-			sb.append("«"+ obj.name+"» {"+obj.x+":"+obj.y+" | "+obj.x2+":"+obj.y2+"} "+
+			sb.append(obj.id+" «"+ obj.name+"»  {"+obj.x+":"+obj.y+" | "+obj.x2+":"+obj.y2+"} "+
 				"\n\tЦентр и расст: {"+obj.xc+":"+obj.yc+"} "+obj.distance+
 				"\n\tРад мин/макс: "+obj.deg_min+"/"+obj.deg_max+
 				"\n\n");
+		}
+		
+		Collections.sort(objs, new Comparator<DescribedWorldObject>(){
+
+				@Override
+				public int compare(DescribedWorldObject p1, DescribedWorldObject p2) {
+					if(p1.distance <  p2.distance) return -1;
+					if(p1.distance == p2.distance) return 0;
+					if(p1.distance >  p2.distance) return 1;
+					return 0;
+				}
+			});
+		
+		int[] pie = new int[360];
+		for(DescribedWorldObject obj : objs){
+			for(int i = obj.deg_min; i < obj.deg_max; i++){
+				if(pie[i]==0) pie[i] = obj.id;
+			}
+		}
+		for(int i : pie){
+			sb.append(i+"\t");
 		}
 		
 		return sb.toString();
