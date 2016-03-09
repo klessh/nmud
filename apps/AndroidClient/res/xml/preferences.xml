@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android" > 
+
+	<PreferenceCategory
+		android:title="Dialog">
+
+		<EditTextPreference
+			android:key="AUTHOR" 
+    	    android:title="Имя автора" 
+			android:summary="Должны же вы как-то себя именовать"  
+			android:defaultValue="Меченый" />
+
+		<CheckBoxPreference
+			android:key="DIALOGFRAG_SCROLLTOEND" 
+    	    android:title="Прокрутка к концу ветки" 
+			android:summary="Точнее, скачок к предпоследнему посту"   
+			android:defaultValue="true" />
+
+	</PreferenceCategory>
+</PreferenceScreen>
+

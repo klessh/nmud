@@ -1,0 +1,138 @@
+﻿
+0down votefavorite
+
+I need to be able to return an (X, Y) position from Java to Lua and I can't figure out how to do it. With the C API you would just push the values onto the stack and then return the number of return values, but that doesn't seem to be how LuaJava does it. Any suggestions?
+
++++++++++
+
+The problem may be that the first parameter is always the JavaFunction object itself. Let's say you want a function addmult which takes two numbers, and returns their sum and product. The numeric parameters have to be retrieved as indexes 2 and 3, as follows:
+
+JavaFunction addmult = new JavaFunction(L) {
+
+ @Override public int execute() throws LuaException { 
+double x = L.toNumber(2);
+ double y = L.toNumber(3); 
+L.pushNumber(x+y); 
+L.pushNumber(x*y); return 2; 
+}
+ };
+ addmult.register("addmult");
+
+Now, you should get a similar result in your code:
+
+print(addmult(3, 5)) --> 8 13
+
+======
+
++++++++++
+
+I have a Lua function defined in a Java String, and I'd like to pass it a String arg
+
+String luaCode = "function hello(name) return 'Hello ' + name +'!' end";
+
+Executng code
+
+public String runGreetingFromLua(String src, String arg) throws LuaException { 
+L = LuaStateFactory.newLuaState(); 
+L.openLibs(); 
+L.setTop(0);
+ int ok = L.LloadString(src); 
+
+if (ok == 0) {
+ L.getGlobal("debug");
+ L.getField(-1, "traceback"); 
+L.remove(-2); 
+L.insert(-2); L.getGlobal("hello"); 
+L.pushString(arg); 
+ok = L.pcall(1, 0, -2); 
+if (ok == 0) { 
+String res = output.toString();
+ output.setLength(0); 
+return res;
+ } 
+} throw new LuaException(errorReason(ok) + ": " + L.toString(-1)); 
+}
+
+Getting Unknown error 5: error in error handling
+
+I'm completely new to lua and luajava, I'm sure this simple case of not understanding how the LauState object is working, the java docs aren't amazing (or I'm missing something very newbie). I have been able to get a return value if I call the hello function from within the lua code and using print method. I'm executing on Android device using AndroLua
+
++++++++++
+
+Managed to get this working by removing some of the error handling code as noted in the luajava examples that seemed to interfere and swapping call to L.LLloadString to L.LdoString(src) ;and L.pcall to L.call.
+
+public String runLuaHello(String src, String arg) throws LuaException { 
+//init 
+L = LuaStateFactory.newLuaState(); 
+L.openLibs(); 
+L.setTop(0);
+ //load the lua source code
+ int ok = L.LdoString(src); 
+if (ok == 0) { //don't quite understand why it's getGlobal? but here you set the method name 
+L.getGlobal("hello"); 
+//send the arg to lua 
+L.pushString(arg); 
+//this specifies 1 arg and 1 result
+ L.call(1, 1); 
+//get the result
+ String result = L.toString(-1); 
+//pop the result off the stack 
+L.pop(1); 
+return result; 
+} throw new LuaException(errorReason(ok) + ": " + L.toString(-1)); 
+}
+
++++++++++
+
+I'm really stuck at this, searched my ass of google definitely, trying to "import" a table from lua to an array in java with luajava... Now, I've been able to do some easy stuff, printing lua-vars in java and reading a single element from a table.. everything working here
+
+JAVA
+
+LuaState L = LuaStateFactory.newLuaState(); 
+L.openLibs(); L.LdoFile("data/test.lua"); 
+L.getGlobal("x"); //I want to read lua-variable x 
+LuaObject obj = L.getLuaObject(L.getTop()); //So I get the top-element here 
+System.out.println(obj.getField("Version")); 
+
+LUA
+
+x = { ["Version"] = 1.3,["Scans"] = 3 }
+
+Now, this is obviously fairly easy for retrieving single values, but I'd like to get the whole object into Java (as an array or whatever) so I can do some stuff with it.. I tried looping through that LuaObject but since it's not iterable or a 'real' array yet, thats not possible.. Simply outputting objwill tell me its a lua table, I've tried a lot of stupid stuff with .getObject, no success. Then I read something about proxies and .pcall (That looked like it was for passing values in Java to functions in lua, which is not, what i want) Couldnt find anything in the (very very poorly) documented javadoc, so I'm hoping someone has experience with this.. Probably really easy one but hard to find information on. Really happy about any information on this!
+
+p.s. I CANNOT change the original lua file (later on) but that file will only contain one big table..
+
++++++++++
+
+Lua is a dynamic language, with table being its only data structure. A table can contain any combination of key/value pairs, which is in contrast with Java's static typing. Therefore you need to create a conversion function which will create a Java object from Lua table. This is not provided by LuaJava automatically.
+
+If you want to fill in a Java POD class with data taken from a Lua table, you basically have these options:
+
+Do it manually (easiest) - create a simple function, which takes a Lua stack index, expects a Lua table at that index, and then creates a Java instance of your POD class and fills it with data manually, i.e. you need to type in all the required getField calls.
+
+Use Java reflection (more generic) - the conversion function takes a Lua stack index and a Java Class, creates a new instance of that class and use Java reflection together with lua_next to iterate over the Lua table and fill out the necessary Java fields.
+
+If you only intent to use conversion on one type of Lua table, I suggest you use the first option. The downside is that everytime you change structure, you have to update the conversion code. There are downsides to the second approach as well, for example how should you handle cases of missing/extra keys, subtables etc.
+
++++++++++
+   
+
+Ok, so far this seems a little above my head, but I'll give it a try.. So, since my lua-table is somewhat dynamic (there are user names in there), I cant use getField to access them, so 1. is not an option then i guess?! Reflection is completely new to me and by first sight looked like a little too complicated.. I will try using LdoString and have a loop in lua fill a table that i send from java, dunno if thats gonna work, but I'll give it a shot.. Thanks for your reply though, maybe i can get into reflection easier than i thought, we'll see ;) – bengalo Apr 5 '12 at 15:18
+
+   
+
+Java Reflection is not trivial. What I meant by "manually" is that you should write out all assignments like this:
+Data d = new Data(); 
+L.getField(idx, "name");
+ d.name = L.toString(L, -1); 
+L.getField(idx, "version");
+ d.version = L.toString(L, -1); 
+... and do not forget to clean up the Lua stack afterwards :) –  Michal Kottman Apr 5 '12 at 17:49
+
+   
+
+Okay, no reflection for me then ;) But if I dont know what the names are, I cant retrieve them with getField.. The table always has the same name but the items are usernames and servers where I dont know what they are exactly.. First row is always 'version', second one is always 'scans' but within scans it will store server names that are unknown to me at the time of execution.. So, any solution on that? –  bengalo Apr 5 '12 at 18:48 
+
+   
+
+btw, its nested within scans several times and I dont know any of the data in there by name, just what it looks like.. –  bengalo Apr 5 '12 at 19:00
