@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+	<item
+        android:id="@+id/item_run"
+        android:title="Выполнить"
+		android:showAsAction="ifRoom|withText"/>
+	
+	<item
+        android:id="@+id/item_open"
+        android:title="Открыть"
+		android:showAsAction="ifRoom|withText"/>
+	
+	<item
+        android:id="@+id/item_save"
+        android:title="Сохранить"
+		android:showAsAction="ifRoom|withText"/>
+	
+	<item
+        android:id="@+id/item_save_as"
+        android:title="Сохранить как"
+		android:showAsAction="ifRoom|withText"/>
+    
+</menu>

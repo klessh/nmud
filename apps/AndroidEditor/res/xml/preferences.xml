@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<PreferenceScreen 
+		xmlns:android="http://schemas.android.com/apk/res/android">
+		<PreferenceCategory   
+			android:title="Редактор карт"/>
+			<EditTextPreference
+				android:key="PREF_MAP_ROOT"   
+				android:title="Рабочая папка карт"  
+				android:summary="Укажите папку для сохранений файлов"  
+				android:defaultValue="/storage/emulated/0/Download/" />
+		<EditTextPreference
+			android:key="PREF_MAP_ROOT_NAMETABLES"   
+			android:title="Рабочая папка таблицы имен"  
+			android:summary="Укажите папку для сохранений файлов"  
+			android:defaultValue="/storage/emulated/0/Download/" />
+		<EditTextPreference
+			android:key="PREF_MAP_ROOT_BUILDINGS"   
+			android:title="Рабочая папка зданий"  
+			android:summary="Укажите папку для сохранений файлов"  
+			android:defaultValue="/storage/emulated/0/Download/" />
+			
+		<PreferenceCategory   
+			android:title="Редактор lua"/>
+			<EditTextPreference
+				android:key="PREF_LUA_ROOT"   
+				android:title="Рабочая папка"  
+				android:summary="Укажите папку для сохранений файлов .lua"  
+				android:defaultValue="/storage/emulated/0/Download/" />
+			
+			<CheckBoxPreference
+				android:key="PREF_LUA_CLIPBOARD"   
+				android:title="Использование буфера обмена"  
+				android:summary="Сохранять и восстанавливать ли из буфера обмена?"  
+				android:defaultValue="false"/>
+			
+			<CheckBoxPreference
+				android:key="PREF_LUA_HSCROLL"   
+				android:title="Горизонтальная прокрутка (поле ввода)"  
+				android:summary="Запретить перенос слов по ширине экрана?"  
+				android:defaultValue="true"/>
+			
+		<PreferenceCategory
+			android:title="Свистелки">
+
+		</PreferenceCategory>
+
+	</PreferenceScreen>
