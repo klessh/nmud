@@ -5,6 +5,7 @@ public class DescribedWorldObject extends WorldObject{
 	public int id;
 	public int xc, yc, distance, area;
 	public int deg_min, deg_max, deg_center;
+	public int priority;
 	
 	public DescribedWorldObject(int id, WorldObject obj){
 		this.id = id;
