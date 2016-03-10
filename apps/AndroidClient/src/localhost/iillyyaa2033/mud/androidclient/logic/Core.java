@@ -1,18 +1,17 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import org.keplerproject.luajava.JavaFunction;
 import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
-import java.util.ArrayList;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class Core extends Thread {
 
@@ -234,31 +233,6 @@ public class Core extends Thread {
 		redir.register("redir");
 	}
 
-	/*	public String doScript(String src) {
-	 String res = null;			// Вывод, сейчас пуст
-
-	 L.setTop(0);
-	 int ok = L.LloadString(src);			// Загрузим строку и занесем результат
-	 isScriptRunning = true;	// Флаг, что луа работает
-	 try {										// Попробуем...
-	 if (ok == 0) {							// Если все нормально
-	 L.getGlobal("debug");
-	 L.getField(-1, "traceback");
-	 L.remove(-2);
-	 L.insert(-2);
-	 ok = L.pcall(0, 0, -2);
-	 if (ok != 0) {
-	 res = "Internal error";
-	 }
-	 }
-	 } catch (Exception e) {
-	 res = "Internal error";
-	 send(res+errorReason(ok) + ": " + L.toString(-1) + e.toString());
-	 }
-	 isScriptRunning = false;
-	 return res;
-	 }*/
-
 	public String doFunction(String scriptName, String funcName, String[] args) {
 		if (!canSctipts) return "Скрипты не работают.";
 
@@ -306,8 +280,14 @@ public class Core extends Thread {
 
 		StringBuilder sb = new StringBuilder();
 		ArrayList<DescribedWorldObject> objs = new ArrayList<DescribedWorldObject>();
-		sb.append("Точка зрения: " + "(" + x0 + "," + y0 + ")");
-		sb.append("Объектов: " + db.objects.size() + "\n");
+		HashMap<Integer, DescribedWorldObject> objsm = new HashMap<Integer,DescribedWorldObject>();
+
+		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
+		objsm.put(0, horizon);
+
+		sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
+
+		int object_with_biggest_priority = 0;
 
 		int idhlp = 0;
 		for (WorldObject o : db.objects) {
@@ -334,16 +314,12 @@ public class Core extends Thread {
 				obj.deg_min = _max;
 			}
 
-			obj.area = getDistance(obj.x,obj.y,obj.x2,obj.y) * getDistance(obj.x,obj.y,obj.x,obj.y2);
-			double priority = obj.area * (1/(double) obj.distance) * 10;
+			obj.area = getDistance(obj.x, obj.y, obj.x2, obj.y) * getDistance(obj.x, obj.y, obj.x, obj.y2);
+			double priority = obj.area * (1 / (double) obj.distance) * 10;
 			obj.priority = new Double(priority).intValue();
-			
+
 			objs.add(obj);
-			sb.append(obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
-					  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
-					  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
-					  "\n\tПриоритет: " + obj.priority +
-					  "\n\n");
+			objsm.put(obj.id, obj);
 		}
 
 		Collections.sort(objs, new Comparator<DescribedWorldObject>(){
@@ -367,16 +343,59 @@ public class Core extends Thread {
 				for (int i = obj.deg_min; i < 360; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
 				}
-				
+
 				for (int i = 0; i < obj.deg_max; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
 				}
 			}
 		}
-		for (int i : pie) {
-			sb.append(i + "\t");
+
+		objs = null;
+
+		// TODO: вангую багу, что objbefore_before может быть неправилен для крайних объектов
+		int objbefore = pie[0], objbefore_before = pie[0];
+		for (int i = 0; i < 360; i++) {
+			sb.append(pie[i] + " ");
+			if (pie[i] != objbefore) {
+				objsm.get(objbefore).obj_right = pie[i];
+				objsm.get(pie[i]).obj_left = objbefore;
+				objsm.get(pie[i]).included = true;
+
+				objsm.get(pie[i]).obj_left2 = objbefore_before;
+				objsm.get(objbefore_before).obj_right2 = pie[i];
+
+				objbefore_before = objbefore;
+				objbefore = pie[i];
+			}
+
+			if (objsm.get(pie[i]).priority > objsm.get(object_with_biggest_priority).priority)
+				object_with_biggest_priority = pie[i];
 		}
 
+		if (pie[359] != pie[0]) {
+			objsm.get(pie[359]).obj_right = pie[0];
+			objsm.get(pie[0]).obj_left = pie[0];
+
+		}
+
+		for (int i = 1; i < objsm.size(); i++) {
+			DescribedWorldObject obj = objsm.get(i);
+			if (obj.included)
+				sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
+						  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
+						  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
+						  "\n\tПриоритет: " + obj.priority +
+						  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
+						  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
+						  );
+		}
+		
+		sb.append("\n\nНаиб. приор.: " + object_with_biggest_priority);
+
+		
+		
+		
+		// TODO: dont forget exclude included == false
 		return sb.toString();
 	}
 
@@ -401,6 +420,24 @@ public class Core extends Thread {
 		return new Double(Math.toDegrees(arccos)).intValue();
 	}
 
+	String compareObjs(int angle, DescribedWorldObject one){
+		StringBuilder sb = new StringBuilder();
+		// TODO: moar random text and phrases
+		
+		return "";
+	}
+	
+	String compareObjs(DescribedWorldObject one, DescribedWorldObject another){
+		// A справа/слева от В
+		// А перед/позади В
+		return "";
+	}
+	
+	String compareObjs(DescribedWorldObject one, DescribedWorldObject two, DescribedWorldObject three){
+		// А между В и С
+		return "";
+	}
+	
 	public synchronized boolean close() {	// Закрытые сокета и lua
 		if (isScriptRunning) return false;
 
