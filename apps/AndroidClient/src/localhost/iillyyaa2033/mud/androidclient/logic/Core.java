@@ -285,7 +285,7 @@ public class Core extends Thread {
 		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
 		objsm.put(0, horizon);
 
-		sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
+	//	sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
 
 		int object_with_biggest_priority = 0;
 
@@ -355,7 +355,7 @@ public class Core extends Thread {
 		// TODO: вангую багу, что objbefore_before может быть неправилен для крайних объектов
 		int objbefore = pie[0], objbefore_before = pie[0];
 		for (int i = 0; i < 360; i++) {
-			sb.append(pie[i] + " ");
+		//	sb.append(pie[i] + " ");
 			if (pie[i] != objbefore) {
 				objsm.get(objbefore).obj_right = pie[i];
 				objsm.get(pie[i]).obj_left = objbefore;
@@ -378,22 +378,22 @@ public class Core extends Thread {
 
 		}
 
+		sb.append("Вокруг себя вы видите следующее: ");
 		for (int i = 1; i < objsm.size(); i++) {
 			DescribedWorldObject obj = objsm.get(i);
 			if (obj.included)
-				sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
+				sb.append(obj.name.toLowerCase()+", ");
+			/*	sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
 						  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
 						  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
 						  "\n\tПриоритет: " + obj.priority +
 						  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
 						  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
-						  );
-		}
+						  );	*/
+		}	
 		
-		sb.append("\n\nНаиб. приор.: " + object_with_biggest_priority);
-
-		
-		
+		sb.append("землю и голубое небо.");
+	//	sb.append(compareObjs(258, objsm.get(object_with_biggest_priority), pie));
 		
 		// TODO: dont forget exclude included == false
 		return sb.toString();
@@ -420,11 +420,21 @@ public class Core extends Thread {
 		return new Double(Math.toDegrees(arccos)).intValue();
 	}
 
-	String compareObjs(int angle, DescribedWorldObject one){
+	String compareObjs(int angle, DescribedWorldObject obj, int[] pie){
 		StringBuilder sb = new StringBuilder();
+		
+		byte mark = 0x0000;
+		
+		int fr = ((angle+45)<360 ? angle+45 : (360-(angle+45))*-1);
+		int br = ((fr+90)<360 ? fr+90 : (360-(fr+90))*-1);
+		int bl = ((br+90)<360 ? br+90 : (360-(br+90))*-1);
+		int fl = ((bl+90)<360 ? bl+90 : (360-(bl+90))*-1);
+		
+		
+		sb.append("Недалеко от вас находится "+obj.name.toLowerCase()+".");
 		// TODO: moar random text and phrases
 		
-		return "";
+		return sb.toString();
 	}
 	
 	String compareObjs(DescribedWorldObject one, DescribedWorldObject another){
