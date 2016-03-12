@@ -28,6 +28,8 @@ public class Core extends Thread {
 
 	public String cmdstr;
 
+	public String[] arg = {"Test arg"};
+	
 	ArrayList<String> report;
 
 	public Core(MainActivity activity) {
@@ -57,11 +59,11 @@ public class Core extends Thread {
 				canSctipts = false;
 			}
 		}
-
+		
 		doFunction("onServerStarted", "on", null);
 
 		doFunction("onClientConnected", "on", null);
-
+		
 		String cmd = "";
 		while (!(cmd = read()).equals("")) {
 			comms(cmd);
@@ -69,8 +71,7 @@ public class Core extends Thread {
 	}
 
 	private String[] haventcmd = {"Команды не существует.","Нет такой команды.","Похоже, такой команды нет.",
-		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Лондон украден летучими мышами",
-		"Ничего не случилось", "London was stolen by bats"};
+		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Ничего не случилось","Команда отсутствует."};
 
 	private synchronized void comms(String message) {	// Обарботка входящией строки
 		message = message.toLowerCase();	// Теперь все сообщение набрано строчными буквами
@@ -233,6 +234,10 @@ public class Core extends Thread {
 		redir.register("redir");
 	}
 
+	public String doFunction(String script, String func){
+		return doFunction(script, func, null);
+	}
+	
 	public String doFunction(String scriptName, String funcName, String[] args) {
 		if (!canSctipts) return "Скрипты не работают.";
 
@@ -249,7 +254,14 @@ public class Core extends Thread {
 			int ok = L.LdoString(scriptsmap.get(scriptName));
 			if (ok == 0) {
 				L.getGlobal(funcName);
-				L.pcall(0, 1, -2);
+				if(args!=null){
+					for(int i = 0; i<args.length; i++){
+						L.pushString(args[i]);
+					}
+					L.pcall(args.length, 1, -2-args.length);
+				} else {
+					L.pcall(0, 1, -2);
+				}
 				res = L.toString(-1);
 			} else {
 				res = errorReason(ok);
