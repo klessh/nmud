@@ -1,5 +1,3 @@
 function on()
-	if(client:debug) then
-		client:send("Запустились\n===========");
-	end
+	client:send("Запустились\n===========");
 end

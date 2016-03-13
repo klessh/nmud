@@ -3,8 +3,9 @@ function chat(...)
 		local scripts = client:listScripts();
 		client:send(scripts);
 	else
-		if client:getFullCommand(arg[1]) ~= nil then
-			local help = client:doFunction(arg[1],"help");
+		local cmd = client:getFullCommand(arg[1]);
+		if cmd ~= nil then
+			local help = client:doFunction(cmd,"help");
 			client:send(help);
 		else
 			client:send("Справки по этой команде пока нет.");

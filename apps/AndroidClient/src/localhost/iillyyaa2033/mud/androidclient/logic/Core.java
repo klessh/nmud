@@ -16,15 +16,17 @@ import java.util.Set;
 
 public class Core extends Thread {
 
+	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1;
+	
 	private MainActivity activity;
 	public Importer importer;
 	private Database db;
 	private LuaState L;
 
 	private HashMap<String, String> scriptsmap;
-	private Set<String> scriptsset;
+	private ArrayList<String> scriptsnames;
 	
-	public boolean debug = !false;
+	public boolean debug = true;
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 
@@ -45,8 +47,7 @@ public class Core extends Thread {
 		try { sleep(1000);
 		} catch (InterruptedException e) {}
 
-		scriptsmap = importer.importChatScripts();
-		scriptsset = scriptsmap.keySet();
+		update();
 		
 		if (scriptsmap == null) {
 			canScripts = false;
@@ -72,6 +73,22 @@ public class Core extends Thread {
 		}
 	}
 
+	public synchronized void update() {
+		scriptsmap = importer.importChatScripts();
+		scriptsnames = new ArrayList<String>();
+		
+		if(scriptsmap != null){
+			Set<String> set = scriptsmap.keySet();
+			for(String s : set){
+				scriptsnames.add(s);
+			}
+			
+			Collections.sort(scriptsnames);
+		}
+		db.update();
+	}
+	
+	
 	private String[] haventcmd = {"Команды не существует.","Нет такой команды.","Похоже, такой команды нет.",
 		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Ничего не случилось","Команда отсутствует."};
 
@@ -95,7 +112,7 @@ public class Core extends Thread {
 				send(doFunction(cmd, "chat", args));
 			} else {
 				String fullCmd = getFullCommand(cmd);
-				if(cmd == null){
+				if(fullCmd == null){
 					report.add(message);
 					int random = (int)Math.floor(Math.random() * haventcmd.length);
 					send(haventcmd[random]);
@@ -109,7 +126,7 @@ public class Core extends Thread {
 	}
 
 	public String getFullCommand(String shortCmd){
-		for(String s : scriptsset){
+		for(String s : scriptsnames){
 			if(s.startsWith(shortCmd)){
 				return s;
 			}
@@ -130,6 +147,18 @@ public class Core extends Thread {
 		return cmd;
 	}
 
+	public synchronized boolean send(int level, String line){
+		switch(level){
+			case LEVEL_CLIENT:
+				return send(line);
+			case LEVEL_DEBUG:
+				if(debug) return send(line);
+				else return true;
+			default:
+				return send(line);
+		}
+	}
+	
 	public String line2snd;
 	public synchronized boolean send(String line) {
 		if (line == null) return true;
@@ -186,12 +215,6 @@ public class Core extends Thread {
 			});
 	}
 
-	public synchronized void update() {
-		scriptsmap = importer.importChatScripts();
-		scriptsset = scriptsmap.keySet();
-		db.update();
-	}
-
 	public String doFunction(String script, String func) {
 		return doFunction(script, func, null);
 	}
@@ -200,7 +223,7 @@ public class Core extends Thread {
 		if (!canScripts) return "Скрипты не работают.";
 
 		if (!scriptsmap.containsKey(scriptName)) {
-			send("# Команды " + scriptName + " не существует.");
+			send(LEVEL_DEBUG,"# Команды " + scriptName + " не существует.");
 			return "";
 		}
 		String res = null;
@@ -214,7 +237,7 @@ public class Core extends Thread {
 				L.getGlobal(funcName);
 				
 				if(L.isNil(-1)){
-					send("# У скрипта "+scriptName+" нет функции "+funcName+".");
+					send(LEVEL_DEBUG,"# У скрипта "+scriptName+" нет функции "+funcName+".");
 				} else if (args == null) {
 					L.pcall(0, 1, -2);
 				} else {
@@ -225,10 +248,10 @@ public class Core extends Thread {
 				}
 				res = L.toString(-1);
 			} else {
-				send("# При выполнении " + scriptName + ":" + funcName+"() произошла досадная ошибка: "+errorReason(ok));
+				send(LEVEL_DEBUG,"# При выполнении " + scriptName + ":" + funcName+"() произошла досадная ошибка: "+errorReason(ok));
 			}
 		} catch (Exception e) {
-			send("# Произошла серьезная ошибка:\n"+e.toString());
+			send(LEVEL_DEBUG,"# Произошла серьезная ошибка:\n"+e.toString());
 			res = "Internal error";
 		}
 		isScriptRunning = false;
@@ -423,9 +446,11 @@ public class Core extends Thread {
 
 	public String listScripts(){
 		StringBuilder sb = new StringBuilder();
-		for(String s : scriptsset){
-			sb.append(s+"\t\t");
+		
+		for(String s : scriptsnames){
+			sb.append(s+"\n");
 		}
+		sb.append("Всего скриптов: "+scriptsnames.size());
 		return sb.toString();
 	}
 	

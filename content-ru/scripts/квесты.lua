@@ -1,3 +1,3 @@
 function chat()
-	redir("задания");
+	client:doFunction("задания","chat");
 end

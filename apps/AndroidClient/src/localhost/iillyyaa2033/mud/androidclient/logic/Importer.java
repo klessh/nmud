@@ -40,7 +40,7 @@ public class Importer {
 		
 		File work = new File(scriptspath);
 		if(!work.exists()){
-			/*if(core.debug)*/ core.send("# Importer: путь скриптов не существует.\n\nПроверь правильность:"+scriptspath);
+			/**/ core.send(core.LEVEL_DEBUG, "# Importer: путь скриптов не существует.\n\nПроверь правильность:"+scriptspath);
 			return null;
 		}
 
@@ -56,7 +56,7 @@ public class Importer {
 		HashMap<String, String> cmds = new HashMap<String, String>();
 
 		if(list == null || list.length <1){
-			if(core.debug) core.send("# Improter: список луа-файлов "+(list==null ? "null" : "равен "+list.length)+". Путь - "+scriptspath);
+			 core.send(core.LEVEL_DEBUG, "# Improter: список луа-файлов "+(list==null ? "null" : "равен "+list.length)+". Путь - "+scriptspath);
 			return cmds;
 		}
 
@@ -79,15 +79,15 @@ public class Importer {
 				String value = currscript.toString();
 				cmds.put(key, value);
 
-				if(core.debug){
-					if(value.contains("server:")) core.send("# Скрипт \""+key+"\" использует доступ к серверу.");
-					if(value.contains("client:close")) core.send("# Скрипт \""+key+"\" может закрывать клиенты.");
+				{
+					if(value.contains("server:")) core.send(core.LEVEL_DEBUG, "# Скрипт \""+key+"\" использует доступ к серверу.");
+					if(value.contains("client:close")) core.send(core.LEVEL_DEBUG, "# Скрипт \""+key+"\" может закрывать клиенты.");
 				}
 				
 				currscript.setLength(0);
 				bufferedreader.close();
 			}catch (Exception e) {
-				if(core.debug) core.send("Importer: ошибка ридеров"+e);
+				 core.send("Importer: ошибка ридеров"+e);
 				return null;
 			}
 		return cmds;
@@ -97,7 +97,7 @@ public class Importer {
 
 		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/users.csv");
 		if(!workfile.exists()){
-			if(core.debug) core.send("Importer: нету файла с акками");
+			 core.send("Importer: нету файла с акками");
 			return null;
 		}
 
@@ -122,7 +122,7 @@ public class Importer {
 			bufferedreader.close();
 			return users;
 		}catch (Exception e) {
-			if(core.debug) core.send("Importer: ошибка импорта акков"+e);
+			 core.send("Importer: ошибка импорта акков"+e);
 			return null;
 		}
 	}
@@ -131,7 +131,7 @@ public class Importer {
 		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/maps/testmap.txt");
 		
 		if(!workfile.exists()){
-			if(core.debug) core.send("Importer: нету файла с акками");
+			 core.send("Importer: нету файла с акками");
 			return null;
 		}
 
@@ -161,7 +161,7 @@ public class Importer {
 			bufferedreader.close();
 			return objs;
 		}catch (Exception e) {
-			if(core.debug) core.send("Importer: ошибка импорта акков"+e);
+			 core.send("Importer: ошибка импорта акков"+e);
 			return null;
 		}
 	}
