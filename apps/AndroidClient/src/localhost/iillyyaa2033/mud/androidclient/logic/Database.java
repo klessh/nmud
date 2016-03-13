@@ -6,10 +6,16 @@ import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 
 public class Database{
 	
+	private Core c;
 	public ArrayList<WorldObject> objects;
 	ArrayList<ChunkManager> chunks;
 	
 	public Database(Core c){
+		this.c = c;
+		objects = c.importer.importObjects();
+	}
+	
+	public void update(){
 		objects = c.importer.importObjects();
 	}
 	

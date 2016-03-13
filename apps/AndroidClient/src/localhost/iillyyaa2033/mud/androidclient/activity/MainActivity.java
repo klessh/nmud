@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
 		core.setDaemon(true);
 		core.start();
 	}
-
+	
 	@Override
 	protected void onStop() {
 		super.onStop();

@@ -1,4 +1,5 @@
-function chat()
+function chat(...)
 	client:send("Обновляемся...");
---	server:update();
+	server:update();
+	client:send("Обновились.");
 end

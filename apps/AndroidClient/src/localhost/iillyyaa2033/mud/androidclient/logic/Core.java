@@ -12,6 +12,7 @@ import org.keplerproject.luajava.JavaFunction;
 import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
+import java.util.Set;
 
 public class Core extends Thread {
 
@@ -21,14 +22,13 @@ public class Core extends Thread {
 	private LuaState L;
 
 	private HashMap<String, String> scriptsmap;
-
+	private Set<String> scriptsset;
+	
 	public boolean debug = !false;
-	private boolean canSctipts = false;
+	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 
 	public String cmdstr;
-
-	public String[] arg = {"Test arg"};
 	
 	ArrayList<String> report;
 
@@ -46,24 +46,26 @@ public class Core extends Thread {
 		} catch (InterruptedException e) {}
 
 		scriptsmap = importer.importChatScripts();
-
-		if (scriptsmap == null) {
-			canSctipts = false;
-		} else {
-
-			try {
-				initLua();
-				canSctipts = true;
-			} catch (LuaException e) {
-				send(e.toString());
-				canSctipts = false;
-			}
-		}
+		scriptsset = scriptsmap.keySet();
 		
+		if (scriptsmap == null) {
+			canScripts = false;
+		} else {
+			L = LuaStateFactory.newLuaState();
+			L.openLibs();
+
+			L.pushJavaObject(Core.this);	
+			L.setGlobal("client");
+			L.pushJavaObject(Core.this);
+			L.setGlobal("server");
+			
+			canScripts = true;
+		}
+
 		doFunction("onServerStarted", "on", null);
 
 		doFunction("onClientConnected", "on", null);
-		
+
 		String cmd = "";
 		while (!(cmd = read()).equals("")) {
 			comms(cmd);
@@ -73,36 +75,49 @@ public class Core extends Thread {
 	private String[] haventcmd = {"Команды не существует.","Нет такой команды.","Похоже, такой команды нет.",
 		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Ничего не случилось","Команда отсутствует."};
 
-	private synchronized void comms(String message) {	// Обарботка входящией строки
-		message = message.toLowerCase();	// Теперь все сообщение набрано строчными буквами
+	private synchronized void comms(String message) {
+		message = message.toLowerCase();
 
-		StringTokenizer token = new StringTokenizer(message);	// Делим сообщение на токены
-		int size = token.countTokens();							// определяем количество токенов
+		StringTokenizer token = new StringTokenizer(message);
+		int size = token.countTokens();
 
-		if (size == 0) return;	// Если токенов нет, то завершимся
+		if (size == 0) return;
 
-		String cmd = token.nextToken();		// Возьмем первое слово как команду...
-		String[] args = new String[size - 1];	// создадим массив для ея аргументов
+		String cmd = token.nextToken();
+		String[] args = new String[size - 1];
 
-		for (int i = 0; i < size - 1; i++) {		// Пройдемся циклом 
-			args[i] = token.nextToken();	// занесем все остальный слова сообщения в массив аргументов
+		for (int i = 0; i < size - 1; i++) {
+			args[i] = token.nextToken();
 		}
 
 		if (scriptsmap != null) {
 			if (scriptsmap.containsKey(cmd)) {
-				send(doFunction(cmd, "chat", null));
+				send(doFunction(cmd, "chat", args));
 			} else {
-				report.add(message);
-				int random = (int)Math.floor(Math.random() * haventcmd.length);
-				send(haventcmd[random]);
+				String fullCmd = getFullCommand(cmd);
+				if(cmd == null){
+					report.add(message);
+					int random = (int)Math.floor(Math.random() * haventcmd.length);
+					send(haventcmd[random]);
+				} else {
+					send(doFunction(fullCmd,"chat",args));
+				}
 			}
-
 		} else {
 			send("Скрипты не загружены.");
 		}
 	}
 
-	public synchronized String read() {	// Получение входящей строки
+	public String getFullCommand(String shortCmd){
+		for(String s : scriptsset){
+			if(s.startsWith(shortCmd)){
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	public synchronized String read() {
 		while (cmdstr == null) {
 			try {
 				sleep(100);
@@ -171,75 +186,18 @@ public class Core extends Thread {
 			});
 	}
 
-	private void initLua() throws LuaException {
-
-		L = LuaStateFactory.newLuaState();
-		L.openLibs();
-
-		L.pushJavaObject(Core.this);	
-		L.setGlobal("client");
-		L.pushJavaObject(Core.this);
-		L.setGlobal("server");
-
-		JavaFunction print = new JavaFunction(L) {
-
-			@Override
-			public int execute() throws LuaException {
-
-				for (int i = 2; i <= L.getTop(); i++) {	
-					int type = L.type(i);				
-					String stype = L.typeName(type);
-					String val = null;
-					if (stype.equals("userdata")) {		
-						Object obj = L.toJavaObject(i);	
-						if (obj != null)				
-							val = obj.toString();		
-					} else if (stype.equals("boolean")) {			
-						val = L.toBoolean(i) ? "true" : "false";	
-					} else {
-						val = L.toString(i);
-					}
-					if (val == null)		
-						val = stype;		
-					send(val);
-				}
-				return 0;				
-			}
-		};
-		print.register("print");
-
-		JavaFunction redir = new JavaFunction(L){
-
-			@Override
-			public int execute() throws LuaException {
-				for (int i = 2; i <= L.getTop(); i++) {	
-					int type = L.type(i);				
-					String stype = L.typeName(type);
-					String val = null;
-					if (stype.equals("userdata")) {		
-						Object obj = L.toJavaObject(i);	
-						if (obj != null)				
-							val = obj.toString();		
-					} else if (stype.equals("boolean")) {			
-						val = L.toBoolean(i) ? "true" : "false";	
-					} else {
-						val = L.toString(i);
-					}
-					if (val == null)	val = stype;
-					send(doFunction(val, "chat", null));	
-				}
-				return 0;
-			}
-		};
-		redir.register("redir");
+	public synchronized void update() {
+		scriptsmap = importer.importChatScripts();
+		scriptsset = scriptsmap.keySet();
+		db.update();
 	}
 
-	public String doFunction(String script, String func){
+	public String doFunction(String script, String func) {
 		return doFunction(script, func, null);
 	}
-	
+
 	public String doFunction(String scriptName, String funcName, String[] args) {
-		if (!canSctipts) return "Скрипты не работают.";
+		if (!canScripts) return "Скрипты не работают.";
 
 		if (!scriptsmap.containsKey(scriptName)) {
 			send("# Команды " + scriptName + " не существует.");
@@ -254,20 +212,23 @@ public class Core extends Thread {
 			int ok = L.LdoString(scriptsmap.get(scriptName));
 			if (ok == 0) {
 				L.getGlobal(funcName);
-				if(args!=null){
-					for(int i = 0; i<args.length; i++){
+				
+				if(L.isNil(-1)){
+					send("# У скрипта "+scriptName+" нет функции "+funcName+".");
+				} else if (args == null) {
+					L.pcall(0, 1, -2);
+				} else {
+					for (int i = 0; i < args.length; i++) {
 						L.pushString(args[i]);
 					}
-					L.pcall(args.length, 1, -2-args.length);
-				} else {
-					L.pcall(0, 1, -2);
+					L.pcall(args.length, 1, -2 - args.length);
 				}
 				res = L.toString(-1);
 			} else {
-				res = errorReason(ok);
+				send("# При выполнении " + scriptName + ":" + funcName+"() произошла досадная ошибка: "+errorReason(ok));
 			}
 		} catch (Exception e) {
-			send(e.toString());
+			send("# Произошла серьезная ошибка:\n"+e.toString());
 			res = "Internal error";
 		}
 		isScriptRunning = false;
@@ -297,7 +258,7 @@ public class Core extends Thread {
 		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
 		objsm.put(0, horizon);
 
-	//	sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
+		//	sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
 
 		int object_with_biggest_priority = 0;
 
@@ -367,7 +328,7 @@ public class Core extends Thread {
 		// TODO: вангую багу, что objbefore_before может быть неправилен для крайних объектов
 		int objbefore = pie[0], objbefore_before = pie[0];
 		for (int i = 0; i < 360; i++) {
-		//	sb.append(pie[i] + " ");
+			//	sb.append(pie[i] + " ");
 			if (pie[i] != objbefore) {
 				objsm.get(objbefore).obj_right = pie[i];
 				objsm.get(pie[i]).obj_left = objbefore;
@@ -394,19 +355,19 @@ public class Core extends Thread {
 		for (int i = 1; i < objsm.size(); i++) {
 			DescribedWorldObject obj = objsm.get(i);
 			if (obj.included)
-				sb.append(obj.name.toLowerCase()+", ");
+				sb.append(obj.name.toLowerCase() + ", ");
 			/*	sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
-						  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
-						  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
-						  "\n\tПриоритет: " + obj.priority +
-						  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
-						  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
-						  );	*/
+			 "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
+			 "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
+			 "\n\tПриоритет: " + obj.priority +
+			 "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
+			 "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
+			 );	*/
 		}	
-		
+
 		sb.append("землю и голубое небо.");
-	//	sb.append(compareObjs(258, objsm.get(object_with_biggest_priority), pie));
-		
+		//	sb.append(compareObjs(258, objsm.get(object_with_biggest_priority), pie));
+
 		// TODO: dont forget exclude included == false
 		return sb.toString();
 	}
@@ -432,39 +393,47 @@ public class Core extends Thread {
 		return new Double(Math.toDegrees(arccos)).intValue();
 	}
 
-	String compareObjs(int angle, DescribedWorldObject obj, int[] pie){
+	String compareObjs(int angle, DescribedWorldObject obj, int[] pie) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		byte mark = 0x0000;
-		
-		int fr = ((angle+45)<360 ? angle+45 : (360-(angle+45))*-1);
-		int br = ((fr+90)<360 ? fr+90 : (360-(fr+90))*-1);
-		int bl = ((br+90)<360 ? br+90 : (360-(br+90))*-1);
-		int fl = ((bl+90)<360 ? bl+90 : (360-(bl+90))*-1);
-		
-		
-		sb.append("Недалеко от вас находится "+obj.name.toLowerCase()+".");
+
+		int fr = ((angle + 45) < 360 ? angle + 45 : (360 - (angle + 45)) * -1);
+		int br = ((fr + 90) < 360 ? fr + 90 : (360 - (fr + 90)) * -1);
+		int bl = ((br + 90) < 360 ? br + 90 : (360 - (br + 90)) * -1);
+		int fl = ((bl + 90) < 360 ? bl + 90 : (360 - (bl + 90)) * -1);
+
+
+		sb.append("Недалеко от вас находится " + obj.name.toLowerCase() + ".");
 		// TODO: moar random text and phrases
-		
+
 		return sb.toString();
 	}
-	
-	String compareObjs(DescribedWorldObject one, DescribedWorldObject another){
+
+	String compareObjs(DescribedWorldObject one, DescribedWorldObject another) {
 		// A справа/слева от В
 		// А перед/позади В
 		return "";
 	}
-	
-	String compareObjs(DescribedWorldObject one, DescribedWorldObject two, DescribedWorldObject three){
+
+	String compareObjs(DescribedWorldObject one, DescribedWorldObject two, DescribedWorldObject three) {
 		// А между В и С
 		return "";
+	}
+
+	public String listScripts(){
+		StringBuilder sb = new StringBuilder();
+		for(String s : scriptsset){
+			sb.append(s+"\t\t");
+		}
+		return sb.toString();
 	}
 	
 	public synchronized boolean close() {	// Закрытые сокета и lua
 		if (isScriptRunning) return false;
 
 		try {						// пытаемся...
-			if (canSctipts) L.close();
+			if (canScripts) L.close();
 			Thread.currentThread().interrupt();
 			send("Socket closed");
 		} catch (Exception e) {									// А при ошибке...

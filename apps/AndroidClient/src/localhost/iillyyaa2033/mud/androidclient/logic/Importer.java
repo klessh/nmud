@@ -32,7 +32,7 @@ public class Importer {
 		// TODO: Implement this method
 	}
 	
-	public HashMap<String, String> importChatScripts(){
+	public synchronized HashMap<String, String> importChatScripts(){
 
 		String scriptspath = Environment.getExternalStorageDirectory() + "/Download/nMud/scripts/";
 //		String scriptspath = "file:///android_asset/nMud/scripts/";

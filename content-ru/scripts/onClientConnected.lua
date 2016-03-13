@@ -13,14 +13,15 @@ function handleInput(menuname)
 	if menuname == "main" then
 		if input == "1" then
 			client:send("======");
-			redir("осмотреться");
+			client:doFunction("осмотреться","chat");
 			return;
 		elseif input == "2" then
 			client:startPreferences();
 			handleInput("main");
 			return;
 		elseif input == "3" then
-			client:send("Настройки профиля будут, но попозже. Вы перенаправлены в игру.");
+			client:send("Настройки профиля будут, но попозже.");
+			handleInput("main");
 			return;
 		else
 			output = handleInput(menuname);
