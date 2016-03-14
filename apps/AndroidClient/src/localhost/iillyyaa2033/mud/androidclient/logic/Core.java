@@ -1,18 +1,17 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
-import org.keplerproject.luajava.JavaFunction;
-import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
-import java.util.Set;
 
 public class Core extends Thread {
 
@@ -20,7 +19,7 @@ public class Core extends Thread {
 
 	private MainActivity activity;
 	public Importer importer;
-	private Database db;
+	public Database db;
 	private LuaState L;
 
 	private HashMap<String, String> scriptsmap;
@@ -76,6 +75,11 @@ public class Core extends Thread {
 	}
 
 	public synchronized void update() {
+		if(!(new File(db.datapath)).exists()){
+			importer.extractContent(activity);
+			importer.unzip(activity.getCacheDir() + "/content-ru.zip",db.datapath);
+		}
+		
 		scriptsmap = importer.importChatScripts();
 		scriptsnames = new ArrayList<String>();
 
@@ -154,7 +158,7 @@ public class Core extends Thread {
 			case LEVEL_CLIENT:
 				return send(line);
 			case LEVEL_DEBUG:
-				if (debug) return send(line);
+				if (debug) return send("# "+line);
 				else return true;
 			default:
 				return send(line);
@@ -225,7 +229,7 @@ public class Core extends Thread {
 		if (!canScripts) return "Скрипты не работают.";
 
 		if (!scriptsmap.containsKey(scriptName)) {
-			send(LEVEL_DEBUG, "# Команды " + scriptName + " не существует.");
+			send(LEVEL_DEBUG, "Команды " + scriptName + " не существует.");
 			return "";
 		}
 		String res = null;
@@ -239,7 +243,7 @@ public class Core extends Thread {
 				L.getGlobal(funcName);
 
 				if (L.isNil(-1)) {
-					send(LEVEL_DEBUG, "# У скрипта " + scriptName + " нет функции " + funcName + ".");
+					send(LEVEL_DEBUG, "У скрипта " + scriptName + " нет функции " + funcName + ".");
 				} else if (args == null) {
 					L.pcall(0, 1, -2);
 				} else {
@@ -250,10 +254,10 @@ public class Core extends Thread {
 				}
 				res = L.toString(-1);
 			} else {
-				send(LEVEL_DEBUG, "# При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
+				send(LEVEL_DEBUG, "При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
 			}
 		} catch (Exception e) {
-			send(LEVEL_DEBUG, "# Произошла серьезная ошибка:\n" + e.toString());
+			send(LEVEL_DEBUG, "Произошла серьезная ошибка:\n" + e.toString());
 			res = "Internal error";
 		}
 		isScriptRunning = false;

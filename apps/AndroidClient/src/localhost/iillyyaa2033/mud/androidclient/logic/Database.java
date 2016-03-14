@@ -3,6 +3,7 @@ package localhost.iillyyaa2033.mud.androidclient.logic;
 import java.util.ArrayList;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.ChunkManager;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
+import android.os.Environment;
 
 public class Database{
 	
@@ -26,4 +27,7 @@ public class Database{
 	public WorldObject getObjectById(){
 		return null;
 	}
+	
+	public String datapath = Environment.getExternalStorageDirectory() + "/Download/nMud/";
+	public String encoding_contentarchive = "UTF-8";
 }

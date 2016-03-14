@@ -1,6 +1,7 @@
 package localhost.iillyyaa2033.mud.androidclient.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import localhost.iillyyaa2033.mud.androidclient.R;
 import localhost.iillyyaa2033.mud.androidclient.logic.Core;
-import android.content.Intent;
 
 public class MainActivity extends Activity {
 
@@ -42,7 +42,12 @@ public class MainActivity extends Activity {
 
 				@Override
 				public void onClick(View p1) {
-					doWork();
+					String command = textfield.getText().toString();
+
+					if(command.equals("")) return;
+
+					core.cmdstr = (command);
+					textfield.setText("");
 				}
 			});
 
@@ -56,21 +61,6 @@ public class MainActivity extends Activity {
 	protected void onStop() {
 		super.onStop();
 		core.saveReport();
-	}
-	
-	void doWork(){
-		String command = textfield.getText().toString();
-
-		if(command.equals("")) return;
-
-		switch(command){
-			case "scripts":
-	//			core.listScripts();
-				break;
-			default:
-				core.cmdstr = (command);
-		}
-		textfield.setText("");
 	}
 
 	public void addItem(String text){
