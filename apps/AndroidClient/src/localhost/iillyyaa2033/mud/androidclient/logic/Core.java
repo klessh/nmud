@@ -17,7 +17,7 @@ import java.util.Set;
 public class Core extends Thread {
 
 	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1;
-	
+
 	private MainActivity activity;
 	public Importer importer;
 	private Database db;
@@ -25,15 +25,17 @@ public class Core extends Thread {
 
 	private HashMap<String, String> scriptsmap;
 	private ArrayList<String> scriptsnames;
-	
+
 	public boolean debug = true;
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 
 	public String cmdstr;
-	
+
 	ArrayList<String> report;
 
+	int pos_x = 0, pos_y = 0;
+	
 	public Core(MainActivity activity) {
 		this.activity = activity;
 		importer = new Importer(this);
@@ -48,7 +50,7 @@ public class Core extends Thread {
 		} catch (InterruptedException e) {}
 
 		update();
-		
+
 		if (scriptsmap == null) {
 			canScripts = false;
 		} else {
@@ -59,7 +61,7 @@ public class Core extends Thread {
 			L.setGlobal("client");
 			L.pushJavaObject(Core.this);
 			L.setGlobal("server");
-			
+
 			canScripts = true;
 		}
 
@@ -76,19 +78,19 @@ public class Core extends Thread {
 	public synchronized void update() {
 		scriptsmap = importer.importChatScripts();
 		scriptsnames = new ArrayList<String>();
-		
-		if(scriptsmap != null){
+
+		if (scriptsmap != null) {
 			Set<String> set = scriptsmap.keySet();
-			for(String s : set){
+			for (String s : set) {
 				scriptsnames.add(s);
 			}
-			
+
 			Collections.sort(scriptsnames);
 		}
 		db.update();
 	}
-	
-	
+
+
 	private String[] haventcmd = {"Команды не существует.","Нет такой команды.","Похоже, такой команды нет.",
 		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Ничего не случилось","Команда отсутствует."};
 
@@ -112,12 +114,12 @@ public class Core extends Thread {
 				send(doFunction(cmd, "chat", args));
 			} else {
 				String fullCmd = getFullCommand(cmd);
-				if(fullCmd == null){
+				if (fullCmd == null) {
 					report.add(message);
 					int random = (int)Math.floor(Math.random() * haventcmd.length);
 					send(haventcmd[random]);
 				} else {
-					send(doFunction(fullCmd,"chat",args));
+					send(doFunction(fullCmd, "chat", args));
 				}
 			}
 		} else {
@@ -125,15 +127,15 @@ public class Core extends Thread {
 		}
 	}
 
-	public String getFullCommand(String shortCmd){
-		for(String s : scriptsnames){
-			if(s.startsWith(shortCmd)){
+	public String getFullCommand(String shortCmd) {
+		for (String s : scriptsnames) {
+			if (s.startsWith(shortCmd)) {
 				return s;
 			}
 		}
 		return null;
 	}
-	
+
 	public synchronized String read() {
 		while (cmdstr == null) {
 			try {
@@ -147,18 +149,18 @@ public class Core extends Thread {
 		return cmd;
 	}
 
-	public synchronized boolean send(int level, String line){
-		switch(level){
+	public synchronized boolean send(int level, String line) {
+		switch (level) {
 			case LEVEL_CLIENT:
 				return send(line);
 			case LEVEL_DEBUG:
-				if(debug) return send(line);
+				if (debug) return send(line);
 				else return true;
 			default:
 				return send(line);
 		}
 	}
-	
+
 	public String line2snd;
 	public synchronized boolean send(String line) {
 		if (line == null) return true;
@@ -223,7 +225,7 @@ public class Core extends Thread {
 		if (!canScripts) return "Скрипты не работают.";
 
 		if (!scriptsmap.containsKey(scriptName)) {
-			send(LEVEL_DEBUG,"# Команды " + scriptName + " не существует.");
+			send(LEVEL_DEBUG, "# Команды " + scriptName + " не существует.");
 			return "";
 		}
 		String res = null;
@@ -235,9 +237,9 @@ public class Core extends Thread {
 			int ok = L.LdoString(scriptsmap.get(scriptName));
 			if (ok == 0) {
 				L.getGlobal(funcName);
-				
-				if(L.isNil(-1)){
-					send(LEVEL_DEBUG,"# У скрипта "+scriptName+" нет функции "+funcName+".");
+
+				if (L.isNil(-1)) {
+					send(LEVEL_DEBUG, "# У скрипта " + scriptName + " нет функции " + funcName + ".");
 				} else if (args == null) {
 					L.pcall(0, 1, -2);
 				} else {
@@ -248,10 +250,10 @@ public class Core extends Thread {
 				}
 				res = L.toString(-1);
 			} else {
-				send(LEVEL_DEBUG,"# При выполнении " + scriptName + ":" + funcName+"() произошла досадная ошибка: "+errorReason(ok));
+				send(LEVEL_DEBUG, "# При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
 			}
 		} catch (Exception e) {
-			send(LEVEL_DEBUG,"# Произошла серьезная ошибка:\n"+e.toString());
+			send(LEVEL_DEBUG, "# Произошла серьезная ошибка:\n" + e.toString());
 			res = "Internal error";
 		}
 		isScriptRunning = false;
@@ -268,8 +270,15 @@ public class Core extends Thread {
 		return "Ошибка с номером " + error + " не опознана";
 	}
 
+	
+	public String moveTo(String x, String y){
+		pos_x = Integer.parseInt(x);
+		pos_y = Integer.parseInt(y);
+		return "Вы ТПшнулись на ("+pos_x+":"+pos_y+").";
+	}
+	
 	public String getDescription() {
-		return getDescription(15, 25);
+		return getDescription(pos_x, pos_y);
 	}
 
 	public String getDescription(int x0, int y0) {
@@ -281,7 +290,7 @@ public class Core extends Thread {
 		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
 		objsm.put(0, horizon);
 
-		//	sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
+		sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
 
 		int object_with_biggest_priority = 0;
 
@@ -374,7 +383,10 @@ public class Core extends Thread {
 
 		}
 
-		sb.append("Вокруг себя вы видите следующее: ");
+		sb.append(compareObjs(270, objsm.get(object_with_biggest_priority), pie));
+		objsm.get(object_with_biggest_priority).included = false;
+
+		sb.append("\nВокруг себя вы видите следующее: ");
 		for (int i = 1; i < objsm.size(); i++) {
 			DescribedWorldObject obj = objsm.get(i);
 			if (obj.included)
@@ -389,9 +401,7 @@ public class Core extends Thread {
 		}	
 
 		sb.append("землю и голубое небо.");
-		//	sb.append(compareObjs(258, objsm.get(object_with_biggest_priority), pie));
 
-		// TODO: dont forget exclude included == false
 		return sb.toString();
 	}
 
@@ -419,18 +429,54 @@ public class Core extends Thread {
 	String compareObjs(int angle, DescribedWorldObject obj, int[] pie) {
 		StringBuilder sb = new StringBuilder();
 
-		byte mark = 0x0000;
+		int mark = 0;
 
 		int fr = ((angle + 45) < 360 ? angle + 45 : (360 - (angle + 45)) * -1);
 		int br = ((fr + 90) < 360 ? fr + 90 : (360 - (fr + 90)) * -1);
 		int bl = ((br + 90) < 360 ? br + 90 : (360 - (br + 90)) * -1);
 		int fl = ((bl + 90) < 360 ? bl + 90 : (360 - (bl + 90)) * -1);
-
-
-		sb.append("Недалеко от вас находится " + obj.name.toLowerCase() + ".");
-		// TODO: moar random text and phrases
-
+		
+		if(waka(fl,fr,obj)) mark = 1;
+		if(waka(fr,br,obj)) mark = 2;
+		if(waka(br,bl,obj)) mark = 3;
+		if(waka(bl,fl,obj)) mark = 4;
+		
+		String[] straight = {"Перед вами"};
+		String[] right = {"Справа","Справа от вас","По правую руку"};
+		String[] left = {"Слева","Слева от вас"};
+		String[] back = {"Позади","Позади вас"};
+		String[] verb = {"виднеется","находится"};
+		
+		switch(mark){
+			case 1:
+				sb.append(straight[(int)(Math.random()*straight.length)]);
+				break;
+			case 2:
+				sb.append(right[(int)(Math.random()*(right.length))]);
+				break;
+			case 3:
+				sb.append(back[(int)(Math.random()*back.length)]);
+				break;
+			case 4:
+				sb.append(left[(int)(Math.random()*left.length)]);
+				break;
+		}
+		sb.append(" ").append(verb[(int) (Math.random()*verb.length)]).append(" ").append(obj.name);
+		
 		return sb.toString();
+	}
+
+	boolean waka(int l, int r, DescribedWorldObject obj) {
+		
+		if (l < r) {
+			if(obj.deg_center > l && obj.deg_center < r)
+				return true;
+		} else {
+			if(obj.deg_center > l) return true;
+			if(obj.deg_center < r) return true;
+		}
+
+		return false;
 	}
 
 	String compareObjs(DescribedWorldObject one, DescribedWorldObject another) {
@@ -444,16 +490,16 @@ public class Core extends Thread {
 		return "";
 	}
 
-	public String listScripts(){
+	public String listScripts() {
 		StringBuilder sb = new StringBuilder();
-		
-		for(String s : scriptsnames){
-			sb.append(s+"\n");
+
+		for (String s : scriptsnames) {
+			sb.append(s + "\n");
 		}
-		sb.append("Всего скриптов: "+scriptsnames.size());
+		sb.append("Всего скриптов: " + scriptsnames.size());
 		return sb.toString();
 	}
-	
+
 	public synchronized boolean close() {	// Закрытые сокета и lua
 		if (isScriptRunning) return false;
 

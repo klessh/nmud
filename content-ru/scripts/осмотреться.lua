@@ -1,4 +1,4 @@
 function chat(...)
---	client:send("oсм");
-	return client:getDescription(15,25);
+	u = client:getDescription();
+	client:send(u);
 end
