@@ -8,3 +8,7 @@ function chat(...)
 		end
 	end
 end
+
+function help(...)
+	client:send("Команда: тест\n\tЭто тестовый эхо-скрипт для проверки аргументов.");
+end

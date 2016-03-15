@@ -69,8 +69,13 @@ public class Core extends Thread {
 		doFunction("onClientConnected", "on", null);
 
 		String cmd = "";
-		while (!(cmd = read()).equals("")) {
+		while (!(cmd = read()).equals("") && !Thread.currentThread().isInterrupted()) {
 			comms(cmd);
+		}
+		
+		if(interrupted()){
+			send("Finish.");
+			close();
 		}
 	}
 
@@ -504,15 +509,20 @@ public class Core extends Thread {
 		return sb.toString();
 	}
 
-	public synchronized boolean close() {	// Закрытые сокета и lua
-		if (isScriptRunning) return false;
+	public synchronized boolean close() {
+		if (isScriptRunning){
+			Thread.currentThread().interrupt();
+			return false;
+		}
 
-		try {						// пытаемся...
+		try {
 			if (canScripts) L.close();
 			Thread.currentThread().interrupt();
 			send("Socket closed");
-		} catch (Exception e) {									// А при ошибке...
-			send("Ошибка закрытия." + e.toString());		// спамим в лог.
+			wait(3000);
+			activity.finish();
+		} catch (Exception e) {
+			send("Ошибка закрытия." + e.toString());
 		}
 		return true;
 	}
