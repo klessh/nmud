@@ -12,6 +12,7 @@ import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
+import android.preference.PreferenceManager;
 
 public class Core extends Thread {
 
@@ -20,6 +21,7 @@ public class Core extends Thread {
 	private MainActivity activity;
 	public Importer importer;
 	public Database db;
+	public Dictionary dict;
 	private LuaState L;
 
 	private HashMap<String, String> scriptsmap;
@@ -37,8 +39,10 @@ public class Core extends Thread {
 	
 	public Core(MainActivity activity) {
 		this.activity = activity;
+		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG",true);
 		importer = new Importer(this);
 		db = new Database(this);
+		dict = new Dictionary(this);
 		report = new ArrayList<String>();
 	}
 
@@ -66,8 +70,10 @@ public class Core extends Thread {
 
 		doFunction("onServerStarted", "on", null);
 
+		importer.importWords("nouns");
+		
 		doFunction("onClientConnected", "on", null);
-
+		
 		String cmd = "";
 		while (!(cmd = read()).equals("") && !Thread.currentThread().isInterrupted()) {
 			comms(cmd);

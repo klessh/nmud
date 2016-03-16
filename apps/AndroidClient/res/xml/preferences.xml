@@ -2,6 +2,12 @@
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android" > 
 
+	<CheckBoxPreference
+		android:key="FLAG_DEBUG" 
+		android:title="FLAG_DEBUG" 
+		android:summary=""   
+		android:defaultValue="true" />
+	
 	<PreferenceCategory
 		android:title="Dialog">
 
@@ -10,12 +16,6 @@
     	    android:title="Имя автора" 
 			android:summary="Должны же вы как-то себя именовать"  
 			android:defaultValue="Меченый" />
-
-		<CheckBoxPreference
-			android:key="DIALOGFRAG_SCROLLTOEND" 
-    	    android:title="Прокрутка к концу ветки" 
-			android:summary="Точнее, скачок к предпоследнему посту"   
-			android:defaultValue="true" />
 
 	</PreferenceCategory>
 </PreferenceScreen>

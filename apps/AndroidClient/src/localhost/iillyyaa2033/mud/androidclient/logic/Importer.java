@@ -22,7 +22,9 @@ import android.content.Context;
 public class Importer {
 
 	Core core;
-
+	
+	public final int WORDFORMS_SIZE_MOVEME_TOCONFIG = 7;
+	
 	public Importer(Core c) {
 		core = c;
 	}
@@ -126,7 +128,7 @@ public class Importer {
 		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/maps/testmap.txt");
 
 		if (!workfile.exists()) {
-			core.send("Importer: нету файла с акками");
+			core.send(core.LEVEL_DEBUG,"Importer: нету файла с акками");
 			return null;
 		}
 
@@ -161,6 +163,48 @@ public class Importer {
 		}
 	}
 
+	public HashMap<Integer, String[]> importWords(String endfilename){
+		
+		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/dict/"+endfilename+".txt");
+
+		if (!workfile.exists()) {
+			core.send(core.LEVEL_DEBUG,"Importer: нету файла с со словарем ("+workfile.getAbsolutePath()+").");
+			return null;
+		}
+		try {
+			InputStream inputstream = new FileInputStream(workfile);
+			InputStreamReader reader = new InputStreamReader(inputstream, "UTF-8");
+			BufferedReader bufferedreader = new BufferedReader(reader);
+
+			String buffer = "";
+			StringTokenizer token;
+			HashMap<Integer, String[]> objs = new HashMap<Integer, String[]>();
+
+			while ((buffer = bufferedreader.readLine()) != null) {
+				token = new StringTokenizer(buffer, "|");
+				
+				if (token.countTokens() == WORDFORMS_SIZE_MOVEME_TOCONFIG+1) {
+					int id = new Integer(token.nextToken());
+					core.send(core.LEVEL_DEBUG,""+id);
+					
+					String[] word = new String[WORDFORMS_SIZE_MOVEME_TOCONFIG];
+					word[0] = token.nextToken();
+					for(int i = 1; i < WORDFORMS_SIZE_MOVEME_TOCONFIG; i++){
+						word[i] = word[0]+token.nextToken().replace("_","");
+						if(core.debug) core.append(" "+word[i]);
+					}
+					objs.put(id,word);
+				}
+			}
+
+			bufferedreader.close();
+			return objs;
+		} catch (Exception e) {
+			core.send("Importer: ошибка импорта акков" + e);
+			return null;
+		}
+	}
+	
 	public void extractContent(Context c) {
 		File f = new File(c.getCacheDir() + "/content-ru.zip");
 		

@@ -1,14 +1,16 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
+import java.util.HashMap;
+
 public class Dictionary{
 	
 	// maybe, using TreeMap is better?
-	String[][] nouns;
+	HashMap<Integer,String[]> nouns;
 	String[][] verbs;
 	String[][] adjs;
 	
 	public Dictionary(Core c){
-		// TODO: load words using importer
+	//	nouns = c.importer.importWords("nouns");
 	}
 	
 	// search in all known words
