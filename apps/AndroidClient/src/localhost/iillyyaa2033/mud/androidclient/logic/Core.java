@@ -335,7 +335,7 @@ public class Core extends Thread {
 			}
 
 			obj.area = getDistance(obj.x, obj.y, obj.x2, obj.y) * getDistance(obj.x, obj.y, obj.x, obj.y2);
-			double priority = obj.area * (1 / (double) obj.distance) * 10;
+			double priority = /*obj.area */ (1 / (double) obj.distance) * 100;
 			obj.priority = new Double(priority).intValue();
 
 			objs.add(obj);
@@ -398,7 +398,7 @@ public class Core extends Thread {
 
 		}
 
-		sb.append(compareObjs(270, objsm.get(object_with_biggest_priority), pie));
+		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie));
 		objsm.get(object_with_biggest_priority).included = false;
 
 		sb.append("\nВокруг себя вы видите следующее: ");
@@ -446,10 +446,10 @@ public class Core extends Thread {
 
 		int mark = 0;
 
-		int fr = ((angle + 45) < 360 ? angle + 45 : (360 - (angle + 45)) * -1);
-		int br = ((fr + 90) < 360 ? fr + 90 : (360 - (fr + 90)) * -1);
+		int fr = ((angle + 15) < 360 ? angle + 15 : (360 - (angle + 15)) * -1);
+		int br = ((fr + 120) < 360 ? fr + 120 : (360 - (fr + 120)) * -1);
 		int bl = ((br + 90) < 360 ? br + 90 : (360 - (br + 90)) * -1);
-		int fl = ((bl + 90) < 360 ? bl + 90 : (360 - (bl + 90)) * -1);
+		int fl = ((bl + 120) < 360 ? bl + 120 : (360 - (bl + 120)) * -1);
 		
 		if(waka(fl,fr,obj)) mark = 1;
 		if(waka(fr,br,obj)) mark = 2;
@@ -476,7 +476,7 @@ public class Core extends Thread {
 				sb.append(left[(int)(Math.random()*left.length)]);
 				break;
 		}
-		sb.append(" ").append(verb[(int) (Math.random()*verb.length)]).append(" ").append(obj.name);
+		sb.append(" ").append(verb[(int) (Math.random()*verb.length)]).append(" ").append(obj.name.toLowerCase());
 		
 		return sb.toString();
 	}
@@ -487,8 +487,8 @@ public class Core extends Thread {
 			if(obj.deg_center > l && obj.deg_center < r)
 				return true;
 		} else {
-			if(obj.deg_center > l) return true;
-			if(obj.deg_center < r) return true;
+			if(obj.deg_center >= l) return true;
+			if(obj.deg_center <= r) return true;
 		}
 
 		return false;
