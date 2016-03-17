@@ -1,5 +1,6 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
+import android.preference.PreferenceManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,11 +13,10 @@ import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
-import android.preference.PreferenceManager;
 
 public class Core extends Thread {
 
-	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1;
+	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1, LEVEL_DEBUG_IMPORTER = 2;
 
 	public MainActivity activity;
 	public Importer importer;
@@ -27,7 +27,7 @@ public class Core extends Thread {
 	private HashMap<String, String> scriptsmap;
 	private ArrayList<String> scriptsnames;
 
-	public boolean debug = true;
+	public boolean debug = true, debug_importer = false;
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 
@@ -40,8 +40,9 @@ public class Core extends Thread {
 	public Core(MainActivity activity) {
 		this.activity = activity;
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG",true);
-		importer = new Importer(this);
+		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER",false);
 		db = new Database(this);
+		importer = new Importer(this);
 		dict = new Dictionary(this);
 		report = new ArrayList<String>();
 	}
@@ -69,8 +70,6 @@ public class Core extends Thread {
 		}
 
 		doFunction("onServerStarted", "on", null);
-
-		importer.importWords("nouns");
 		
 		doFunction("onClientConnected", "on", null);
 		
@@ -86,7 +85,10 @@ public class Core extends Thread {
 	}
 
 	public synchronized void update() {
+		db.update();
+		
 		if(!(new File(db.datapath)).exists()){
+			// TODO: data must be extracted before db update
 			importer.extractContent(activity);
 			importer.unzip(activity.getCacheDir() + "/content-ru.zip",db.datapath);
 		}
@@ -102,7 +104,8 @@ public class Core extends Thread {
 
 			Collections.sort(scriptsnames);
 		}
-		db.update();
+		
+		dict.update();
 	}
 
 
@@ -170,6 +173,9 @@ public class Core extends Thread {
 				return send(line);
 			case LEVEL_DEBUG:
 				if (debug) return send("# "+line);
+				else return true;
+			case LEVEL_DEBUG_IMPORTER:
+				if (debug_importer) return send("# "+line);
 				else return true;
 			default:
 				return send(line);
@@ -405,7 +411,7 @@ public class Core extends Thread {
 		for (int i = 1; i < objsm.size(); i++) {
 			DescribedWorldObject obj = objsm.get(i);
 			if (obj.included)
-				sb.append(obj.name.toLowerCase() + ", ");
+				sb.append(obj.name.toLowerCase() + "\n\t"+compareObjs(objsm.get(obj.obj_left),obj)+", \n");
 			/*	sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
 			 "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
 			 "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
@@ -495,9 +501,9 @@ public class Core extends Thread {
 	}
 
 	String compareObjs(DescribedWorldObject one, DescribedWorldObject another) {
-		// A справа/слева от В
-		// А перед/позади В
-		return "";
+		StringBuilder sb = new StringBuilder();
+		int distance = Math.max(one.deg_center,another.deg_center) - Math.min(one.deg_center,another.deg_center);
+		return sb.toString();
 	}
 
 	String compareObjs(DescribedWorldObject one, DescribedWorldObject two, DescribedWorldObject three) {

@@ -1,10 +1,9 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
+import android.preference.PreferenceManager;
 import java.util.ArrayList;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.ChunkManager;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 
 public class Database{
 	
@@ -12,6 +11,7 @@ public class Database{
 	public ArrayList<WorldObject> objects;
 	ArrayList<ChunkManager> chunks;
 	
+	// TODO: move it anywhere else, coz db need to be updatet after importer extracted data
 	public String datapath;
 	public String encoding_contentarchive = "UTF-8";
 	
@@ -19,7 +19,6 @@ public class Database{
 	public Database(Core c){
 		this.c = c;
 		datapath = PreferenceManager.getDefaultSharedPreferences(c.activity).getString("DATAPATH","");
-		objects = c.importer.importObjects();
 	}
 	
 	public void update(){

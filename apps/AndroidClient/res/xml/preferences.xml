@@ -2,21 +2,30 @@
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android" > 
 
-	<CheckBoxPreference
-		android:key="FLAG_DEBUG" 
-		android:title="FLAG_DEBUG" 
-		android:summary=""   
-		android:defaultValue="true" />
+	<PreferenceScreen
+		android:title="Флаги текстового вывода"
+		android:summary="Нужна ли Вам техническая информация?">
+		
+		<CheckBoxPreference
+			android:key="FLAG_DEBUG" 
+			android:title="FLAG_DEBUG" 
+			android:summary="Общие отладочные данные"   
+			android:defaultValue="true" />
+		
+		<CheckBoxPreference
+			android:key="FLAG_DEBUG_IMPORTER" 
+			android:title="FLAG_DEBUG_IMPORTER" 
+			android:summary="Отладочные данные импорта"   
+			android:defaultValue="false" />
+		
+	</PreferenceScreen>
 	
 
 	<EditTextPreference
 		android:key="DATAPATH" 
 		android:title="DATAPATH" 
-		android:summary=""  
+		android:summary="Путь к папке с данными"  
 		android:defaultValue="" />
 	
-	<PreferenceCategory
-		android:title="Dialog">
-	</PreferenceCategory>
 </PreferenceScreen>
 

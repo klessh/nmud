@@ -1,6 +1,6 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
-import android.os.Environment;
+import android.content.Context;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,27 +17,20 @@ import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import android.content.Context;
 
 public class Importer {
 
 	Core core;
 	
-	public final int WORDFORMS_SIZE_MOVEME_TOCONFIG = 7;
-	
 	public Importer(Core c) {
 		core = c;
-	}
-
-	public void saveUsers(HashMap<String, String> users) {
-		// TODO: Implement this method
 	}
 
 	public synchronized HashMap<String, String> importChatScripts() {
 
 		File work = new File(core.db.datapath, "scripts");
 		if (!work.exists()) {
-			/**/ core.send(core.LEVEL_DEBUG, "Importer: путь скриптов не существует.\n\nПроверь правильность:" + work.getAbsolutePath());
+			/**/ core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: путь скриптов не существует.\n\nПроверь правильность:" + work.getAbsolutePath());
 			return null;
 		}
 
@@ -53,7 +46,7 @@ public class Importer {
 		HashMap<String, String> cmds = new HashMap<String, String>();
 
 		if (list == null || list.length < 1) {
-			core.send(core.LEVEL_DEBUG, "Improter: список луа-файлов " + (list == null ? "null" : "равен " + list.length) + ". Путь - " + work.getAbsolutePath());
+			core.send(core.LEVEL_DEBUG_IMPORTER, "Improter: список луа-файлов " + (list == null ? "null" : "равен " + list.length) + ". Путь - " + work.getAbsolutePath());
 			return cmds;
 		}
 
@@ -76,10 +69,10 @@ public class Importer {
 				String value = currscript.toString();
 				cmds.put(key, value);
 
-				{
-					if (value.contains("server:")) core.send(core.LEVEL_DEBUG, "Скрипт \"" + key + "\" использует доступ к серверу.");
-					if (value.contains("client:close")) core.send(core.LEVEL_DEBUG, "Скрипт \"" + key + "\" может закрывать клиенты.");
-				}
+				
+					if (value.contains("server:")) core.send(core.LEVEL_DEBUG_IMPORTER, "Скрипт \"" + key + "\" использует доступ к серверу.");
+					if (value.contains("client:close")) core.send(core.LEVEL_DEBUG_IMPORTER, "Скрипт \"" + key + "\" может закрывать клиенты.");
+				
 
 				currscript.setLength(0);
 				bufferedreader.close();
@@ -94,7 +87,7 @@ public class Importer {
 
 		File workfile = new File(core.db.datapath, "users.csv");
 		if (!workfile.exists()) {
-			core.send(core.LEVEL_DEBUG, "Importer: нету файла с акками");
+			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла с акками");
 			return null;
 		}
 
@@ -124,11 +117,15 @@ public class Importer {
 		}
 	}
 
+	public void saveUsers(HashMap<String, String> users) {
+		// TODO: Implement this method
+	}
+	
 	public ArrayList<WorldObject> importObjects() {
-		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/maps/testmap.txt");
+		File workfile = new File(core.db.datapath, "/maps/testmap.txt");
 
 		if (!workfile.exists()) {
-			core.send(core.LEVEL_DEBUG,"Importer: нету файла с акками");
+			core.send(core.LEVEL_DEBUG_IMPORTER,"Importer: нету файла с акками");
 			return null;
 		}
 
@@ -163,14 +160,23 @@ public class Importer {
 		}
 	}
 
+	
+	String[][] forms = new String[][]{
+		new String[]{"",	"а",	"у",	"",		"ом",	"е"},
+		new String[]{"а",	"и",	"е",	"у",	"ей",	"е"},
+		new String[]{"а",	"ы",	"е",	"у",	"ой",	"е"},
+		new String[]{"й",	"я",	"ю",	"й",	"ем",	"е"}
+	};
+	
 	public HashMap<Integer, String[]> importWords(String endfilename){
 		
-		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/dict/"+endfilename+".txt");
+		File workfile = new File(core.db.datapath, "/dict/"+endfilename+".txt");
 
 		if (!workfile.exists()) {
-			core.send(core.LEVEL_DEBUG,"Importer: нету файла с со словарем ("+workfile.getAbsolutePath()+").");
+			core.send(core.LEVEL_DEBUG_IMPORTER,"Importer: нету файла с со словарем ("+workfile.getAbsolutePath()+").");
 			return null;
 		}
+		
 		try {
 			InputStream inputstream = new FileInputStream(workfile);
 			InputStreamReader reader = new InputStreamReader(inputstream, "UTF-8");
@@ -183,17 +189,21 @@ public class Importer {
 			while ((buffer = bufferedreader.readLine()) != null) {
 				token = new StringTokenizer(buffer, "|");
 				
-				if (token.countTokens() == WORDFORMS_SIZE_MOVEME_TOCONFIG+1) {
+				if (token.countTokens() == 3) {
 					int id = new Integer(token.nextToken());
-					core.send(core.LEVEL_DEBUG,""+id);
+					String base = token.nextToken();
+					int end = new Integer(token.nextToken());
+					String[] word = new String[6];
 					
-					String[] word = new String[WORDFORMS_SIZE_MOVEME_TOCONFIG];
-					word[0] = token.nextToken();
-					for(int i = 1; i < WORDFORMS_SIZE_MOVEME_TOCONFIG; i++){
-						word[i] = word[0]+token.nextToken().replace("_","");
-						if(core.debug) core.append(" "+word[i]);
+					core.send(core.LEVEL_DEBUG_IMPORTER,""+id);
+					
+					for(int i = 0; i < 6; i++){
+						word[i] = base+forms[end][i];
+						if(core.debug_importer) core.append(" "+word[i]);
 					}
 					objs.put(id,word);
+				} else {
+					core.send(core.LEVEL_DEBUG_IMPORTER, "Malformed line; "+token.countTokens());
 				}
 			}
 
@@ -221,7 +231,7 @@ public class Importer {
 				fos.write(buffer);
 				fos.close();
 			} catch (Exception e) {
-				core.send(core.LEVEL_DEBUG,e.getMessage());
+				core.send(core.LEVEL_DEBUG_IMPORTER,e.getMessage());
 			}
 		}
 	}
@@ -232,18 +242,18 @@ public class Importer {
 			ZipFile zipFile = new ZipFile(source);
 			zipFile.setFileNameCharset(core.db.encoding_contentarchive);
 			if (zipFile.isEncrypted()) {
-				core.send(core.LEVEL_DEBUG, "Архив зашифрован. Распаковка отменена.");
+				core.send(core.LEVEL_DEBUG_IMPORTER, "Архив зашифрован. Распаковка отменена.");
 				return;
 			}
 			zipFile.extractAll(destination);
 		} catch (ZipException e) {
-			core.send(core.LEVEL_DEBUG, e.getMessage());
+			core.send(core.LEVEL_DEBUG_IMPORTER, e.getMessage());
 		}
 	}
 
 	void saveReport(ArrayList<String> report) {
 		long time = System.currentTimeMillis() / 1000;
-		File workfile = new File(Environment.getExternalStorageDirectory(), "/Download/nMud/report_" + time + ".txt");
+		File workfile = new File(core.db.datapath, "/report_" + time + ".txt");
 		try {
 			workfile.createNewFile();
 			OutputStream stream = new FileOutputStream(workfile);

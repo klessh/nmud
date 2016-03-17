@@ -79,10 +79,14 @@ public class MainActivity extends Activity {
 	
 	public void appendToItem(String text){
 		int size = adapter.getCount();
-		String lastitm = adapter.getItem(size - 1);
-		String newitm = lastitm + text;
-		adapter.remove(lastitm);
-		addItem(newitm);
+		if(size > 1) {
+			String lastitm = adapter.getItem(size - 1);
+			String newitm = lastitm + text;
+			adapter.remove(lastitm);
+			addItem(newitm);
+		} else {
+			addItem(text);
+		}
 	}
 	
 	public void startPreferences(){
