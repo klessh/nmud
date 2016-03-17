@@ -8,15 +8,15 @@
 		android:summary=""   
 		android:defaultValue="true" />
 	
+
+	<EditTextPreference
+		android:key="DATAPATH" 
+		android:title="DATAPATH" 
+		android:summary=""  
+		android:defaultValue="" />
+	
 	<PreferenceCategory
 		android:title="Dialog">
-
-		<EditTextPreference
-			android:key="AUTHOR" 
-    	    android:title="Имя автора" 
-			android:summary="Должны же вы как-то себя именовать"  
-			android:defaultValue="Меченый" />
-
 	</PreferenceCategory>
 </PreferenceScreen>
 

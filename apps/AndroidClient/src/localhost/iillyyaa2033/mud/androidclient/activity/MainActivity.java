@@ -12,6 +12,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import localhost.iillyyaa2033.mud.androidclient.R;
 import localhost.iillyyaa2033.mud.androidclient.logic.Core;
+import android.preference.PreferenceManager;
+import android.content.SharedPreferences;
+import android.os.Environment;
 
 public class MainActivity extends Activity {
 
@@ -28,6 +31,11 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		if(prefs.getString("DATAPATH","").equals(""))
+			prefs.edit().remove("DATAPATH").putString("DATAPATH",Environment.getExternalStorageDirectory()+"/Download/nMud/").apply();
 		
 		list = (ListView) findViewById(R.id.main_ListView);
   		textfield = (EditText) findViewById(R.id.main_EditText);

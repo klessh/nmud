@@ -18,7 +18,7 @@ public class Core extends Thread {
 
 	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1;
 
-	private MainActivity activity;
+	public MainActivity activity;
 	public Importer importer;
 	public Database db;
 	public Dictionary dict;
