@@ -68,3 +68,7 @@ function create_profile()
 
 	return "test";
 end
+
+function help(...)
+	client:send("Команда: loginmanager\n\tЭто системный скрипт.");
+end

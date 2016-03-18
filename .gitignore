@@ -28,12 +28,13 @@ proguard/
 *.log 
 # Android Studio Navigation editor temp files
 .navigation/ 
+report_*.txt
 
 # Android Studio captures folder
 captures/ 
 
-# Intellij*
-.iml 
+# Intellij
+*.iml 
 
 #Keystore files
 *.jks

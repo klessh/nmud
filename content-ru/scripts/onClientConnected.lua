@@ -20,7 +20,7 @@ function handleInput(menuname)
 	
 	if menuname == "main" then
 		if input == "1" then
-			client:send("======");
+			client:send("===========");
 			client:doFunction("осмотреться","chat");
 			return;
 		elseif input == "2" then
@@ -42,4 +42,8 @@ function handleInput(menuname)
 	end
 	
 	return;
+end
+
+function help(...)
+	client:send("Команда: onClientConnected\n\tЭто системный скрипт.");
 end

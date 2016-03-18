@@ -92,6 +92,10 @@ public class Core extends Thread {
 	}
 	
 	public synchronized void update() {
+		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
+		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
+		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
+		
 		db.update();
 
 		if (!(new File(db.datapath)).exists()) {

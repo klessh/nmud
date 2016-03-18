@@ -28,3 +28,7 @@ end
 function chat()
 	client:send(doi());
 end
+
+function help(...)
+	client:send("Команда: grow\n\tЭто тестовый скрипт генерации названий растений. Придуман в 15'м году.");
+end
