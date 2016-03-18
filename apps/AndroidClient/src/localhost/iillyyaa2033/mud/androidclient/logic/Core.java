@@ -16,7 +16,7 @@ import org.keplerproject.luajava.LuaStateFactory;
 
 public class Core extends Thread {
 
-	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1, LEVEL_DEBUG_IMPORTER = 2;
+	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1, LEVEL_DEBUG_IMPORTER = 2, LEVEL_DEBUG_DESCR = 3;
 
 	public MainActivity activity;
 	public Importer importer;
@@ -27,20 +27,22 @@ public class Core extends Thread {
 	private HashMap<String, String> scriptsmap;
 	private ArrayList<String> scriptsnames;
 
-	public boolean debug = true, debug_importer = false;
+	public boolean debug = true, debug_importer = false, debug_descr = false;
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
-
+	private boolean updRequested = false;
+	
 	public String cmdstr;
 
 	ArrayList<String> report;
 
 	int pos_x = 0, pos_y = 0;
-	
+
 	public Core(MainActivity activity) {
 		this.activity = activity;
-		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG",true);
-		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER",false);
+		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
+		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
+		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
 		db = new Database(this);
 		importer = new Importer(this);
 		dict = new Dictionary(this);
@@ -70,29 +72,34 @@ public class Core extends Thread {
 		}
 
 		doFunction("onServerStarted", "on", null);
-		
+
 		doFunction("onClientConnected", "on", null);
-		
+
 		String cmd = "";
 		while (!(cmd = read()).equals("") && !Thread.currentThread().isInterrupted()) {
+			if(updRequested) update();
 			comms(cmd);
 		}
-		
-		if(interrupted()){
+
+		if (interrupted()) {
 			send("Finish.");
 			close();
 		}
 	}
 
+	public void requestUpdate(){
+		updRequested = true;
+	}
+	
 	public synchronized void update() {
 		db.update();
-		
-		if(!(new File(db.datapath)).exists()){
+
+		if (!(new File(db.datapath)).exists()) {
 			// TODO: data must be extracted before db update
 			importer.extractContent(activity);
-			importer.unzip(activity.getCacheDir() + "/content-ru.zip",db.datapath);
+			importer.unzip(activity.getCacheDir() + "/content-ru.zip", db.datapath);
 		}
-		
+
 		scriptsmap = importer.importChatScripts();
 		scriptsnames = new ArrayList<String>();
 
@@ -104,8 +111,9 @@ public class Core extends Thread {
 
 			Collections.sort(scriptsnames);
 		}
-		
+
 		dict.update();
+		updRequested = false;
 	}
 
 
@@ -172,10 +180,13 @@ public class Core extends Thread {
 			case LEVEL_CLIENT:
 				return send(line);
 			case LEVEL_DEBUG:
-				if (debug) return send("# "+line);
+				if (debug) return send("# " + line);
 				else return true;
 			case LEVEL_DEBUG_IMPORTER:
-				if (debug_importer) return send("# "+line);
+				if (debug_importer) return send("# " + line);
+				else return true;
+			case LEVEL_DEBUG_DESCR:
+				if (debug_descr) return send("# " + line);
 				else return true;
 			default:
 				return send(line);
@@ -198,6 +209,24 @@ public class Core extends Thread {
 			sleep(100);
 		} catch (InterruptedException e) {}
 		return true;
+	}
+
+	public synchronized boolean append(int level, String line) {
+		switch (level) {
+			case LEVEL_CLIENT:
+				return append(line);
+			case LEVEL_DEBUG:
+				if (debug) return append("# " + line);
+				else return true;
+			case LEVEL_DEBUG_IMPORTER:
+				if (debug_importer) return append("# " + line);
+				else return true;
+			case LEVEL_DEBUG_DESCR:
+				if (debug_descr) return append("# " + line);
+				else return true;
+			default:
+				return append(line);
+		}
 	}
 
 	public String line2append;
@@ -291,19 +320,20 @@ public class Core extends Thread {
 		return "Ошибка с номером " + error + " не опознана";
 	}
 
-	
-	public String moveTo(String x, String y){
+
+	public String moveTo(String x, String y) {
 		pos_x = Integer.parseInt(x);
 		pos_y = Integer.parseInt(y);
-		return "Вы ТПшнулись на ("+pos_x+":"+pos_y+").";
+		return "Вы ТПшнулись на (" + pos_x + ":" + pos_y + ").";
 	}
-	
+
 	public String getDescription() {
 		return getDescription(pos_x, pos_y);
 	}
 
 	public String getDescription(int x0, int y0) {
 
+		/* PREPARING  */
 		StringBuilder sb = new StringBuilder();
 		ArrayList<DescribedWorldObject> objs = new ArrayList<DescribedWorldObject>();
 		HashMap<Integer, DescribedWorldObject> objsm = new HashMap<Integer,DescribedWorldObject>();
@@ -311,10 +341,11 @@ public class Core extends Thread {
 		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
 		objsm.put(0, horizon);
 
-		sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
+		if (debug_descr) sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
 
 		int object_with_biggest_priority = 0;
 
+		/* CREATING DESCRIBEDWORLDOBJECT AND FILLING IT TO ARRAYLIST */
 		int idhlp = 0;
 		for (WorldObject o : db.objects) {
 
@@ -359,29 +390,34 @@ public class Core extends Thread {
 				}
 			});
 
+		/*  ADDING INFO TO PIE */
 		int[] pie = new int[360];
 		for (DescribedWorldObject obj : objs) {
 			if (obj.deg_min < obj.deg_max) {
 				for (int i = obj.deg_min; i < obj.deg_max; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
+					else if(obj.fullview) obj.fullview = false;
 				}
 			} else {
 				for (int i = obj.deg_min; i < 360; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
+					else if(obj.fullview) obj.fullview = false;
 				}
 
 				for (int i = 0; i < obj.deg_max; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
+					else if(obj.fullview) obj.fullview = false;
 				}
 			}
 		}
 
 		objs = null;
 
-		// TODO: вангую багу, что objbefore_before может быть неправилен для крайних объектов
+
+		/* ADDING OTHER INFO */
 		int objbefore = pie[0], objbefore_before = pie[0];
-		for (int i = 0; i < 360; i++) {
-			//	sb.append(pie[i] + " ");
+		for (int i = 0; i < pie.length; i++) {
+			if(debug_descr)		sb.append(pie[i] + " ");
 			if (pie[i] != objbefore) {
 				objsm.get(objbefore).obj_right = pie[i];
 				objsm.get(pie[i]).obj_left = objbefore;
@@ -398,30 +434,36 @@ public class Core extends Thread {
 				object_with_biggest_priority = pie[i];
 		}
 
-		if (pie[359] != pie[0]) {
-			objsm.get(pie[359]).obj_right = pie[0];
+		if(debug_descr) sb.append("\n\n");
+		
+		if (pie[pie.length-1] != pie[0]) {
+			objsm.get(pie[pie.length-1]).obj_right = pie[0];
 			objsm.get(pie[0]).obj_left = pie[0];
 
 		}
 
-		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie));
+
+		/* TEXT MUST BE GENERATED BELOW */
+		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie)+". ");
 		objsm.get(object_with_biggest_priority).included = false;
 
-		sb.append("\nВокруг себя вы видите следующее: ");
+	//	sb.append("\nВокруг себя вы видите следующее: ");
 		for (int i = 1; i < objsm.size(); i++) {
 			DescribedWorldObject obj = objsm.get(i);
-			if (obj.included)
-				sb.append(obj.name.toLowerCase() + "\n\t"+compareObjs(objsm.get(obj.obj_left),obj)+", \n");
-			/*	sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
-			 "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
-			 "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
-			 "\n\tПриоритет: " + obj.priority +
-			 "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
-			 "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
-			 );	*/
-		}	
-
-		sb.append("землю и голубое небо.");
+			if (obj.included) {
+	/*			if (debug_descr)
+					sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
+							  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
+							  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
+							  "\n\tПриоритет: " + obj.priority +
+							  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
+							  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
+							  );
+					sb.append("\n"+obj.name.toLowerCase() + "\n\t" + compareObjs(obj, objsm.get(obj.obj_right)) + ", \n");
+				*/
+				sb.append(compareObjs(0,obj,pie)+". ");
+			}
+		}
 
 		return sb.toString();
 	}
@@ -456,45 +498,50 @@ public class Core extends Thread {
 		int br = ((fr + 120) < 360 ? fr + 120 : (360 - (fr + 120)) * -1);
 		int bl = ((br + 90) < 360 ? br + 90 : (360 - (br + 90)) * -1);
 		int fl = ((bl + 120) < 360 ? bl + 120 : (360 - (bl + 120)) * -1);
+
+		if (waka(fl, fr, obj)) mark = 1;
+		else if (waka(fr, br, obj)) mark = 2;
+		else if (waka(br, bl, obj)) mark = 3;
+		else if (waka(bl, fl, obj)) mark = 4;
+		else mark = 5;
 		
-		if(waka(fl,fr,obj)) mark = 1;
-		if(waka(fr,br,obj)) mark = 2;
-		if(waka(br,bl,obj)) mark = 3;
-		if(waka(bl,fl,obj)) mark = 4;
-		
-		String[] straight = {"Перед вами"};
+		String[] straight = {"Перед вами","Прямо перед вами"};
 		String[] right = {"Справа","Справа от вас","По правую руку"};
 		String[] left = {"Слева","Слева от вас"};
 		String[] back = {"Позади","Позади вас"};
 		String[] verb = {"виднеется","находится"};
-		
-		switch(mark){
+
+		switch (mark) {
 			case 1:
-				sb.append(straight[(int)(Math.random()*straight.length)]);
+				sb.append(straight[(int)(Math.random() * (straight.length))]);
+			//	sb.append("Впереди ");
 				break;
 			case 2:
-				sb.append(right[(int)(Math.random()*(right.length))]);
+				sb.append(right[(int)(Math.random() * (right.length))]);
 				break;
 			case 3:
-				sb.append(back[(int)(Math.random()*back.length)]);
+				sb.append(back[(int)(Math.random() * back.length)]);
 				break;
 			case 4:
-				sb.append(left[(int)(Math.random()*left.length)]);
+				sb.append(left[(int)(Math.random() * left.length)]);
 				break;
+			case 5:
+			default:
+				send(LEVEL_DEBUG_DESCR,"Пофэйлили марку.");
 		}
-		sb.append(" ").append(verb[(int) (Math.random()*verb.length)]).append(" ").append(obj.name.toLowerCase());
-		
+		sb.append(" ").append(verb[(int) (Math.random() * verb.length)]).append(" ").append(obj.name.toLowerCase());
+
 		return sb.toString();
 	}
 
 	boolean waka(int l, int r, DescribedWorldObject obj) {
-		
+
 		if (l < r) {
-			if(obj.deg_center > l && obj.deg_center < r)
+			if (obj.deg_center >= l && obj.deg_center <= r)
 				return true;
 		} else {
-			if(obj.deg_center >= l) return true;
-			if(obj.deg_center <= r) return true;
+			if (obj.deg_center >= l) return true;
+			if (obj.deg_center <= r) return true;
 		}
 
 		return false;
@@ -502,7 +549,9 @@ public class Core extends Thread {
 
 	String compareObjs(DescribedWorldObject one, DescribedWorldObject another) {
 		StringBuilder sb = new StringBuilder();
-		int distance = Math.max(one.deg_center,another.deg_center) - Math.min(one.deg_center,another.deg_center);
+		int distance = Math.max(one.deg_center, another.deg_center) - Math.min(one.deg_center, another.deg_center);
+		if (distance > 180) distance = distance-360;
+		sb.append("Dist "+one.name + " to " + another.name + " is " + distance);
 		return sb.toString();
 	}
 
@@ -522,7 +571,7 @@ public class Core extends Thread {
 	}
 
 	public synchronized boolean close() {
-		if (isScriptRunning){
+		if (isScriptRunning) {
 			Thread.currentThread().interrupt();
 			return false;
 		}

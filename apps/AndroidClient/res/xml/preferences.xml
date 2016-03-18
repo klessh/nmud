@@ -18,6 +18,12 @@
 			android:summary="Отладочные данные импорта"   
 			android:defaultValue="false" />
 		
+		<CheckBoxPreference
+			android:key="FLAG_DEBUG_DESCR" 
+			android:title="FLAG_DEBUG_DESCR" 
+			android:summary="Отладочные данные описаний"   
+			android:defaultValue="false" />
+		
 	</PreferenceScreen>
 	
 
