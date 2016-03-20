@@ -332,23 +332,23 @@ public class Core extends Thread {
 	}
 
 	public String getDescription() {
-		return getDescription(pos_x, pos_y);
+		return getDescription(pos_x, pos_y, 0);
 	}
 
-	public String getDescription(int x0, int y0) {
+	public String getDescription(int x0, int y0, int deg) {
 
 		/* PREPARING  */
 		StringBuilder sb = new StringBuilder();
 		ArrayList<DescribedWorldObject> objs = new ArrayList<DescribedWorldObject>();
 		HashMap<Integer, DescribedWorldObject> objsm = new HashMap<Integer,DescribedWorldObject>();
 
-		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
+		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горeзонт"));
+		horizon.included = false;
 		objsm.put(0, horizon);
 
 		if (debug_descr) sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
 
-		int object_with_biggest_priority = 0;
-
+		
 		/* CREATING DESCRIBEDWORLDOBJECT AND FILLING IT TO ARRAYLIST */
 		int idhlp = 0;
 		for (WorldObject o : db.objects) {
@@ -376,6 +376,7 @@ public class Core extends Thread {
 			}
 
 			obj.area = getDistance(obj.x, obj.y, obj.x2, obj.y) * getDistance(obj.x, obj.y, obj.x, obj.y2);
+			// TODO: приоритет еще должен зависеть от отклонения от центра сегмента зрения
 			double priority = /*obj.area */ (1 / (double) obj.distance) * 100;
 			obj.priority = new Double(priority).intValue();
 
@@ -415,13 +416,13 @@ public class Core extends Thread {
 			}
 		}
 
-		objs = null;
+		objs = new ArrayList<DescribedWorldObject>();
 
 
 		/* ADDING OTHER INFO */
 		int objbefore = pie[0], objbefore_before = pie[0];
 		for (int i = 0; i < pie.length; i++) {
-			if(debug_descr)		sb.append(pie[i] + " ");
+			
 			if (pie[i] != objbefore) {
 				objsm.get(objbefore).obj_right = pie[i];
 				objsm.get(pie[i]).obj_left = objbefore;
@@ -433,45 +434,69 @@ public class Core extends Thread {
 				objbefore_before = objbefore;
 				objbefore = pie[i];
 			}
-
-			if (objsm.get(pie[i]).priority > objsm.get(object_with_biggest_priority).priority)
-				object_with_biggest_priority = pie[i];
 		}
-
-		if(debug_descr) sb.append("\n\n");
 		
 		if (pie[pie.length-1] != pie[0]) {
 			objsm.get(pie[pie.length-1]).obj_right = pie[0];
 			objsm.get(pie[0]).obj_left = pie[0];
 
 		}
-
-
-		/* TEXT MUST BE GENERATED BELOW */
-		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie)+". ");
-		objsm.get(object_with_biggest_priority).included = false;
-
-	//	sb.append("\nВокруг себя вы видите следующее: ");
-		for (int i = 1; i < objsm.size(); i++) {
-			DescribedWorldObject obj = objsm.get(i);
-			if (obj.included) {
-	/*			if (debug_descr)
-					sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
-							  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
-							  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
-							  "\n\tПриоритет: " + obj.priority +
-							  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
-							  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
-							  );
-					sb.append("\n"+obj.name.toLowerCase() + "\n\t" + compareObjs(obj, objsm.get(obj.obj_right)) + ", \n");
-				*/
-				sb.append(compareObjs(0,obj,pie)+". ");
+		
+		int _zone = 0; // forward - right - backward - left
+		int _zonepointer = 0;
+		int[][] pie2 = new int[5][90];
+		
+		int[] starters = new int[4];
+		
+		for(int i = deg; i<360; i++){
+			pie2[_zone][_zonepointer] = pie[i];
+			sb.append(" "+pie[i]);
+			if(objsm.get(pie[i]).priority > objsm.get(starters[_zone]).priority) starters[_zone] = pie[i];
+			_zonepointer++;
+			if(_zonepointer == 90){
+				_zone++;
+				_zonepointer = 0;
+				sb.append("\n");
 			}
 		}
-
+		
+		for(int i = 0; i<deg; i++){
+			pie2[_zone][_zonepointer] = pie[i];
+			sb.append(" "+pie[i]);
+			if(objsm.get(pie[i]).priority > objsm.get(starters[_zone]).priority) starters[_zone] = pie[i];
+			_zonepointer++;
+			if(_zonepointer == 90){
+				_zone++;
+				_zonepointer = 0;
+				sb.append("\n");
+			}
+		}
+		
+		recursiveDescr(sb,objsm,0,objsm.get(starters[0]));
+		
 		return sb.toString();
 	}
 
+	StringBuilder recursiveDescr(StringBuilder sb, HashMap<Integer,DescribedWorldObject> objsm, int deep, DescribedWorldObject starter){
+		if(deep > 10) return sb;
+		if(!starter.included) return sb;
+		deep++;
+		
+		sb.append("\n");
+		for(int i = 0; i<deep; i++){
+			sb.append("\t");
+		}
+		
+		sb.append(objsm.get(starter.obj_left).included ? objsm.get(starter.obj_left).name+" находится слева от "+starter.name+"; " : "");
+		sb.append(objsm.get(starter.obj_right).included ? objsm.get(starter.obj_right).name+" находится справа от "+starter.name+";" : "");
+		starter.included = false;
+		
+		if(objsm.get(starter.obj_left).included) recursiveDescr(sb,objsm,deep,objsm.get(starter.obj_left));
+		if(objsm.get(starter.obj_right).included) recursiveDescr(sb,objsm,deep,objsm.get(starter.obj_right));
+		
+		return sb;
+	}
+	
 	private int getDistance(int x1, int y1, int x2, int y2) {
 		double dist = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		return new Double(dist).intValue();
@@ -492,77 +517,8 @@ public class Core extends Thread {
 		//	return new Double(arccos*1000).intValue();
 		return new Double(Math.toDegrees(arccos)).intValue();
 	}
-
-	String compareObjs(int angle, DescribedWorldObject obj, int[] pie) {
-		StringBuilder sb = new StringBuilder();
-
-		int mark = 0;
-
-		int fr = ((angle + 15) < 360 ? angle + 15 : (360 - (angle + 15)) * -1);
-		int br = ((fr + 120) < 360 ? fr + 120 : (360 - (fr + 120)) * -1);
-		int bl = ((br + 90) < 360 ? br + 90 : (360 - (br + 90)) * -1);
-		int fl = ((bl + 120) < 360 ? bl + 120 : (360 - (bl + 120)) * -1);
-
-		if (waka(fl, fr, obj)) mark = 1;
-		else if (waka(fr, br, obj)) mark = 2;
-		else if (waka(br, bl, obj)) mark = 3;
-		else if (waka(bl, fl, obj)) mark = 4;
-		else mark = 5;
-		
-		String[] straight = {"Перед вами","Прямо перед вами"};
-		String[] right = {"Справа","Справа от вас","По правую руку"};
-		String[] left = {"Слева","Слева от вас"};
-		String[] back = {"Позади","Позади вас"};
-		String[] verb = {"виднеется","находится"};
-
-		switch (mark) {
-			case 1:
-				sb.append(straight[(int)(Math.random() * (straight.length))]);
-			//	sb.append("Впереди ");
-				break;
-			case 2:
-				sb.append(right[(int)(Math.random() * (right.length))]);
-				break;
-			case 3:
-				sb.append(back[(int)(Math.random() * back.length)]);
-				break;
-			case 4:
-				sb.append(left[(int)(Math.random() * left.length)]);
-				break;
-			case 5:
-			default:
-				send(LEVEL_DEBUG_DESCR,"Пофэйлили марку.");
-		}
-		sb.append(" ").append(verb[(int) (Math.random() * verb.length)]).append(" ").append(obj.name.toLowerCase());
-
-		return sb.toString();
-	}
-
-	boolean waka(int l, int r, DescribedWorldObject obj) {
-
-		if (l < r) {
-			if (obj.deg_center >= l && obj.deg_center <= r)
-				return true;
-		} else {
-			if (obj.deg_center >= l) return true;
-			if (obj.deg_center <= r) return true;
-		}
-
-		return false;
-	}
-
-	String compareObjs(DescribedWorldObject one, DescribedWorldObject another) {
-		StringBuilder sb = new StringBuilder();
-		int distance = Math.max(one.deg_center, another.deg_center) - Math.min(one.deg_center, another.deg_center);
-		if (distance > 180) distance = distance-360;
-		sb.append("Dist "+one.name + " to " + another.name + " is " + distance);
-		return sb.toString();
-	}
-
-	String compareObjs(DescribedWorldObject one, DescribedWorldObject two, DescribedWorldObject three) {
-		// А между В и С
-		return "";
-	}
+	
+	
 
 	public String listScripts() {
 		StringBuilder sb = new StringBuilder();
