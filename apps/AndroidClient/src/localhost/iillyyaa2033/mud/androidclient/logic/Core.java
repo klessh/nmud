@@ -338,6 +338,8 @@ public class Core extends Thread {
 	public String getDescription(int x0, int y0, int deg) {
 
 		/* PREPARING  */
+		long time_start =  System.currentTimeMillis();
+		
 		StringBuilder sb = new StringBuilder();
 		ArrayList<DescribedWorldObject> objs = new ArrayList<DescribedWorldObject>();
 		HashMap<Integer, DescribedWorldObject> objsm = new HashMap<Integer,DescribedWorldObject>();
@@ -376,9 +378,6 @@ public class Core extends Thread {
 			}
 
 			obj.area = getDistance(obj.x, obj.y, obj.x2, obj.y) * getDistance(obj.x, obj.y, obj.x, obj.y2);
-			// TODO: приоритет еще должен зависеть от отклонения от центра сегмента зрения
-			double priority = /*obj.area */ (1 / (double) obj.distance) * 100;
-			obj.priority = new Double(priority).intValue();
 
 			objs.add(obj);
 			objsm.put(obj.id, obj);
@@ -414,6 +413,10 @@ public class Core extends Thread {
 					else if(obj.fullview) obj.fullview = false;
 				}
 			}
+			
+			// TODO: приоритет еще должен зависеть от отклонения от центра сегмента зрения
+			double priority = /*obj.area */ (1 / (double) obj.distance) * 100 * (obj.fullview ? 1000: 1);
+			obj.priority = new Double(priority).intValue();
 		}
 
 		objs = new ArrayList<DescribedWorldObject>();
@@ -444,55 +447,63 @@ public class Core extends Thread {
 		
 		int _zone = 0; // forward - right - backward - left
 		int _zonepointer = 0;
-		int[][] pie2 = new int[5][90];
+		int[][] pie2 = new int[4][90];
 		
-		int[] starters = new int[4];
+		int[] starters = new int[4];	// Начальные объекты
 		
 		for(int i = deg; i<360; i++){
 			pie2[_zone][_zonepointer] = pie[i];
-			sb.append(" "+pie[i]);
+			if(debug_descr) sb.append(" "+pie[i]);
 			if(objsm.get(pie[i]).priority > objsm.get(starters[_zone]).priority) starters[_zone] = pie[i];
 			_zonepointer++;
 			if(_zonepointer == 90){
 				_zone++;
 				_zonepointer = 0;
-				sb.append("\n");
+				if(debug_descr) sb.append("\n");
 			}
 		}
 		
 		for(int i = 0; i<deg; i++){
 			pie2[_zone][_zonepointer] = pie[i];
-			sb.append(" "+pie[i]);
+			if(debug_descr) sb.append(" "+pie[i]);
 			if(objsm.get(pie[i]).priority > objsm.get(starters[_zone]).priority) starters[_zone] = pie[i];
 			_zonepointer++;
 			if(_zonepointer == 90){
 				_zone++;
 				_zonepointer = 0;
-				sb.append("\n");
+				if(debug_descr) sb.append("\n");
 			}
 		}
 		
-		recursiveDescr(sb,objsm,0,objsm.get(starters[0]));
+		sb.append("Впереди "+objsm.get(starters[0]).name);
+		sb.append("\nСправа "+objsm.get(starters[1]).name);
+		sb.append("\nПозади "+objsm.get(starters[2]).name);
+		sb.append("\nСлева "+objsm.get(starters[3]).name);
+	//	recursiveDescr(sb,objsm,pie,0,objsm.get(starters[0]));
+		
+		
+		long time_finish = System.currentTimeMillis();
+		sb.append("\n\tВыполнено за "+(time_finish-time_start)+" мс.");
 		
 		return sb.toString();
 	}
 
-	StringBuilder recursiveDescr(StringBuilder sb, HashMap<Integer,DescribedWorldObject> objsm, int deep, DescribedWorldObject starter){
+	StringBuilder recursiveDescr(StringBuilder sb, HashMap<Integer,DescribedWorldObject> objsm, int[] pie, int deep, DescribedWorldObject starter){
 		if(deep > 10) return sb;
 		if(!starter.included) return sb;
 		deep++;
 		
-		sb.append("\n");
-		for(int i = 0; i<deep; i++){
-			sb.append("\t");
-		}
+		DescribedWorldObject left2 = objsm.get(starter.obj_left2);
+		DescribedWorldObject left = objsm.get(starter.obj_left);
+		DescribedWorldObject right = objsm.get(starter.obj_right);
+		DescribedWorldObject right2 = objsm.get(starter.obj_right2);
 		
-		sb.append(objsm.get(starter.obj_left).included ? objsm.get(starter.obj_left).name+" находится слева от "+starter.name+"; " : "");
-		sb.append(objsm.get(starter.obj_right).included ? objsm.get(starter.obj_right).name+" находится справа от "+starter.name+";" : "");
+		sb.append(left.included ? "Слева от "+starter.name.toLowerCase()+"а находится "+left.name.toLowerCase()+"; " : "");
+		sb.append(right.included ? "Справа от "+starter.name.toLowerCase()+"а находится "+right.name.toLowerCase()+"; " : "");
 		starter.included = false;
 		
-		if(objsm.get(starter.obj_left).included) recursiveDescr(sb,objsm,deep,objsm.get(starter.obj_left));
-		if(objsm.get(starter.obj_right).included) recursiveDescr(sb,objsm,deep,objsm.get(starter.obj_right));
+		if(left.included) recursiveDescr(sb,objsm,pie,deep,left);
+		if(right.included) recursiveDescr(sb,objsm,pie,deep,right);
 		
 		return sb;
 	}
