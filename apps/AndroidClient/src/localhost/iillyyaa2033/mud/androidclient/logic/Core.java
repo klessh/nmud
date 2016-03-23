@@ -16,7 +16,11 @@ import org.keplerproject.luajava.LuaStateFactory;
 
 public class Core extends Thread {
 
-	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1, LEVEL_DEBUG_IMPORTER = 2, LEVEL_DEBUG_DESCR = 3;
+	public static final int LEVEL_CLIENT = 0, 
+							LEVEL_DEBUG = 1, 
+							LEVEL_DEBUG_IMPORTER = 2, 
+							LEVEL_DEBUG_DESCR = 3,
+							LEVEL_DEBUG_SCRIPTS = 4;
 
 	public MainActivity activity;
 	public Importer importer;
@@ -27,7 +31,7 @@ public class Core extends Thread {
 	private HashMap<String, String> scriptsmap;
 	private ArrayList<String> scriptsnames;
 
-	public boolean debug = true, debug_importer = false, debug_descr = false;
+	public boolean debug = true, debug_importer = false, debug_descr = false, debug_scripts = false;
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 	private boolean updRequested = false;
@@ -43,6 +47,7 @@ public class Core extends Thread {
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
 		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
 		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
+		debug_scripts = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_SCRIPTS", false);
 		db = new Database(this);
 		importer = new Importer(this);
 		dict = new Dictionary(this);
@@ -95,6 +100,7 @@ public class Core extends Thread {
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
 		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
 		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
+		debug_scripts = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_SCRIPTS", false);
 		
 		db.update();
 
@@ -192,6 +198,9 @@ public class Core extends Thread {
 			case LEVEL_DEBUG_DESCR:
 				if (debug_descr) return send("# " + line);
 				else return true;
+			case LEVEL_DEBUG_SCRIPTS:
+				if (debug_scripts) return send("# " + line);
+				else return true;
 			default:
 				return send(line);
 		}
@@ -227,6 +236,9 @@ public class Core extends Thread {
 				else return true;
 			case LEVEL_DEBUG_DESCR:
 				if (debug_descr) return append("# " + line);
+				else return true;
+			case LEVEL_DEBUG_SCRIPTS:
+				if (debug_scripts) return append("# " + line);
 				else return true;
 			default:
 				return append(line);
@@ -276,10 +288,12 @@ public class Core extends Thread {
 	}
 
 	public String doFunction(String scriptName, String funcName, String[] args) {
+		long time_start = System.currentTimeMillis();
+		
 		if (!canScripts) return "Скрипты не работают.";
 
 		if (!scriptsmap.containsKey(scriptName)) {
-			send(LEVEL_DEBUG, "Команды " + scriptName + " не существует.");
+			send(LEVEL_DEBUG_SCRIPTS, "Команды " + scriptName + " не существует.");
 			return "";
 		}
 		String res = null;
@@ -293,7 +307,7 @@ public class Core extends Thread {
 				L.getGlobal(funcName);
 
 				if (L.isNil(-1)) {
-					send(LEVEL_DEBUG, "У скрипта " + scriptName + " нет функции " + funcName + ".");
+					send(LEVEL_DEBUG_SCRIPTS, "У скрипта " + scriptName + " нет функции " + funcName + ".");
 				} else if (args == null) {
 					L.pcall(0, 1, -2);
 				} else {
@@ -304,13 +318,17 @@ public class Core extends Thread {
 				}
 				res = L.toString(-1);
 			} else {
-				send(LEVEL_DEBUG, "При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
+				send(LEVEL_DEBUG_SCRIPTS, "При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
 			}
 		} catch (Exception e) {
 			send(LEVEL_DEBUG, "Произошла серьезная ошибка:\n" + e.toString());
 			res = "Internal error";
 		}
 		isScriptRunning = false;
+		
+		long time_end = System.currentTimeMillis();
+		send(LEVEL_DEBUG_SCRIPTS,"Script "+scriptName+":"+funcName+" finished. Time: "+(time_end-time_start)+" ms.");
+		
 		return res;
 	}
 
@@ -338,8 +356,6 @@ public class Core extends Thread {
 	public String getDescription(int x0, int y0, int deg) {
 
 		/* PREPARING  */
-		long time_start =  System.currentTimeMillis();
-		
 		StringBuilder sb = new StringBuilder();
 		ArrayList<DescribedWorldObject> objs = new ArrayList<DescribedWorldObject>();
 		HashMap<Integer, DescribedWorldObject> objsm = new HashMap<Integer,DescribedWorldObject>();
@@ -480,10 +496,6 @@ public class Core extends Thread {
 		sb.append("\nПозади "+objsm.get(starters[2]).name);
 		sb.append("\nСлева "+objsm.get(starters[3]).name);
 	//	recursiveDescr(sb,objsm,pie,0,objsm.get(starters[0]));
-		
-		
-		long time_finish = System.currentTimeMillis();
-		sb.append("\n\tВыполнено за "+(time_finish-time_start)+" мс.");
 		
 		return sb.toString();
 	}
