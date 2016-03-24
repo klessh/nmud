@@ -31,7 +31,7 @@ public class Core extends Thread {
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 	private boolean updRequested = false;
-	
+
 	public String cmdstr;
 
 	ArrayList<String> report;
@@ -77,7 +77,7 @@ public class Core extends Thread {
 
 		String cmd = "";
 		while (!(cmd = read()).equals("") && !Thread.currentThread().isInterrupted()) {
-			if(updRequested) update();
+			if (updRequested) update();
 			comms(cmd);
 		}
 
@@ -87,15 +87,15 @@ public class Core extends Thread {
 		}
 	}
 
-	public void requestUpdate(){
+	public void requestUpdate() {
 		updRequested = true;
 	}
-	
+
 	public synchronized void update() {
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
 		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
 		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
-		
+
 		db.update();
 
 		if (!(new File(db.datapath)).exists()) {
@@ -400,17 +400,17 @@ public class Core extends Thread {
 			if (obj.deg_min < obj.deg_max) {
 				for (int i = obj.deg_min; i < obj.deg_max; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
-					else if(obj.fullview) obj.fullview = false;
+					else if (obj.fullview) obj.fullview = false;
 				}
 			} else {
 				for (int i = obj.deg_min; i < 360; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
-					else if(obj.fullview) obj.fullview = false;
+					else if (obj.fullview) obj.fullview = false;
 				}
 
 				for (int i = 0; i < obj.deg_max; i++) {
 					if (pie[i] == 0) pie[i] = obj.id;
-					else if(obj.fullview) obj.fullview = false;
+					else if (obj.fullview) obj.fullview = false;
 				}
 			}
 		}
@@ -421,7 +421,7 @@ public class Core extends Thread {
 		/* ADDING OTHER INFO */
 		int objbefore = pie[0], objbefore_before = pie[0];
 		for (int i = 0; i < pie.length; i++) {
-			if(debug_descr)		sb.append(pie[i] + " ");
+			if (debug_descr)		sb.append(pie[i] + " ");
 			if (pie[i] != objbefore) {
 				objsm.get(objbefore).obj_right = pie[i];
 				objsm.get(pie[i]).obj_left = objbefore;
@@ -438,24 +438,24 @@ public class Core extends Thread {
 				object_with_biggest_priority = pie[i];
 		}
 
-		if(debug_descr) sb.append("\n\n");
-		
-		if (pie[pie.length-1] != pie[0]) {
-			objsm.get(pie[pie.length-1]).obj_right = pie[0];
+		if (debug_descr) sb.append("\n\n\n");
+
+		if (pie[pie.length - 1] != pie[0]) {
+			objsm.get(pie[pie.length - 1]).obj_right = pie[0];
 			objsm.get(pie[0]).obj_left = pie[0];
 
 		}
 
 
 		/* TEXT MUST BE GENERATED BELOW */
-		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie)+". ");
+		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie) + ". ");
 		objsm.get(object_with_biggest_priority).included = false;
 
-	//	sb.append("\nВокруг себя вы видите следующее: ");
+		//	sb.append("\nВокруг себя вы видите следующее: ");
 		for (int i = 1; i < objsm.size(); i++) {
 			DescribedWorldObject obj = objsm.get(i);
 			if (obj.included) {
-	/*			if (debug_descr)
+				if (debug_descr) {
 					sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
 							  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
 							  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
@@ -463,9 +463,9 @@ public class Core extends Thread {
 							  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
 							  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
 							  );
-					sb.append("\n"+obj.name.toLowerCase() + "\n\t" + compareObjs(obj, objsm.get(obj.obj_right)) + ", \n");
-				*/
-				sb.append(compareObjs(0,obj,pie)+". ");
+					sb.append("\n" + obj.name.toLowerCase() + "\n\t" + compareObjs(obj, objsm.get(obj.obj_right)) + ", \n");
+				}
+				sb.append(compareObjs(0, obj, pie) + ". ");
 			}
 		}
 
@@ -498,17 +498,17 @@ public class Core extends Thread {
 
 		int mark = 0;
 
-		int fr = ((angle + 15) < 360 ? angle + 15 : (360 - (angle + 15)) * -1);
-		int br = ((fr + 120) < 360 ? fr + 120 : (360 - (fr + 120)) * -1);
+		int fr = ((angle + 45) < 360 ? angle + 45 : (360 - (angle + 45)) * -1);
+		int br = ((fr + 90) < 360 ? fr + 90 : (360 - (fr + 90)) * -1);
 		int bl = ((br + 90) < 360 ? br + 90 : (360 - (br + 90)) * -1);
-		int fl = ((bl + 120) < 360 ? bl + 120 : (360 - (bl + 120)) * -1);
+		int fl = ((bl + 90) < 360 ? bl + 90 : (360 - (bl + 90)) * -1);
 
 		if (waka(fl, fr, obj)) mark = 1;
 		else if (waka(fr, br, obj)) mark = 2;
 		else if (waka(br, bl, obj)) mark = 3;
 		else if (waka(bl, fl, obj)) mark = 4;
 		else mark = 5;
-		
+
 		String[] straight = {"Перед вами","Прямо перед вами"};
 		String[] right = {"Справа","Справа от вас","По правую руку"};
 		String[] left = {"Слева","Слева от вас"};
@@ -518,7 +518,7 @@ public class Core extends Thread {
 		switch (mark) {
 			case 1:
 				sb.append(straight[(int)(Math.random() * (straight.length))]);
-			//	sb.append("Впереди ");
+				//	sb.append("Впереди ");
 				break;
 			case 2:
 				sb.append(right[(int)(Math.random() * (right.length))]);
@@ -531,7 +531,7 @@ public class Core extends Thread {
 				break;
 			case 5:
 			default:
-				send(LEVEL_DEBUG_DESCR,"Пофэйлили марку.");
+				send(LEVEL_DEBUG_DESCR, "Пофэйлили марку.");
 		}
 		sb.append(" ").append(verb[(int) (Math.random() * verb.length)]).append(" ").append(obj.name.toLowerCase());
 
@@ -554,8 +554,8 @@ public class Core extends Thread {
 	String compareObjs(DescribedWorldObject one, DescribedWorldObject another) {
 		StringBuilder sb = new StringBuilder();
 		int distance = Math.max(one.deg_center, another.deg_center) - Math.min(one.deg_center, another.deg_center);
-		if (distance > 180) distance = distance-360;
-		sb.append("Dist "+one.name + " to " + another.name + " is " + distance);
+		if (distance > 180) distance = distance - 360;
+	 	sb.append("Dist " + one.name + " to " + another.name + " is " + distance);
 		return sb.toString();
 	}
 
