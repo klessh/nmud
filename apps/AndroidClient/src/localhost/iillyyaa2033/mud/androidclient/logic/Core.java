@@ -16,7 +16,11 @@ import org.keplerproject.luajava.LuaStateFactory;
 
 public class Core extends Thread {
 
-	public static final int LEVEL_CLIENT = 0, LEVEL_DEBUG = 1, LEVEL_DEBUG_IMPORTER = 2, LEVEL_DEBUG_DESCR = 3;
+	public static final int LEVEL_CLIENT = 0, 
+							LEVEL_DEBUG = 1, 
+							LEVEL_DEBUG_IMPORTER = 2, 
+							LEVEL_DEBUG_DESCR = 3,
+							LEVEL_DEBUG_SCRIPTS = 4;
 
 	public MainActivity activity;
 	public Importer importer;
@@ -27,7 +31,7 @@ public class Core extends Thread {
 	private HashMap<String, String> scriptsmap;
 	private ArrayList<String> scriptsnames;
 
-	public boolean debug = true, debug_importer = false, debug_descr = false;
+	public boolean debug = true, debug_importer = false, debug_descr = false, debug_scripts = false;
 	private boolean canScripts = false;
 	private boolean isScriptRunning = false;
 	private boolean updRequested = false;
@@ -43,6 +47,7 @@ public class Core extends Thread {
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
 		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
 		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
+		debug_scripts = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_SCRIPTS", false);
 		db = new Database(this);
 		importer = new Importer(this);
 		dict = new Dictionary(this);
@@ -95,7 +100,8 @@ public class Core extends Thread {
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
 		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
 		debug_descr = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_DESCR", false);
-
+		debug_scripts = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_SCRIPTS", false);
+		
 		db.update();
 
 		if (!(new File(db.datapath)).exists()) {
@@ -192,6 +198,9 @@ public class Core extends Thread {
 			case LEVEL_DEBUG_DESCR:
 				if (debug_descr) return send("# " + line);
 				else return true;
+			case LEVEL_DEBUG_SCRIPTS:
+				if (debug_scripts) return send("# " + line);
+				else return true;
 			default:
 				return send(line);
 		}
@@ -227,6 +236,9 @@ public class Core extends Thread {
 				else return true;
 			case LEVEL_DEBUG_DESCR:
 				if (debug_descr) return append("# " + line);
+				else return true;
+			case LEVEL_DEBUG_SCRIPTS:
+				if (debug_scripts) return append("# " + line);
 				else return true;
 			default:
 				return append(line);
@@ -276,10 +288,12 @@ public class Core extends Thread {
 	}
 
 	public String doFunction(String scriptName, String funcName, String[] args) {
+		long time_start = System.currentTimeMillis();
+		
 		if (!canScripts) return "Скрипты не работают.";
 
 		if (!scriptsmap.containsKey(scriptName)) {
-			send(LEVEL_DEBUG, "Команды " + scriptName + " не существует.");
+			send(LEVEL_DEBUG_SCRIPTS, "Команды " + scriptName + " не существует.");
 			return "";
 		}
 		String res = null;
@@ -293,7 +307,7 @@ public class Core extends Thread {
 				L.getGlobal(funcName);
 
 				if (L.isNil(-1)) {
-					send(LEVEL_DEBUG, "У скрипта " + scriptName + " нет функции " + funcName + ".");
+					send(LEVEL_DEBUG_SCRIPTS, "У скрипта " + scriptName + " нет функции " + funcName + ".");
 				} else if (args == null) {
 					L.pcall(0, 1, -2);
 				} else {
@@ -304,13 +318,17 @@ public class Core extends Thread {
 				}
 				res = L.toString(-1);
 			} else {
-				send(LEVEL_DEBUG, "При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
+				send(LEVEL_DEBUG_SCRIPTS, "При выполнении " + scriptName + ":" + funcName + "() произошла досадная ошибка: " + errorReason(ok));
 			}
 		} catch (Exception e) {
 			send(LEVEL_DEBUG, "Произошла серьезная ошибка:\n" + e.toString());
 			res = "Internal error";
 		}
 		isScriptRunning = false;
+		
+		long time_end = System.currentTimeMillis();
+		send(LEVEL_DEBUG_SCRIPTS,"Script "+scriptName+":"+funcName+" finished. Time: "+(time_end-time_start)+" ms.");
+		
 		return res;
 	}
 
@@ -332,23 +350,23 @@ public class Core extends Thread {
 	}
 
 	public String getDescription() {
-		return getDescription(pos_x, pos_y);
+		return getDescription(pos_x, pos_y, 0);
 	}
 
-	public String getDescription(int x0, int y0) {
+	public String getDescription(int x0, int y0, int deg) {
 
 		/* PREPARING  */
 		StringBuilder sb = new StringBuilder();
 		ArrayList<DescribedWorldObject> objs = new ArrayList<DescribedWorldObject>();
 		HashMap<Integer, DescribedWorldObject> objsm = new HashMap<Integer,DescribedWorldObject>();
 
-		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горизонт"));
+		DescribedWorldObject horizon = new DescribedWorldObject(0, new WorldObject(0, 0, 0, 0, "Горeзонт"));
+		horizon.included = false;
 		objsm.put(0, horizon);
 
 		if (debug_descr) sb.append("Точка зрения: " + "(" + x0 + "," + y0 + "); Объектов: " + db.objects.size() + "\n");
 
-		int object_with_biggest_priority = 0;
-
+		
 		/* CREATING DESCRIBEDWORLDOBJECT AND FILLING IT TO ARRAYLIST */
 		int idhlp = 0;
 		for (WorldObject o : db.objects) {
@@ -376,8 +394,6 @@ public class Core extends Thread {
 			}
 
 			obj.area = getDistance(obj.x, obj.y, obj.x2, obj.y) * getDistance(obj.x, obj.y, obj.x, obj.y2);
-			double priority = /*obj.area */ (1 / (double) obj.distance) * 100;
-			obj.priority = new Double(priority).intValue();
 
 			objs.add(obj);
 			objsm.put(obj.id, obj);
@@ -413,15 +429,20 @@ public class Core extends Thread {
 					else if (obj.fullview) obj.fullview = false;
 				}
 			}
+			
+			// TODO: приоритет еще должен зависеть от отклонения от центра сегмента зрения
+			double priority = /*obj.area */ (1 / (double) obj.distance) * 100 * (obj.fullview ? 1000: 1);
+			obj.priority = new Double(priority).intValue();
 		}
 
-		objs = null;
+		objs = new ArrayList<DescribedWorldObject>();
 
 
 		/* ADDING OTHER INFO */
 		int objbefore = pie[0], objbefore_before = pie[0];
 		for (int i = 0; i < pie.length; i++) {
 			if (debug_descr)		sb.append(pie[i] + " ");
+
 			if (pie[i] != objbefore) {
 				objsm.get(objbefore).obj_right = pie[i];
 				objsm.get(pie[i]).obj_left = objbefore;
@@ -433,45 +454,73 @@ public class Core extends Thread {
 				objbefore_before = objbefore;
 				objbefore = pie[i];
 			}
-
-			if (objsm.get(pie[i]).priority > objsm.get(object_with_biggest_priority).priority)
-				object_with_biggest_priority = pie[i];
 		}
 
 		if (debug_descr) sb.append("\n\n\n");
 
-		if (pie[pie.length - 1] != pie[0]) {
+		if (pie[pie.length - 1] != pie[0])
 			objsm.get(pie[pie.length - 1]).obj_right = pie[0];
-			objsm.get(pie[0]).obj_left = pie[0];
-
-		}
-
-
-		/* TEXT MUST BE GENERATED BELOW */
-		sb.append(compareObjs(0, objsm.get(object_with_biggest_priority), pie) + ". ");
-		objsm.get(object_with_biggest_priority).included = false;
-
-		//	sb.append("\nВокруг себя вы видите следующее: ");
-		for (int i = 1; i < objsm.size(); i++) {
-			DescribedWorldObject obj = objsm.get(i);
-			if (obj.included) {
-				if (debug_descr) {
-					sb.append("\n\n" + obj.id + " «" + obj.name + "»  {" + obj.x + ":" + obj.y + " | " + obj.x2 + ":" + obj.y2 + "} " +
-							  "\n\tЦентр и расст: {" + obj.xc + ":" + obj.yc + "} " + obj.distance +
-							  "\n\tРад мин/макс: " + obj.deg_min + "/" + obj.deg_max +
-							  "\n\tПриоритет: " + obj.priority +
-							  "\n\tСлева/справа 1: " + obj.obj_left + " / " + obj.obj_right +
-							  "\n\tСлева/справа 2: " + obj.obj_left2 + " / " + obj.obj_right2
-							  );
-					sb.append("\n" + obj.name.toLowerCase() + "\n\t" + compareObjs(obj, objsm.get(obj.obj_right)) + ", \n");
-				}
-				sb.append(compareObjs(0, obj, pie) + ". ");
+		
+		int _zone = 0; // forward - right - backward - left
+		int _zonepointer = 0;
+		int[][] pie2 = new int[4][90];
+		
+		int[] starters = new int[4];	// Начальные объекты
+		
+		for(int i = deg; i<360; i++){
+			pie2[_zone][_zonepointer] = pie[i];
+			if(debug_descr) sb.append(" "+pie[i]);
+			if(objsm.get(pie[i]).priority > objsm.get(starters[_zone]).priority) starters[_zone] = pie[i];
+			_zonepointer++;
+			if(_zonepointer == 90){
+				_zone++;
+				_zonepointer = 0;
+				if(debug_descr) sb.append("\n");
 			}
 		}
-
+		
+		for(int i = 0; i<deg; i++){
+			pie2[_zone][_zonepointer] = pie[i];
+			if(debug_descr) sb.append(" "+pie[i]);
+			if(objsm.get(pie[i]).priority > objsm.get(starters[_zone]).priority) starters[_zone] = pie[i];
+			_zonepointer++;
+			
+			if(_zonepointer == 90){
+				_zone++;
+				_zonepointer = 0;
+				if(debug_descr) sb.append("\n");
+			}
+		}
+		
+		sb.append("Впереди "+objsm.get(starters[0]).name);
+		sb.append("\nСправа "+objsm.get(starters[1]).name);
+		sb.append("\nПозади "+objsm.get(starters[2]).name);
+		sb.append("\nСлева "+objsm.get(starters[3]).name);
+	//	recursiveDescr(sb,objsm,pie,0,objsm.get(starters[0]));
+		
 		return sb.toString();
 	}
 
+	StringBuilder recursiveDescr(StringBuilder sb, HashMap<Integer,DescribedWorldObject> objsm, int[] pie, int deep, DescribedWorldObject starter){
+		if(deep > 10) return sb;
+		if(!starter.included) return sb;
+		deep++;
+
+		DescribedWorldObject left2 = objsm.get(starter.obj_left2);
+		DescribedWorldObject left = objsm.get(starter.obj_left);
+		DescribedWorldObject right = objsm.get(starter.obj_right);
+		DescribedWorldObject right2 = objsm.get(starter.obj_right2);
+
+		sb.append(left.included ? "Слева от "+starter.name.toLowerCase()+"а находится "+left.name.toLowerCase()+"; " : "");
+		sb.append(right.included ? "Справа от "+starter.name.toLowerCase()+"а находится "+right.name.toLowerCase()+"; " : "");
+		starter.included = false;
+
+		if(left.included) recursiveDescr(sb,objsm,pie,deep,left);
+		if(right.included) recursiveDescr(sb,objsm,pie,deep,right);
+
+		return sb;
+	}
+	
 	private int getDistance(int x1, int y1, int x2, int y2) {
 		double dist = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		return new Double(dist).intValue();
@@ -563,7 +612,7 @@ public class Core extends Thread {
 		// А между В и С
 		return "";
 	}
-
+	
 	public String listScripts() {
 		StringBuilder sb = new StringBuilder();
 
