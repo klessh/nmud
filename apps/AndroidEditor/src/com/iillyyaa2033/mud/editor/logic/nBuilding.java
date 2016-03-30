@@ -1,4 +1,5 @@
 package com.iillyyaa2033.mud.editor.logic;
+
 import java.util.ArrayList;
 
 public class nBuilding extends nObject{

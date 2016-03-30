@@ -1,7 +1,7 @@
 package com.iillyyaa2033.mud.editor.view;
 
-import android.widget.TextView;
 import android.content.Context;
+import android.widget.TextView;
 
 public class LuaEditorView extends TextView{
 	
