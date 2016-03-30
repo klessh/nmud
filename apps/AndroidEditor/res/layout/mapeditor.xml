@@ -22,7 +22,7 @@
 		android:background="?android:attr/dividerHorizontal"
 		android:layout_width="3dp"/>
 
-	<com.iillyyaa2033.mud.editor.mapeditor.view.MapEditorView
+	<com.iillyyaa2033.mud.editor.view.MapEditorView
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
 		android:id="@+id/mapeditor_editor"/>

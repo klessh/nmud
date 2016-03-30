@@ -19,7 +19,7 @@ public class MainActivity extends Activity{
 	//	int i = android.R.style.Theme_Holo_Dialog_NoActionBar_MinWidth;
 		
 		ListView lv = (ListView) findViewById(R.id.mainListView);
-		String[] activities = {"Редактор карт","Редактор скриптов","Настройки","Справка"};
+		String[] activities = {"Редактор карт"/*,"Редактор скриптов"*/,"Настройки",/*"Справка"*/};
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,activities);
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener(){
@@ -31,14 +31,11 @@ public class MainActivity extends Activity{
 							startActivity(new Intent(MainActivity.this, MapEditorActivity.class));
 							break;
 						case 1:
-							startActivity(new Intent(MainActivity.this, LuaEditorActivity.class));
-							break;
-						case 2:
 							startActivity(new Intent(MainActivity.this, Preferences.class));
 							break;
-						case 3:
+					/*	case 2:
 							startActivity(new Intent(MainActivity.this, HelpActivity.class));
-							break;
+							break;	*/
 					}
 				}
 		});
