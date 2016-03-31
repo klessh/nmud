@@ -28,9 +28,6 @@
 			android:name=".activity.Preferences" 
 			android:label="Настройки"	
 			android:parentActivityName="MainActivity">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value="MainActivity" />
 		</activity>
 
 		<activity
@@ -44,18 +41,12 @@
 			android:label="Редактор lua"
 			android:launchMode="singleTask"
 			android:parentActivityName="MainActivity">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value="MainActivity" />
 		</activity>
 		<activity 
 			android:name=".activity.MapEditorActivity" 
 			android:label="Редактор карт"
 			android:launchMode="singleTask"
 			android:parentActivityName=".MainActivity">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".MainActivity" />
 		</activity>
 		<activity 
 			android:name=".activity.BuildingEditorActivity" 
@@ -67,9 +58,6 @@
 			android:name=".activity.HelpActivity" 
 			android:label="Справка"
 			android:parentActivityName="MainActivity">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value="MainActivity" />
 		</activity>
     </application>
 

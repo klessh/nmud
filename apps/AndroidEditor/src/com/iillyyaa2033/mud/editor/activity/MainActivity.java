@@ -1,43 +1,30 @@
 package com.iillyyaa2033.mud.editor.activity;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import com.iillyyaa2033.mud.editor.fragment.MainListFragment;
 import com.iillyyaa2033.mud.editor.R;
+import android.app.Fragment;
+import android.widget.ListAdapter;
+import android.widget.ArrayAdapter;
 
-public class MainActivity extends Activity{
-    
-    @Override
-    public void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-	//	int i = android.R.style.Theme_Holo_Dialog_NoActionBar_MinWidth;
+public class MainActivity extends FragmentActivity {
+
+	MainListFragment list;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 		
-		ListView lv = (ListView) findViewById(R.id.mainListView);
-		String[] activities = {"Редактор карт"/*,"Редактор скриптов"*/,"Настройки",/*"Справка"*/};
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,activities);
-		lv.setAdapter(adapter);
-		lv.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
-					switch(p3){
-						case 0:
-							startActivity(new Intent(MainActivity.this, MapEditorActivity.class));
-							break;
-						case 1:
-							startActivity(new Intent(MainActivity.this, Preferences.class));
-							break;
-					/*	case 2:
-							startActivity(new Intent(MainActivity.this, HelpActivity.class));
-							break;	*/
-					}
-				}
-		});
-    }
+		list = new MainListFragment();
+		getFragmentManager().beginTransaction().add(R.id.activity_mainf_frame, list).commit();
+		
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+		list.setListAdapter(adapter);
+		adapter.add("Editor");
+		adapter.add("Preferences");
+		adapter.add("Help");
+		
+	}
 }
