@@ -22,6 +22,7 @@ public class MainActivity extends FragmentActivity {
 		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
 		list.setListAdapter(adapter);
+		
 		adapter.add("Editor");
 		adapter.add("Preferences");
 		adapter.add("Help");

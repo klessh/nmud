@@ -26,8 +26,7 @@
 		
 		<activity 
 			android:name=".activity.Preferences" 
-			android:label="Настройки"	
-			android:parentActivityName="MainActivity">
+			android:label="Настройки">
 		</activity>
 
 		<activity
@@ -43,10 +42,9 @@
 			android:parentActivityName="MainActivity">
 		</activity>
 		<activity 
-			android:name=".activity.MapEditorActivity" 
+			android:name=".activity.MapEditorActivityF" 
 			android:label="Редактор карт"
-			android:launchMode="singleTask"
-			android:parentActivityName=".MainActivity">
+			android:launchMode="singleTask">
 		</activity>
 		<activity 
 			android:name=".activity.BuildingEditorActivity" 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="horizontal">
+
+	<FrameLayout
+		android:layout_height="match_parent"
+		android:layout_width="200dp"
+		android:id="@+id/activity_mapeditor_objects"
+		android:background="#2FCA27"/>
+
+	<View
+		android:layout_height="match_parent"
+		android:background="?android:attr/dividerHorizontal"
+		android:layout_width="1dp"/>
+
+	<FrameLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:id="@+id/activity_mapeditor_map"
+		android:background="#DF4C3A"/>
+
+</LinearLayout>
+
