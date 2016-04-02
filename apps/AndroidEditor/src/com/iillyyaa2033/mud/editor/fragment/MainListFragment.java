@@ -12,7 +12,7 @@ import android.content.Intent;
 import com.iillyyaa2033.mud.editor.activity.MapEditorActivity;
 import com.iillyyaa2033.mud.editor.activity.Preferences;
 import com.iillyyaa2033.mud.editor.activity.HelpActivity;
-import com.iillyyaa2033.mud.editor.activity.MapEditorActivityF;
+import com.iillyyaa2033.mud.editor.activity.MapEditorActivity;
 import android.view.MenuItem;
 
 public class MainListFragment extends ListFragment {
@@ -23,7 +23,7 @@ public class MainListFragment extends ListFragment {
 		
 		switch(position){
 			case 0:
-				startActivity(new Intent(getActivity(),MapEditorActivityF.class));
+				startActivity(new Intent(getActivity(),MapEditorActivity.class));
 				break;
 			case 1:
 				startActivity(new Intent(getActivity(),Preferences.class));

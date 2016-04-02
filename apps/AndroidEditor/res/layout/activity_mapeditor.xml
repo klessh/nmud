@@ -8,8 +8,7 @@
 	<FrameLayout
 		android:layout_height="match_parent"
 		android:layout_width="200dp"
-		android:id="@+id/activity_mapeditor_objects"
-		android:background="#2FCA27"/>
+		android:id="@+id/activity_mapeditor_objects"/>
 
 	<View
 		android:layout_height="match_parent"
@@ -19,8 +18,7 @@
 	<FrameLayout
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
-		android:id="@+id/activity_mapeditor_map"
-		android:background="#DF4C3A"/>
+		android:id="@+id/activity_mapeditor_map"/>
 
 </LinearLayout>
 

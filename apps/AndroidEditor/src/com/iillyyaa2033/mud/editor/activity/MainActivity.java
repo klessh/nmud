@@ -1,12 +1,10 @@
 package com.iillyyaa2033.mud.editor.activity;
 
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import com.iillyyaa2033.mud.editor.fragment.MainListFragment;
-import com.iillyyaa2033.mud.editor.R;
-import android.app.Fragment;
-import android.widget.ListAdapter;
+import android.support.v4.app.FragmentActivity;
 import android.widget.ArrayAdapter;
+import com.iillyyaa2033.mud.editor.R;
+import com.iillyyaa2033.mud.editor.fragment.MainListFragment;
 
 public class MainActivity extends FragmentActivity {
 
@@ -16,6 +14,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 		
 		list = new MainListFragment();
 		getFragmentManager().beginTransaction().add(R.id.activity_mainf_frame, list).commit();

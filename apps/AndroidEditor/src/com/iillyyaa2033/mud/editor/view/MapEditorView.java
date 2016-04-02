@@ -189,38 +189,7 @@ public class MapEditorView extends View{
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener{
 
 		public void showDescriptionDialog(int x, int y){
-
-			AlertDialog.Builder ad = new AlertDialog.Builder(context);
-			StringBuilder left = new StringBuilder(), right = new StringBuilder(), top = new StringBuilder(), bottom = new StringBuilder();
-			
-			for(nObject obj : objs){
-				int angle = (int) getAngle(x, y, obj.xc, obj.yc);
-/*					if(angle > 315 || angle < 45){ // У нормальных людей - это объекты вверху, в андроиде же - внизу.
-						bottom.append(names[i]+" ("+angle+"°)\n"); // Занесем объект в список
-					} else if(135 < angle && angle < 225){
-						top.append(names[i]+" ("+angle+"°)\n");
-					} else {
-						left.append(names[i]+" ("+angle+"°)\n");
-					}*/
-			}
-			ad.setMessage("[Впереди]\n"+top.toString()+"\n\n[Позади]\n"+bottom.toString()+"\n\n[Слева|Справа]\n"+left.toString());
-			ad.show();
-		}
-
-		double getAngle(int x2, int y2,int x3, int y3){
-			int x1 = x2;
-			int y1 = y2 + 10;
-
-			double l1 = Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)); // расстояние AB
-			double l2 = Math.sqrt((x3-x2)*(x3-x2)+(y3-y2)*(y3-y2)); // расстояние BC
-			double l3 = Math.sqrt((x3-x1)*(x3-x1)+(y3-y1)*(y3-y1)); // расстояние AC
-
-			double cos = (l1*l1 + l2*l2 - l3*l3) / (2 * l1 * l2); // косинус
-			double arccos = Math.acos(cos);
-
-			// ПОРЕШАТЬ МИНУС
-			double result = 180/Math.PI * arccos;
-			return result;
+			// TODO: descr gen
 		}
 		
         @Override	// При движении пальцем
@@ -276,7 +245,7 @@ public class MapEditorView extends View{
 
 			switch (mode){
 				case FREE:
-					AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+		/*			AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 					String[] items = new String[]{"Посмотреть описание","OBJECT ADD/EDIT","(AI-граф)"};
 					if (objectid == -1){
 						dialog.setTitle("<.,.>");
@@ -292,22 +261,22 @@ public class MapEditorView extends View{
 									case 0:
 										showDescriptionDialog((int)x, (int)y);
 										break;
-									case 1:
+									case 1:*/
 										mode = OBJECT_ADDING;
 										type = TYPE_MOVING;
 										toAdd = new int[]{(int) x - 15,(int) y - 15,(int) x + 15,(int) y + 15};
-										invalidate();
+										invalidate();	/*
 										break;
 								}
 							}
 						});
-					dialog.show();
+					dialog.show(); */
 					break;
 				case OBJECT_ADDING:
 					if (type == TYPE_MOVING) 
 						type = TYPE_RIGHT; 
 					else{
-						AlertDialog.Builder td = new AlertDialog.Builder(context);
+			/*			AlertDialog.Builder td = new AlertDialog.Builder(context);
 						td.setTitle("Choose type:");
 						td.setItems(new String[]{"Building","Object"}, new DialogInterface.OnClickListener(){
 
@@ -315,15 +284,16 @@ public class MapEditorView extends View{
 								public void onClick(DialogInterface p1, int p2){
 									switch(p2){
 										case 0:
-											parent.startBuildingEditor(new nObject(objs.size(), toAdd, null));
+										//	parent.startBuildingEditor(new nObject(objs.size(), toAdd, null));
 											break;
 										case 1:
-											parent.startObjectEditor(new nObject(objs.size(), toAdd,null));
+										//	parent.startObjectEditor(new nObject(objs.size(), toAdd,null));
 											break;
 									}
 								}
 							});
-						td.show();
+						td.show(); */
+						objs.add(new nObject(0,toAdd,null));
 						mode = FREE;
 						invalidate();
 					}

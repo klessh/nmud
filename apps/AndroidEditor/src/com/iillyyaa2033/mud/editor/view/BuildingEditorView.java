@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import com.iillyyaa2033.mud.editor.activity.BuildingEditorActivity;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import com.iillyyaa2033.mud.editor.logic.nDoor;
 import com.iillyyaa2033.mud.editor.logic.nObject;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 
 public class BuildingEditorView extends View{
 	
-	public BuildingEditorActivity parent;
+//	public BuildingEditorActivity parent;
 	private Context context;
 	Loader loader;
 	private Paint wallpaint;
@@ -233,7 +232,7 @@ public class BuildingEditorView extends View{
 						if(toAdd[0]>=roomSelector[0]+15 && toAdd[1]>=roomSelector[1]+15 && toAdd[2]<=roomSelector[2]-15 && toAdd[3]<=roomSelector[3]-15)
 							objs.add(new nObject(objs.size(),toAdd,new String[][]{{""}}));
 						mode = FREE;
-						parent.objEdit();
+			//			parent.objEdit();
 					}
 					break;
 				case DOOR_ADDING:

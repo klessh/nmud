@@ -28,35 +28,19 @@
 			android:name=".activity.Preferences" 
 			android:label="Настройки">
 		</activity>
-
-		<activity
-			android:theme="@style/FileChooserTheme"
-			android:name=".activity.FileChooserActivity" 
-			android:label="Выбор файла">
-		</activity>
 		
 		<activity 
-			android:name=".activity.LuaEditorActivity" 
-			android:label="Редактор lua"
-			android:launchMode="singleTask"
-			android:parentActivityName="MainActivity">
-		</activity>
-		<activity 
-			android:name=".activity.MapEditorActivityF" 
+			android:name=".activity.MapEditorActivity" 
 			android:label="Редактор карт"
 			android:launchMode="singleTask">
 		</activity>
-		<activity 
-			android:name=".activity.BuildingEditorActivity" 
-			android:label="Редактор зданий"/>
-		<activity 
-			android:name=".activity.ObjectEditorActivity" 
-			android:label="Редактор объекта" />
+
 		<activity 
 			android:name=".activity.HelpActivity" 
 			android:label="Справка"
 			android:parentActivityName="MainActivity">
 		</activity>
+		
     </application>
 
 </manifest>

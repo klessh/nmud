@@ -18,11 +18,9 @@ import java.util.StringTokenizer;
 public class Loader{
 	
 	Context c;
-	Loader l;
 	
 	public Loader(Context c){
 		this.c = c;
-		if(l == null) l = this;
 	}
 	
 	public String[][] loadNametable(String nameofnametable, String[][] qualitys) throws IOException{

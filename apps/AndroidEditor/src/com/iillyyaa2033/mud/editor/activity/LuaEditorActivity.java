@@ -210,11 +210,7 @@ public class LuaEditorActivity extends Activity{
 			case R.id.item_open:
 				if(pref.getBoolean("PREF_LUA_CLIPBOARD",false)) source.setText(clipboard.getText());
 				else {
-					Intent i = new Intent(this, FileChooserActivity.class);
-					i.putExtra("requestcode",1);
-					i.putExtra("target",targetDir.getAbsolutePath());
-					i.putExtra("extension",".lua");
-					startActivityForResult(i,1);
+					// here was link to filechooser
 				}
 				break;
 			case R.id.item_save:
@@ -238,12 +234,7 @@ public class LuaEditorActivity extends Activity{
 				}
 				break;
 			case R.id.item_save_as:
-				Intent i = new Intent(this, FileChooserActivity.class);
-				i.putExtra("requestcode",2);
-				i.putExtra("target",targetDir.getAbsolutePath());
-				i.putExtra("extension",".lua");
-				i.putExtra("output",source.getText().toString());
-				startActivityForResult(i,2); 
+				// here was link 2 filechooser
 				break;
 		}
 		return super.onMenuItemSelected(featureId, item);
