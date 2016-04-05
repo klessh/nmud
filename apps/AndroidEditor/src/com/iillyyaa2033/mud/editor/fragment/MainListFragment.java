@@ -9,10 +9,10 @@ import android.widget.ListView;
 import android.app.ListFragment;
 import android.widget.Toast;
 import android.content.Intent;
-import com.iillyyaa2033.mud.editor.activity.MapEditorActivity;
+import com.iillyyaa2033.mud.editor.activity.EditorActivity;
 import com.iillyyaa2033.mud.editor.activity.Preferences;
 import com.iillyyaa2033.mud.editor.activity.HelpActivity;
-import com.iillyyaa2033.mud.editor.activity.MapEditorActivity;
+import com.iillyyaa2033.mud.editor.activity.EditorActivity;
 import android.view.MenuItem;
 
 public class MainListFragment extends ListFragment {
@@ -23,7 +23,7 @@ public class MainListFragment extends ListFragment {
 		
 		switch(position){
 			case 0:
-				startActivity(new Intent(getActivity(),MapEditorActivity.class));
+				startActivity(new Intent(getActivity(),EditorActivity.class));
 				break;
 			case 1:
 				startActivity(new Intent(getActivity(),Preferences.class));

@@ -30,7 +30,7 @@
 		</activity>
 		
 		<activity 
-			android:name=".activity.MapEditorActivity" 
+			android:name=".activity.EditorActivity" 
 			android:label="Редактор карт"
 			android:launchMode="singleTask">
 		</activity>

@@ -11,7 +11,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import com.iillyyaa2033.mud.editor.activity.MapEditorActivity;
+import com.iillyyaa2033.mud.editor.activity.EditorActivity;
 import com.iillyyaa2033.mud.editor.adapter.MapEditorAdapter;
 import com.iillyyaa2033.mud.editor.logic.nObject;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class MapEditorView extends View{
 
 	String n = "mud.editor";
 	Context context;
-	MapEditorActivity parent = null;
+	EditorActivity parent = null;
 	
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
@@ -92,7 +92,7 @@ public class MapEditorView extends View{
 		leftlist.addAlll(objs);
 	}
 	
-	public void setParent(MapEditorActivity parent){
+	public void setParent(EditorActivity parent){
 		this.parent = parent;
 	}
 	

@@ -15,16 +15,20 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		
 		list = new MainListFragment();
 		getFragmentManager().beginTransaction().add(R.id.activity_mainf_frame, list).commit();
-		
+	}
+
+	@Override
+	protected void onStart() {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
 		list.setListAdapter(adapter);
-		
+
 		adapter.add("Editor");
 		adapter.add("Preferences");
 		adapter.add("Help");
-		
+		super.onStart();
 	}
+	
+	
 }
