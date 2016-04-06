@@ -3,12 +3,13 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:orientation="horizontal">
+	android:orientation="vertical"
+	android:id="@+id/fragment_mapeditor_LinearLayout1">
 
-	<FrameLayout
+	<com.iillyyaa2033.mud.editor.view.MapEditorView
 		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:id="@+id/activity_mapeditor_map"/>
+		android:background="?android:attr/dividerVertical"
+		android:layout_width="match_parent"/>
 
 </LinearLayout>
 

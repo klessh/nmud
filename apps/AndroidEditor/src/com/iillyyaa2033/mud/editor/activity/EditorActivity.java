@@ -9,12 +9,14 @@ import com.iillyyaa2033.mud.editor.R;
 import com.iillyyaa2033.mud.editor.fragment.MapEditorMapFragment;
 import com.iillyyaa2033.mud.editor.fragment.EditorListFragment;
 import android.app.Fragment;
+import android.app.ListFragment;
+import java.util.ArrayList;
+import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
 
 public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
 	
-	EditorListFragment list;
-	ArrayAdapter<String> adapter;
 	MapEditorMapFragment map;
+	EditorDictionaryFragment dictionary;
 	ActionBar actionBar;
 	
 	@Override
@@ -27,23 +29,12 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
 		map = new MapEditorMapFragment();
+		
 		actionBar.addTab(actionBar.newTab().setText("MapEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
 		
-		
-	}
-
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_activated_1);
-		adapter.add("aaaaa");
-		adapter.add("bbbbb");
-		adapter.add("ccccc");
-		list = new EditorListFragment();
-		list.setListAdapter(adapter);
-		getFragmentManager().beginTransaction().add(R.id.activity_mapeditor_objects, list).commit();
-		super.onPostCreate(savedInstanceState);
+		dictionary = new EditorDictionaryFragment();
 	}
 	
 	@Override
@@ -53,7 +44,6 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 
 	@Override
 	public void onTabUnselected(ActionBar.Tab p1, FragmentTransaction p2) {
-		list.setSelection(1);
 	}
 
 	@Override
@@ -63,9 +53,13 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 	
 	void selectTab(int pos){
 		actionBar.setSelectedNavigationItem(pos);
+		
 		switch(pos){
 			case 0:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,map).commit();
+				break;
+			case 2:
+				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,dictionary).commit();
 				break;
 			default:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,new Fragment()).commit();
