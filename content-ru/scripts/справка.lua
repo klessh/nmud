@@ -1,7 +1,7 @@
 function chat(...)
 	if #arg == 0 then
 		scripts = client:listScripts();
-		client:send(scripts);
+		client:send("Список доступных команд: \n======\n"..scripts.."\n======");
 	else
 		cmd = client:getFullCommand(arg[1]);
 		

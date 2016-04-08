@@ -13,7 +13,7 @@ array3 = {
 "белый",		"зеленый",	"фиолетовый",	"красивый",	"грязевой",
 "горный",		"душистый"}
 
-function doi()
+function doit()
   i = math.floor(math.random()*(#array1)+1);
   j = math.floor(math.random()*(#array2)+1);
   k = math.floor(math.random()*(#array3)+1);
@@ -26,7 +26,7 @@ function doi()
 end
 
 function chat()
-	client:send(doi());
+	client:send(doit());
 end
 
 function help(...)
