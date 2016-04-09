@@ -115,7 +115,7 @@ public class Loader{
 		OutputStream outputstream = new FileOutputStream(f);
 		OutputStreamWriter writer = new OutputStreamWriter(outputstream, "UTF-8");
 		writer.write("[Objects]\n");
-		for(nObject o: map.objs){
+		for(nObject o: map.rooms){
 			StringBuilder sb = new StringBuilder();
 			sb.append(o.id+";");
 			sb.append(o.x1+";"); 

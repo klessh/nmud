@@ -1,8 +1,6 @@
 package com.iillyyaa2033.mud.editor.view;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,49 +10,49 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import com.iillyyaa2033.mud.editor.activity.EditorActivity;
-import com.iillyyaa2033.mud.editor.adapter.MapEditorAdapter;
 import com.iillyyaa2033.mud.editor.logic.nObject;
 import java.util.ArrayList;
+import com.iillyyaa2033.mud.editor.logic.nRoom;
+import android.app.AlertDialog;
 
-public class MapEditorView extends View{
+public class MapEditorView extends View {
 
 	String n = "mud.editor";
 	Context context;
 	EditorActivity parent = null;
-	
+
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
     private float canvasSize;
     private float mScaleFactor;
 	private Paint paint, rootPaint, selectionPaint;
-	
-	public ArrayList<nObject> objs;		// Сам массив
+
+	public ArrayList<nRoom> rooms;		// Сам массив
 	private nObject stepObj;
 	public int[] toAdd;
-	private int[] selection;
+	private int[] selectionBorder;
+	private int selectedObjId;
 	private int type;
 	private int mode;
 	private static final int FREE = 0, OBJECT_ADDING = 1, OBJECT_EDITING = 2;
 	private static final int TYPE_LEFT = 0, TYPE_RIGHT = 1, TYPE_MOVING = 2;
-	
-	private MapEditorAdapter leftlist = null;
-	
-	public MapEditorView(Context c){
+
+	public MapEditorView(Context c) {
 		super(c);
 		init(c);
 	}
-	
-	public MapEditorView (Context context, AttributeSet ats, int defStyle) { 
+
+	public MapEditorView(Context context, AttributeSet ats, int defStyle) { 
 	    super(context, ats, defStyle);
 		init(context);
 	}   
-	
-	public MapEditorView (Context context, AttributeSet attrs) {  
+
+	public MapEditorView(Context context, AttributeSet attrs) {  
 		super(context, attrs); 
 		init(context);
 	}
-	
-	void init(Context c){
+
+	void init(Context c) {
 		context = c;
 		canvasSize = 5000;		// Сторона квадрата
         mScaleFactor = 1f;		// Значение зума по умолчанию
@@ -81,87 +79,78 @@ public class MapEditorView extends View{
 		selectionPaint = new Paint();
 		selectionPaint.setColor(Color.RED);
 		selectionPaint.setStyle(Paint.Style.STROKE);
+		selectionPaint.setStrokeWidth(4);
 		
-		objs = new ArrayList<nObject>();
+		rooms = new ArrayList<nRoom>();
 		mode = FREE;
 	}
 
+	public void setSelectionToObject(int obj_id) {
+		if (obj_id > rooms.size()) return;
 
-	public void setAdapter(MapEditorAdapter adapter){
-		leftlist = adapter;
-		leftlist.addAlll(objs);
-	}
-	
-	public void setParent(EditorActivity parent){
-		this.parent = parent;
-	}
-	
-	public void setSelectionToObject(int obj_id){
-		if(obj_id>objs.size()) return;
-		
-		nObject obj = objs.get(obj_id);
-		scrollTo(obj.x1+(obj.x1-obj.xc),obj.y1+(obj.y1-obj.yc));
-		selection = new int[]{obj.x1-10,obj.y1-10,obj.x2+10,obj.y2+10};
+		nRoom obj = rooms.get(obj_id);
+		selectedObjId = obj_id;
+	//	scrollTo(obj.x1 + (obj.x1 - obj.xc), obj.y1 + (obj.y1 - obj.yc));
+		selectionBorder = new int[]{obj.x1, obj.y1,obj.x2, obj.y2};
 		invalidate();
 	}
-	
-	public void editObject(int obj_id){
+
+	public void editObject(int obj_id) {
 		setSelectionToObject(obj_id);
 		mode = OBJECT_EDITING;
 		type = TYPE_MOVING;
-		stepObj = objs.get(obj_id);
+		stepObj = rooms.get(obj_id);
 		toAdd = new int[]{stepObj.x1,stepObj.y1,stepObj.x2,stepObj.y2};
-		objs.remove(obj_id);
-		leftlist.rm(obj_id);
-		selection = null;
+		rooms.remove(obj_id);
+		selectionBorder = null;
 		invalidate();
 	}
-	
-	public void removeObject(int position){
-		objs.remove(position);
-		leftlist.rm(position);
+
+	public void removeObject(int position) {
+		rooms.remove(position);
 		invalidate();
 	}
-	
+
 	@Override
-	protected void onDraw(Canvas canvas){
+	protected void onDraw(Canvas canvas) {
 		canvas.scale(mScaleFactor, mScaleFactor);
 
 		rootPaint.setColor(Color.WHITE);
-		canvas.drawRect(0,0,canvasSize,canvasSize,rootPaint);
-		canvas.drawRect(0,0,canvasSize,canvasSize,rootPaint);
+		canvas.drawRect(0, 0, canvasSize, canvasSize, rootPaint);
+		canvas.drawRect(0, 0, canvasSize, canvasSize, rootPaint);
 
-		// DRAWING LINES
+		// DRAWING GRID
 		rootPaint.setColor(Color.BLACK);
-		for(int stepx = 0; stepx<101; stepx++){
-			canvas.drawLine(stepx*50,0,stepx*50,canvasSize,rootPaint);
+		for (int stepx = 0; stepx < 101; stepx++) {
+			canvas.drawLine(stepx * 50, 0, stepx * 50, canvasSize, rootPaint);
 		}
 
-		for(int stepy = 0; stepy<101; stepy++){
-			canvas.drawLine(0,stepy*50,canvasSize,stepy*50,rootPaint);
+		for (int stepy = 0; stepy < 101; stepy++) {
+			canvas.drawLine(0, stepy * 50, canvasSize, stepy * 50, rootPaint);
 		}
 
-		if(mode == OBJECT_ADDING || mode == OBJECT_EDITING){
-			canvas.drawRect(toAdd[0],toAdd[1],toAdd[2],toAdd[3],paint);
-		}
-		
+		if (mode == OBJECT_ADDING || mode == OBJECT_EDITING) {
+			canvas.drawRect(toAdd[0], toAdd[1], toAdd[2], toAdd[3], paint);
+		} 
+
 		// DRAWING OBJECTS
-		for(nObject obj : objs){
-			canvas.drawRect(obj.x1,obj.y1,obj.x2,obj.y2,paint);
+		for (nObject obj : rooms) {
+			canvas.drawRect(obj.x1, obj.y1, obj.x2, obj.y2, paint);
+			canvas.drawText(""+obj.id,obj.x2,obj.y1,paint);
 		}
-		
-		if(selection != null){
-			canvas.drawRect(selection[0],selection[1],selection[2],selection[3],selectionPaint);
+
+		if (selectionBorder != null) {
+			canvas.drawRect(selectionBorder[0], selectionBorder[1], selectionBorder[2], selectionBorder[3], selectionPaint);
 		}
 	}
-	
+
 	@Override	// Если было нажатие
     public boolean onTouchEvent(MotionEvent event) {
         detector.onTouchEvent(event);
         scaleGestureDetector.onTouchEvent(event);
         return true;
     }
-	
+
 	private class MyScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         @Override	// Если пользователь сделал щипок 
@@ -173,11 +162,11 @@ public class MapEditorView extends View{
 
             // следим чтобы канвас не уменьшили меньше половины исходного размера 
 			// и не допускаем увеличения больше чем в три раза
-            if(mScaleFactor*scaleFactor > 0.25 && mScaleFactor*scaleFactor < 3){
+            if (mScaleFactor * scaleFactor > 0.25 && mScaleFactor * scaleFactor < 3) {
                 mScaleFactor *= scaleGestureDetector.getScaleFactor();
-				
-                int scrollX=(int)((getScrollX()+focusX)*scaleFactor-focusX);
-                int scrollY=(int)((getScrollY()+focusY)*scaleFactor-focusY);
+
+                int scrollX=(int)((getScrollX() + focusX) * scaleFactor - focusX);
+                int scrollY=(int)((getScrollY() + focusY) * scaleFactor - focusY);
                 scrollTo(scrollX, scrollY);
 				invalidate();
             }
@@ -186,114 +175,69 @@ public class MapEditorView extends View{
     }
 
 
-    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener{
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-		public void showDescriptionDialog(int x, int y){
+		public void showDescriptionDialog(int x, int y) {
 			// TODO: descr gen
 		}
-		
+
         @Override	// При движении пальцем
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
-			switch(mode){
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			switch (mode) {
 				case FREE:
 					scrollBy((int) distanceX, (int)distanceY);
 					break;
 				case OBJECT_ADDING:
 				case OBJECT_EDITING:
-					switch(type){
+					switch (type) {
 						case TYPE_MOVING:
-							toAdd[0] -= distanceX/(mScaleFactor*2);
-							toAdd[2] -= distanceX/(mScaleFactor*2);
-							toAdd[1] -= distanceY/(mScaleFactor*2);
-							toAdd[3] -= distanceY/(mScaleFactor*2);
+							toAdd[0] -= distanceX / (mScaleFactor * 2);
+							toAdd[2] -= distanceX / (mScaleFactor * 2);
+							toAdd[1] -= distanceY / (mScaleFactor * 2);
+							toAdd[3] -= distanceY / (mScaleFactor * 2);
 							break;
 						case TYPE_LEFT:
-							toAdd[0] -= distanceX/(mScaleFactor*2);
-							toAdd[1] -= distanceY/(mScaleFactor*2);
-							if(toAdd[0] > toAdd[2] || toAdd[1] > toAdd[3]) type = TYPE_RIGHT;
+							toAdd[0] -= distanceX / (mScaleFactor * 2);
+							toAdd[1] -= distanceY / (mScaleFactor * 2);
+							if (toAdd[0] > toAdd[2] || toAdd[1] > toAdd[3]) type = TYPE_RIGHT;
 							break;
 						case TYPE_RIGHT:
-							toAdd[2] -= distanceX/(mScaleFactor*2);
-							toAdd[3] -= distanceY/(mScaleFactor*2);
-							if(toAdd[0] > toAdd[2] || toAdd[1] > toAdd[3]) type = TYPE_LEFT;
+							toAdd[2] -= distanceX / (mScaleFactor * 2);
+							toAdd[3] -= distanceY / (mScaleFactor * 2);
+							if (toAdd[0] > toAdd[2] || toAdd[1] > toAdd[3]) type = TYPE_LEFT;
 							break;
 					}
 					invalidate();
 					break;
-					// do nothing
 			}
             return true;
         }
 
         @Override 	// Одиночный тап
-        public boolean onSingleTapConfirmed(MotionEvent event){
-			final float x = (event.getX() + getScrollX()) / mScaleFactor; //получаем координаты ячейки, по которой тапнули
+        public boolean onSingleTapConfirmed(MotionEvent event) {
+			final float x = (event.getX() + getScrollX()) / mScaleFactor;
             final float y = (event.getY() + getScrollY()) / mScaleFactor;
-
+			
 			if (x < 0 || y < 0) return false;
 
-
-			int objectid = -1;
-			for (nObject obj: objs){
-				int l = (int) Math.sqrt((obj.xc - x) * (obj.xc - x) + (obj.yc - y) * (obj.yc - y));
-				if (l < 10){
-					objectid = obj.id;
-					break;
-
-				}
-			}
-
-			switch (mode){
+			switch (mode) {
 				case FREE:
-		/*			AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-					String[] items = new String[]{"Посмотреть описание","OBJECT ADD/EDIT","(AI-граф)"};
-					if (objectid == -1){
-						dialog.setTitle("<.,.>");
-						items[1] = "Разместить объект";
-					}else{
-						dialog.setTitle("OBJECT N " + objectid);
-						items[1] = "Редактировать объект";
+					for(nObject blank : rooms){
+						if(x>blank.x1 && x<blank.x2 && y>blank.y1 && y<blank.y2){
+							setSelectionToObject(blank.id);
+							return true;
+						}
 					}
-					dialog.setItems(items, new DialogInterface.OnClickListener(){
-							@Override
-							public void onClick(DialogInterface p1, int p2){
-								switch (p2){
-									case 0:
-										showDescriptionDialog((int)x, (int)y);
-										break;
-									case 1:*/
-										mode = OBJECT_ADDING;
-										type = TYPE_MOVING;
-										toAdd = new int[]{(int) x - 15,(int) y - 15,(int) x + 15,(int) y + 15};
-										invalidate();	/*
-										break;
-								}
-							}
-						});
-					dialog.show(); */
+					mode = OBJECT_ADDING;
+					type = TYPE_MOVING;
+					toAdd = new int[]{(int) x - 15,(int) y - 15,(int) x + 15,(int) y + 15};
+					invalidate();
 					break;
 				case OBJECT_ADDING:
 					if (type == TYPE_MOVING) 
 						type = TYPE_RIGHT; 
-					else{
-			/*			AlertDialog.Builder td = new AlertDialog.Builder(context);
-						td.setTitle("Choose type:");
-						td.setItems(new String[]{"Building","Object"}, new DialogInterface.OnClickListener(){
-
-								@Override
-								public void onClick(DialogInterface p1, int p2){
-									switch(p2){
-										case 0:
-										//	parent.startBuildingEditor(new nObject(objs.size(), toAdd, null));
-											break;
-										case 1:
-										//	parent.startObjectEditor(new nObject(objs.size(), toAdd,null));
-											break;
-									}
-								}
-							});
-						td.show(); */
-						objs.add(new nObject(0,toAdd,null));
+					else {
+						rooms.add(new nRoom(rooms.size(), toAdd, null,null));
 						mode = FREE;
 						invalidate();
 					}
@@ -301,10 +245,9 @@ public class MapEditorView extends View{
 				case OBJECT_EDITING:
 					if (type == TYPE_MOVING) 
 						type = TYPE_RIGHT; 
-					else{
+					else {
 						stepObj.setCoords(toAdd);
-						objs.add(stepObj);
-						leftlist.add(stepObj);
+						rooms.add(new nRoom(stepObj,null));
 						mode = FREE;
 					}
 					break;
@@ -313,5 +256,20 @@ public class MapEditorView extends View{
 			}
 			return true;
         }
+
+		@Override
+		public void onLongPress(MotionEvent event) {
+			
+			switch(mode){
+				case FREE:
+					(new AlertDialog.Builder(context))
+						.setTitle("Obj id is "+selectedObjId)
+						.setItems(new String[]{"Edit this room","Connect with other rooms"},null)
+						.show();
+			}
+			
+		}
+		
+		
     }
 }
