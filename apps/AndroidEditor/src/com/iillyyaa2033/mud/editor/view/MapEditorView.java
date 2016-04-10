@@ -14,6 +14,7 @@ import com.iillyyaa2033.mud.editor.logic.nObject;
 import java.util.ArrayList;
 import com.iillyyaa2033.mud.editor.logic.nRoom;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 public class MapEditorView extends View {
 
@@ -29,12 +30,13 @@ public class MapEditorView extends View {
 
 	public ArrayList<nRoom> rooms;		// Сам массив
 	private nObject stepObj;
-	public int[] toAdd;
+	private int[] toAdd;
 	private int[] selectionBorder;
+	private int selectedRoomId;
 	private int selectedObjId;
 	private int type;
 	private int mode;
-	private static final int FREE = 0, OBJECT_ADDING = 1, OBJECT_EDITING = 2;
+	private static final int FREE = 0, OBJECT_ADDING = 1, OBJECT_EDITING = 2, ROOM_EDITING = 3;
 	private static final int TYPE_LEFT = 0, TYPE_RIGHT = 1, TYPE_MOVING = 2;
 
 	public MapEditorView(Context c) {
@@ -85,18 +87,18 @@ public class MapEditorView extends View {
 		mode = FREE;
 	}
 
-	public void setSelectionToObject(int obj_id) {
-		if (obj_id > rooms.size()) return;
+	public void setSelectionToRoom(int room_id) {
+		if (room_id > rooms.size()) return;
 
-		nRoom obj = rooms.get(obj_id);
-		selectedObjId = obj_id;
-	//	scrollTo(obj.x1 + (obj.x1 - obj.xc), obj.y1 + (obj.y1 - obj.yc));
+		nRoom obj = rooms.get(room_id);
+		selectedRoomId = room_id;
+	//	scrollTo(getDisplay().getHeight()+obj.xc, getDisplay().getWidth() + obj.yc);
 		selectionBorder = new int[]{obj.x1, obj.y1,obj.x2, obj.y2};
 		invalidate();
 	}
 
 	public void editObject(int obj_id) {
-		setSelectionToObject(obj_id);
+		setSelectionToRoom(obj_id);
 		mode = OBJECT_EDITING;
 		type = TYPE_MOVING;
 		stepObj = rooms.get(obj_id);
@@ -120,23 +122,31 @@ public class MapEditorView extends View {
 		canvas.drawRect(0, 0, canvasSize, canvasSize, rootPaint);
 
 		// DRAWING GRID
-		rootPaint.setColor(Color.BLACK);
-		for (int stepx = 0; stepx < 101; stepx++) {
-			canvas.drawLine(stepx * 50, 0, stepx * 50, canvasSize, rootPaint);
+		rootPaint.setColor(Color.argb(50,0,0,0));
+		for (int stepx = 0; stepx < 51; stepx++) {
+			canvas.drawLine(stepx * 100, 0, stepx * 100, canvasSize, rootPaint);
 		}
 
-		for (int stepy = 0; stepy < 101; stepy++) {
-			canvas.drawLine(0, stepy * 50, canvasSize, stepy * 50, rootPaint);
+		for (int stepy = 0; stepy < 51; stepy++) {
+			canvas.drawLine(0, stepy * 100, canvasSize, stepy * 100, rootPaint);
 		}
 
+		paint.setStyle(Paint.Style.STROKE);
 		if (mode == OBJECT_ADDING || mode == OBJECT_EDITING) {
 			canvas.drawRect(toAdd[0], toAdd[1], toAdd[2], toAdd[3], paint);
+			canvas.drawCircle(toAdd[0],toAdd[1],10,paint);
+			canvas.drawCircle(toAdd[2],toAdd[3],10,paint);
 		} 
 
 		// DRAWING OBJECTS
+		paint.setStyle(Paint.Style.FILL_AND_STROKE);
+		paint.setColor(Color.argb(70,0,0,0));
 		for (nObject obj : rooms) {
 			canvas.drawRect(obj.x1, obj.y1, obj.x2, obj.y2, paint);
 			canvas.drawText(""+obj.id,obj.x2,obj.y1,paint);
+			
+			if(obj.id == selectedRoomId)
+				canvas.drawText("Room selected",obj.x2,obj.y1+10,paint);
 		}
 
 		if (selectionBorder != null) {
@@ -176,10 +186,6 @@ public class MapEditorView extends View {
 
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-		public void showDescriptionDialog(int x, int y) {
-			// TODO: descr gen
-		}
 
         @Override	// При движении пальцем
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -224,7 +230,7 @@ public class MapEditorView extends View {
 				case FREE:
 					for(nObject blank : rooms){
 						if(x>blank.x1 && x<blank.x2 && y>blank.y1 && y<blank.y2){
-							setSelectionToObject(blank.id);
+							setSelectionToRoom(blank.id);
 							return true;
 						}
 					}
@@ -263,8 +269,16 @@ public class MapEditorView extends View {
 			switch(mode){
 				case FREE:
 					(new AlertDialog.Builder(context))
-						.setTitle("Obj id is "+selectedObjId)
-						.setItems(new String[]{"Edit this room","Connect with other rooms"},null)
+						.setTitle("Obj id is "+selectedRoomId)
+						.setItems(new String[]{"Edit this room","Connect with other rooms"}, new AlertDialog.OnClickListener(){
+
+							@Override
+							public void onClick(DialogInterface p1, int p2) {
+								switch(p2){
+									
+								}
+							}
+						})
 						.show();
 			}
 			
