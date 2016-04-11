@@ -34,11 +34,9 @@ public class MapEditorView extends View {
 	private int[] selectionBorder;
 	private int selectedRoomId;
 	private int selectedObjId;
-	private int type;
 	private int mode;
 	private static final int FREE = 0, OBJECT_ADDING = 1, OBJECT_EDITING = 2, ROOM_EDITING = 3;
-	private static final int TYPE_LEFT = 0, TYPE_RIGHT = 1, TYPE_MOVING = 2;
-
+	
 	public MapEditorView(Context c) {
 		super(c);
 		init(c);
@@ -63,8 +61,6 @@ public class MapEditorView extends View {
         detector = new GestureDetector(c, new MyGestureListener());
 
 		rootPaint = new Paint();
-		rootPaint.setColor(Color.WHITE);
-		rootPaint.setStyle(Paint.Style.FILL);
 
 		paint = new Paint();
         paint.setAntiAlias(true);
@@ -82,7 +78,7 @@ public class MapEditorView extends View {
 		selectionPaint.setColor(Color.RED);
 		selectionPaint.setStyle(Paint.Style.STROKE);
 		selectionPaint.setStrokeWidth(4);
-		
+
 		rooms = new ArrayList<nRoom>();
 		mode = FREE;
 	}
@@ -92,7 +88,7 @@ public class MapEditorView extends View {
 
 		nRoom obj = rooms.get(room_id);
 		selectedRoomId = room_id;
-	//	scrollTo(getDisplay().getHeight()+obj.xc, getDisplay().getWidth() + obj.yc);
+		//	scrollTo(getDisplay().getHeight()+obj.xc, getDisplay().getWidth() + obj.yc);
 		selectionBorder = new int[]{obj.x1, obj.y1,obj.x2, obj.y2};
 		invalidate();
 	}
@@ -100,7 +96,6 @@ public class MapEditorView extends View {
 	public void editObject(int obj_id) {
 		setSelectionToRoom(obj_id);
 		mode = OBJECT_EDITING;
-		type = TYPE_MOVING;
 		stepObj = rooms.get(obj_id);
 		toAdd = new int[]{stepObj.x1,stepObj.y1,stepObj.x2,stepObj.y2};
 		rooms.remove(obj_id);
@@ -118,11 +113,12 @@ public class MapEditorView extends View {
 		canvas.scale(mScaleFactor, mScaleFactor);
 
 		rootPaint.setColor(Color.WHITE);
+		rootPaint.setStyle(Paint.Style.FILL);
 		canvas.drawRect(0, 0, canvasSize, canvasSize, rootPaint);
 		canvas.drawRect(0, 0, canvasSize, canvasSize, rootPaint);
 
 		// DRAWING GRID
-		rootPaint.setColor(Color.argb(50,0,0,0));
+		rootPaint.setColor(Color.argb(50, 0, 0, 0));
 		for (int stepx = 0; stepx < 51; stepx++) {
 			canvas.drawLine(stepx * 100, 0, stepx * 100, canvasSize, rootPaint);
 		}
@@ -131,22 +127,27 @@ public class MapEditorView extends View {
 			canvas.drawLine(0, stepy * 100, canvasSize, stepy * 100, rootPaint);
 		}
 
-		paint.setStyle(Paint.Style.STROKE);
 		if (mode == OBJECT_ADDING || mode == OBJECT_EDITING) {
+			paint.setStyle(Paint.Style.STROKE);
 			canvas.drawRect(toAdd[0], toAdd[1], toAdd[2], toAdd[3], paint);
-			canvas.drawCircle(toAdd[0],toAdd[1],10,paint);
-			canvas.drawCircle(toAdd[2],toAdd[3],10,paint);
+
+			rootPaint.setStyle(Paint.Style.FILL);
+			canvas.drawCircle(toAdd[0], toAdd[1], 10, rootPaint);
+			canvas.drawCircle(toAdd[2], toAdd[3], 10, rootPaint);
+
+			canvas.drawCircle(toAdd[0], toAdd[1], 10, paint);
+			canvas.drawCircle(toAdd[2], toAdd[3], 10, paint);
 		} 
 
 		// DRAWING OBJECTS
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
-		paint.setColor(Color.argb(70,0,0,0));
+		paint.setColor(Color.argb(70, 0, 0, 0));
 		for (nObject obj : rooms) {
 			canvas.drawRect(obj.x1, obj.y1, obj.x2, obj.y2, paint);
-			canvas.drawText(""+obj.id,obj.x2,obj.y1,paint);
-			
-			if(obj.id == selectedRoomId)
-				canvas.drawText("Room selected",obj.x2,obj.y1+10,paint);
+			canvas.drawText("" + obj.id, obj.x2, obj.y1, paint);
+
+			if (obj.id == selectedRoomId)
+				canvas.drawText("Room selected", obj.x2, obj.y1 + 10, paint);
 		}
 
 		if (selectionBorder != null) {
@@ -189,29 +190,28 @@ public class MapEditorView extends View {
 
         @Override	// При движении пальцем
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			int constant = 1;
+			int point_const = 50;
+			float x1 = (e2.getX() + getScrollX()) / mScaleFactor;
+            float y1 = (e2.getY() + getScrollY()) / mScaleFactor;
+
 			switch (mode) {
 				case FREE:
 					scrollBy((int) distanceX, (int)distanceY);
 					break;
 				case OBJECT_ADDING:
 				case OBJECT_EDITING:
-					switch (type) {
-						case TYPE_MOVING:
-							toAdd[0] -= distanceX / (mScaleFactor * 2);
-							toAdd[2] -= distanceX / (mScaleFactor * 2);
-							toAdd[1] -= distanceY / (mScaleFactor * 2);
-							toAdd[3] -= distanceY / (mScaleFactor * 2);
-							break;
-						case TYPE_LEFT:
-							toAdd[0] -= distanceX / (mScaleFactor * 2);
-							toAdd[1] -= distanceY / (mScaleFactor * 2);
-							if (toAdd[0] > toAdd[2] || toAdd[1] > toAdd[3]) type = TYPE_RIGHT;
-							break;
-						case TYPE_RIGHT:
-							toAdd[2] -= distanceX / (mScaleFactor * 2);
-							toAdd[3] -= distanceY / (mScaleFactor * 2);
-							if (toAdd[0] > toAdd[2] || toAdd[1] > toAdd[3]) type = TYPE_LEFT;
-							break;
+					if ((x1 > toAdd[0] - point_const && x1 < toAdd[0] + point_const) && (y1 > toAdd[1] - point_const && y1 < toAdd[1] + point_const)) {
+						toAdd[0] -= distanceX / (mScaleFactor * constant);
+						toAdd[1] -= distanceY / (mScaleFactor * constant);
+					} else if ((x1 > toAdd[2] - point_const && x1 < toAdd[2] + point_const) && (y1 > toAdd[3] - point_const && y1 < toAdd[3] + point_const)) {
+						toAdd[2] -= distanceX / (mScaleFactor * constant);
+						toAdd[3] -= distanceY / (mScaleFactor * constant);
+					} else {
+						toAdd[0] -= distanceX / (mScaleFactor * constant);
+						toAdd[2] -= distanceX / (mScaleFactor * constant);
+						toAdd[1] -= distanceY / (mScaleFactor * constant);
+						toAdd[3] -= distanceY / (mScaleFactor * constant);
 					}
 					invalidate();
 					break;
@@ -223,39 +223,30 @@ public class MapEditorView extends View {
         public boolean onSingleTapConfirmed(MotionEvent event) {
 			final float x = (event.getX() + getScrollX()) / mScaleFactor;
             final float y = (event.getY() + getScrollY()) / mScaleFactor;
-			
+
 			if (x < 0 || y < 0) return false;
 
 			switch (mode) {
 				case FREE:
-					for(nObject blank : rooms){
-						if(x>blank.x1 && x<blank.x2 && y>blank.y1 && y<blank.y2){
+					for (nObject blank : rooms) {
+						if (x > blank.x1 && x < blank.x2 && y > blank.y1 && y < blank.y2) {
 							setSelectionToRoom(blank.id);
 							return true;
 						}
 					}
 					mode = OBJECT_ADDING;
-					type = TYPE_MOVING;
-					toAdd = new int[]{(int) x - 15,(int) y - 15,(int) x + 15,(int) y + 15};
+					toAdd = new int[]{(int) x - 30,(int) y - 30,(int) x + 30,(int) y + 30};
 					invalidate();
 					break;
 				case OBJECT_ADDING:
-					if (type == TYPE_MOVING) 
-						type = TYPE_RIGHT; 
-					else {
-						rooms.add(new nRoom(rooms.size(), toAdd, null,null));
-						mode = FREE;
-						invalidate();
-					}
+					rooms.add(new nRoom(rooms.size(), toAdd, null, null));
+					mode = FREE;
+					invalidate();
 					break;
 				case OBJECT_EDITING:
-					if (type == TYPE_MOVING) 
-						type = TYPE_RIGHT; 
-					else {
-						stepObj.setCoords(toAdd);
-						rooms.add(new nRoom(stepObj,null));
-						mode = FREE;
-					}
+					stepObj.setCoords(toAdd);
+					rooms.add(new nRoom(stepObj, null));
+					mode = FREE;
 					break;
 				default:
 					// do nothing
@@ -265,25 +256,26 @@ public class MapEditorView extends View {
 
 		@Override
 		public void onLongPress(MotionEvent event) {
-			
-			switch(mode){
+
+			switch (mode) {
 				case FREE:
 					(new AlertDialog.Builder(context))
-						.setTitle("Obj id is "+selectedRoomId)
-						.setItems(new String[]{"Edit this room","Connect with other rooms"}, new AlertDialog.OnClickListener(){
+						.setTitle("Obj id is " + selectedRoomId)
+						.setItems(new String[]{"Edit this room","Connect with other rooms","Clear selection"}, new AlertDialog.OnClickListener(){
 
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
-								switch(p2){
-									
+								switch (p2) {
+									case 2:
+										selectedRoomId = -1;
+										selectionBorder = null;
+										invalidate();
+										break;
 								}
 							}
 						})
 						.show();
 			}
-			
 		}
-		
-		
     }
 }
