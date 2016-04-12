@@ -65,6 +65,7 @@ public class Core extends Thread {
 		if (scriptsmap == null) {
 			canScripts = false;
 		} else {
+			try{
 			L = LuaStateFactory.newLuaState();
 			L.openLibs();
 
@@ -74,6 +75,10 @@ public class Core extends Thread {
 			L.setGlobal("server");
 
 			canScripts = true;
+			} catch(Throwable t){
+				canScripts = false;
+				send(t.toString());
+			}
 		}
 
 		doFunction("onServerStarted", "on", null);

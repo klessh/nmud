@@ -4,6 +4,6 @@
 <classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 <classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 <classpathentry kind="output" path="bin/classes"/>
-<classpathentry kind="lib" path="/storage/emulated/0/AppProjects/nmud/apps/AndroidClient/libs/zip4j.jar"/>
-<classpathentry kind="lib" path="/storage/emulated/0/AppProjects/nmud/apps/libs/luajava-android.jar"/>
+<classpathentry kind="lib" path="libs/zip4j.jar"/>
+<classpathentry kind="lib" path="../libs/luajava-android.jar"/>
 </classpath>

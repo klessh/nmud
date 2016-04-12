@@ -4,16 +4,9 @@ function on()
 end
 
 function showMenu()
-	client:send(
-[[Привет! Это главное меню, в котором ты можешь выбрать одно из следущих действий:
-	
-	1. Начать игру;
-	2. Настройки приложения;
-	3. Настройки профиля;
-	4. Благодарности;
-	5. Выход.
-		
-Чтобы выбрать действие, набери в поле ввода его номер, а затем нажми на кнопку справа.]]);
+	client:send("Привет! Это главное меню, в котором ты можешь выбрать одно из следущих действий:");
+	menulist();
+	client:send("Чтобы выбрать действие, набери в поле ввода его номер, а затем нажми на кнопку справа.");
 end
 
 function handleInput(menuname)
@@ -25,14 +18,10 @@ function handleInput(menuname)
 			client:doFunction("осмотреться","chat");
 			return;
 		elseif input == "2" then
-			client:startPreferences();
-			handleInput("main");
-			return;
-		elseif input == "3" then
 			client:send("Настройки профиля будут, но попозже.");
 			handleInput("main");
 			return;
-		elseif input == "4" then
+		elseif input == "3" then
 			client:send([[
 Благодарности:
 ==============
@@ -40,16 +29,10 @@ function handleInput(menuname)
 Неизвестному художнку - за шикарный рисунок Ктулху
 Владельцу сайта romannurik.github.io - за сервис создания иконок
 			]]);
-			client:send([[
-	1. Начать игру;
-	2. Настройки приложения;
-	3. Настройки профиля;
-	4. Благодарности;
-	5. Выход.
-			]]);
+			menulist();
 			handleInput("main");
 			return;
-		elseif input == "5" then
+		elseif input == "4" then
 			client:close();
 			return;
 		else
@@ -64,4 +47,12 @@ end
 
 function help(...)
 	client:send("Команда: onClientConnected\n\tЭто системный скрипт.");
+end
+
+function menulist()
+client:send([[
+	1. Начать игру;
+	2. Настройки профиля;
+	3. Благодарности;
+	4. Выход.]]);
 end

@@ -15,6 +15,9 @@ import localhost.iillyyaa2033.mud.androidclient.logic.Core;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View.OnLongClickListener;
 
 public class MainActivity extends Activity {
 
@@ -59,6 +62,15 @@ public class MainActivity extends Activity {
 				}
 			});
 
+		button.setOnLongClickListener(new OnLongClickListener(){
+
+				@Override
+				public boolean onLongClick(View p1) {
+					startPreferences();
+					return false;
+				}
+			});
+			
 		handler = new Handler();
 		core = new Core(this);
 		core.setDaemon(true);
@@ -70,7 +82,7 @@ public class MainActivity extends Activity {
 		super.onStop();
 		core.saveReport();
 	}
-
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

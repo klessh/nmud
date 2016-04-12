@@ -4,6 +4,6 @@
 <classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 <classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 <classpathentry kind="output" path="bin/classes"/>
-<classpathentry kind="lib" path="/storage/emulated/0/AppProjects/nmud/apps/libs/android-support-v4.jar"/>
 <classpathentry kind="lib" path="/storage/emulated/0/AppProjects/nmud/apps/libs/luajava-android.jar"/>
+<classpathentry kind="lib" path="/storage/sdcard0/AppProjects/nmud/apps/libs/android-support-v4.jar"/>
 </classpath>
