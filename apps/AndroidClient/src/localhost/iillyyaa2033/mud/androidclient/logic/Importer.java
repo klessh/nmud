@@ -216,12 +216,14 @@ public class Importer {
 	}
 	
 	public void extractContent(Context c) {
-		File f = new File(c.getCacheDir() + "/content-ru.zip");
+		File f = new File(c.getCacheDir() + "/content-base.zip");
+		
+		core.send(core.LEVEL_DEBUG_IMPORTER, "Importing content... ");
 		
 		if (!f.exists()){
 			try {
 
-				InputStream is = c.getAssets().open("content-ru.zip");
+				InputStream is = c.getAssets().open("content-base.zip");
 				int size = is.available();
 				byte[] buffer = new byte[size];
 				is.read(buffer);
@@ -230,7 +232,9 @@ public class Importer {
 				FileOutputStream fos = new FileOutputStream(f);
 				fos.write(buffer);
 				fos.close();
+				core.append(core.LEVEL_DEBUG_IMPORTER, "Successfully.");
 			} catch (Exception e) {
+				core.append(core.LEVEL_DEBUG_IMPORTER, "Failed.");
 				core.send(core.LEVEL_DEBUG_IMPORTER,e.getMessage());
 			}
 		}

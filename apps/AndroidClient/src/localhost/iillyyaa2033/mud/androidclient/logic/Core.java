@@ -112,7 +112,7 @@ public class Core extends Thread {
 		if (!(new File(db.datapath)).exists()) {
 			// TODO: data must be extracted before db update
 			importer.extractContent(activity);
-			importer.unzip(activity.getCacheDir() + "/content-ru.zip", db.datapath);
+			importer.unzip(activity.getCacheDir() + "/content-base.zip", db.datapath);
 		}
 
 		scriptsmap = importer.importChatScripts();

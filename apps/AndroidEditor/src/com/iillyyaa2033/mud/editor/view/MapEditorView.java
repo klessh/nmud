@@ -31,11 +31,11 @@ public class MapEditorView extends View {
 	public ArrayList<nRoom> rooms;		// Сам массив
 	private nObject stepObj;
 	private int[] toAdd;
-	private int[] selectionBorder;
-	private int selectedRoomId;
+	private int[] selectionBorder;	// can be null
+	private int selectedRoomId;		// can be -1
 	private int selectedObjId;
 	private int mode;
-	private static final int FREE = 0, OBJECT_ADDING = 1, OBJECT_EDITING = 2, ROOM_EDITING = 3;
+	private static final int FREE = 0, OBJECT_ADDING = 1, OBJECT_EDITING = 2, ROOM_EDITING = 3, PULL_NEW_ROOM = 4;
 	
 	public MapEditorView(Context c) {
 		super(c);
@@ -152,6 +152,12 @@ public class MapEditorView extends View {
 
 		if (selectionBorder != null) {
 			canvas.drawRect(selectionBorder[0], selectionBorder[1], selectionBorder[2], selectionBorder[3], selectionPaint);
+			if(mode == PULL_NEW_ROOM && toAdd == null){
+				canvas.drawCircle((selectionBorder[0]+selectionBorder[2])/2, selectionBorder[1] - 30,15,paint);	// top
+				canvas.drawCircle((selectionBorder[0]+selectionBorder[2])/2, selectionBorder[3] + 30,15,paint);	// down
+				canvas.drawCircle(selectionBorder[0] - 30, (selectionBorder[1]+selectionBorder[3])/2,15,paint);	// left
+				canvas.drawCircle(selectionBorder[2] + 30, (selectionBorder[1]+selectionBorder[3])/2,15,paint);	// right
+			}
 		}
 	}
 
@@ -215,6 +221,9 @@ public class MapEditorView extends View {
 					}
 					invalidate();
 					break;
+				case PULL_NEW_ROOM:
+					scrollBy((int) distanceX, (int)distanceY);
+					break;
 			}
             return true;
         }
@@ -234,8 +243,13 @@ public class MapEditorView extends View {
 							return true;
 						}
 					}
-					mode = OBJECT_ADDING;
-					toAdd = new int[]{(int) x - 30,(int) y - 30,(int) x + 30,(int) y + 30};
+					if(selectionBorder != null){
+						selectionBorder = null;
+						selectedRoomId = -1;
+					} else {
+						mode = OBJECT_ADDING;
+						toAdd = new int[]{(int) x - 30,(int) y - 30,(int) x + 30,(int) y + 30};
+					}
 					invalidate();
 					break;
 				case OBJECT_ADDING:
@@ -247,6 +261,10 @@ public class MapEditorView extends View {
 					stepObj.setCoords(toAdd);
 					rooms.add(new nRoom(stepObj, null));
 					mode = FREE;
+					break;
+				case PULL_NEW_ROOM:
+					mode = FREE;
+					invalidate();
 					break;
 				default:
 					// do nothing
@@ -261,11 +279,16 @@ public class MapEditorView extends View {
 				case FREE:
 					(new AlertDialog.Builder(context))
 						.setTitle("Obj id is " + selectedRoomId)
-						.setItems(new String[]{"Edit this room","Connect with other rooms","Clear selection"}, new AlertDialog.OnClickListener(){
+						.setItems(new String[]{"Edit this room","Pull new room","Clear selection"}, new AlertDialog.OnClickListener(){
 
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
 								switch (p2) {
+									case 1:
+										mode = PULL_NEW_ROOM;
+										toAdd = null;
+										invalidate();
+										break;
 									case 2:
 										selectedRoomId = -1;
 										selectionBorder = null;
