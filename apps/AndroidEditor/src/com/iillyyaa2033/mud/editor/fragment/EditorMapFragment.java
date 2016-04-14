@@ -25,9 +25,9 @@ public class EditorMapFragment extends Fragment {
 		
 	}
 	
-	public ArrayList get(){
+	public MapEditorView get(){
 		// TODO: get
-		return null;
+		return mapview;
 	}
 	
 	

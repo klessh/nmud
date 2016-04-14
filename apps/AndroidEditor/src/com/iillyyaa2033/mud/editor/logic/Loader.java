@@ -71,59 +71,37 @@ public class Loader{
 		writer.flush();
 	}
 	
-	public ArrayList<nObject> loadMap(String f2load) throws Exception{
-		File f = new File(f2load);
+/*	public ArrayList<nRoom> loadMap(String f2load) throws Exception{
+		
+	} */
 
-		if(!f.canRead()) return null;
-
-		InputStream inputstream = new FileInputStream(f2load);
-		InputStreamReader reader = new InputStreamReader(inputstream, "UTF-8");
-		BufferedReader bufferedreader = new BufferedReader(reader);
-
-		ArrayList<nObject> objects = new ArrayList<nObject>();
-
-		String line = "";
-		int todo = 0;
-		while ((line = bufferedreader.readLine()) != null){
-			String delims = " ];";
-			StringTokenizer token = new StringTokenizer(line,delims,false);
-			String firstword;
-
-			if ((firstword = token.nextToken()).equals("[Objects")){
-				todo = 1; 
-			}else{
-				switch (todo){
-					case 1:
-						int[] coords = new int[]{Integer.valueOf(token.nextToken()),Integer.valueOf(token.nextToken()),Integer.valueOf(token.nextToken()),Integer.valueOf(token.nextToken())};
-						String name = token.nextToken();
-						nObject obj = new nObject(Integer.valueOf(firstword),coords, loadNametable(name, new String[8][]));
-						objects.add(obj);
-						break;
-					default:
-						break;
-				}
-			}
-		}
-		return objects;
-	}
-
-	public void saveMap(String f2save, MapEditorView map) throws IOException{
+	public static void saveMap(String f2save, MapEditorView map) throws IOException{
 		File f = new File(f2save);
 
-		if(!f.canRead()) return;
+		if(!f.canRead()) throw new IOException("File not found: \n\t"+f2save);
 
 		OutputStream outputstream = new FileOutputStream(f);
 		OutputStreamWriter writer = new OutputStreamWriter(outputstream, "UTF-8");
-		writer.write("[Objects]\n");
-		for(nObject o: map.rooms){
+		
+		for(nRoom room: map.rooms){
 			StringBuilder sb = new StringBuilder();
-			sb.append(o.id+";");
-			sb.append(o.x1+";"); 
-			sb.append(o.y1+";"); 
-			sb.append(o.x2+";"); 
-			sb.append(o.y2+";");
-			sb.append(o.qualitys[0][0]);
+			sb.append("[room]");
+			sb.append(room.id+"|");
+			sb.append(room.x1+"|"); 
+			sb.append(room.y1+"|"); 
+			sb.append(room.x2+"|"); 
+			sb.append(room.y2+"|");
+			sb.append("unnamed room");
 			sb.append("\n");
+			for(nObject object : room.objects){
+				sb.append(object.id+"|");
+				sb.append(object.x1+"|"); 
+				sb.append(object.y1+"|"); 
+				sb.append(object.x2+"|"); 
+				sb.append(object.y2+"|");
+				sb.append("unnamed item");
+				sb.append("\n");
+			}
 			writer.write(sb.toString());
 		}
 		writer.flush();
@@ -133,19 +111,7 @@ public class Loader{
 		return null;
 	}
 	
-	void saveBuilding(nBuilding building) throws IOException{
-		File f = new File(PreferenceManager.getDefaultSharedPreferences(c).getString("PREF_MAP_ROOT_BUILDINGS","/storage/emulated/0/Download/")+building.qualitys[0][0].toLowerCase()+".nametab");
-		if(!f.exists()) f.createNewFile();
-
-		OutputStream outputstream = new FileOutputStream(f);
-		OutputStreamWriter writer = new OutputStreamWriter(outputstream, "UTF-8");
-		writer.write("[Building]");
+	void saveBuilding(nBuilding building){
 		
-		
-		writer.write("[Rooms]");
-		
-		writer.write("[Doors]");
-		
-		writer.flush();
 	}
 }

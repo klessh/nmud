@@ -12,6 +12,12 @@ import android.app.Fragment;
 import android.app.ListFragment;
 import java.util.ArrayList;
 import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
+import android.view.Menu;
+import android.view.MenuItem;
+import com.iillyyaa2033.mud.editor.logic.Loader;
+import android.preference.PreferenceManager;
+import java.io.IOException;
+import android.app.AlertDialog;
 
 public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
 	
@@ -36,6 +42,27 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 		
 		dictionary = new EditorDictionaryFragment();
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,0,0,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case 0:
+				try {
+					Loader.saveMap(PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/Download/nmud/content-ru")+"/maps/test.txt", map.get());
+				} catch (IOException e) {
+					new AlertDialog.Builder(this).setMessage(e.toString()).show();
+				}
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	
 	
 	@Override
 	public void onTabSelected(ActionBar.Tab p1, FragmentTransaction p2) {
