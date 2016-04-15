@@ -25,6 +25,11 @@
         </activity>
 		
 		<activity 
+			android:name=".activity.ObjectEditorActivity" 
+			android:label="ObjectEditorActivity">
+		</activity>
+		
+		<activity 
 			android:name=".activity.Preferences" 
 			android:label="Настройки">
 		</activity>

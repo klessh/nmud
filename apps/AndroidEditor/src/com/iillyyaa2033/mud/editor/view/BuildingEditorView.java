@@ -65,7 +65,7 @@ public class BuildingEditorView extends View{
 		
 		// TODO: LOAD FROM SDCARD
 		
-		rooms.add(new nRoom(0, new int[]{5,5,150,150}, new String[][]{{"",""}}, null));
+		rooms.add(new nRoom(0, new int[]{5,5,150,150}, "untamed", null));
 	}
 
 	@Override
@@ -222,7 +222,7 @@ public class BuildingEditorView extends View{
 					}
 					break;
 				case ROOM_ADDING:
-					rooms.add(new nRoom(rooms.size(), toAdd, new String[][]{{""}}, null));
+					rooms.add(new nRoom(rooms.size(), toAdd, "untamed", null));
 					mode = FREE;
 					break;
 				case OBJECT_ADDING:
@@ -230,7 +230,7 @@ public class BuildingEditorView extends View{
 						type = TYPE_RIGHT; 
 					else{
 						if(toAdd[0]>=roomSelector[0]+15 && toAdd[1]>=roomSelector[1]+15 && toAdd[2]<=roomSelector[2]-15 && toAdd[3]<=roomSelector[3]-15)
-							objs.add(new nObject(objs.size(),toAdd,new String[][]{{""}}));
+							objs.add(new nObject(objs.size(),toAdd,"untamed"));
 						mode = FREE;
 			//			parent.objEdit();
 					}

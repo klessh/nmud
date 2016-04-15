@@ -7,9 +7,9 @@ public class nBuilding extends nObject{
 	ArrayList<nRoom> rooms;
 	ArrayList<nDoor> inDoors;
 	
-	public nBuilding(int id, int[] coords, String[][] qualitys, 
+	public nBuilding(int id, int[] coords, String name, 
 					ArrayList<nDoor> inDoors,ArrayList<nRoom> rooms){
-		super(id,coords,qualitys);
+		super(id,coords,name);
 		this.rooms = rooms;
 		this.inDoors = inDoors;
 	}	

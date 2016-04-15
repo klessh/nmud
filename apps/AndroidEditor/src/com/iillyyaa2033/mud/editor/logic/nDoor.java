@@ -4,8 +4,8 @@ package com.iillyyaa2033.mud.editor.logic;
 public class nDoor extends nObject{
 	public int x3, y3, x4, y4, xc2, yc2;
 	
-	public nDoor(int id, int[] coords1, int[] coords2, String[][] qualitys){
-		super(id, coords1, qualitys);
+	public nDoor(int id, int[] coords1, int[] coords2, String name){
+		super(id, coords1, name);
 		x3 = coords2[0];
 		y3 = coords2[1];
 		x4 = coords2[2];

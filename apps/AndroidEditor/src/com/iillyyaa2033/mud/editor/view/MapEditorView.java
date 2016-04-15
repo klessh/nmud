@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import com.iillyyaa2033.mud.editor.logic.nRoom;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import com.iillyyaa2033.mud.editor.activity.ObjectEditorActivity;
 
 public class MapEditorView extends View {
 
@@ -108,6 +110,10 @@ public class MapEditorView extends View {
 		invalidate();
 	}
 
+	void syncToDB(){
+		
+	}
+	
 	@Override
 	protected void onDraw(Canvas canvas) {
 		canvas.scale(mScaleFactor, mScaleFactor);
@@ -144,10 +150,7 @@ public class MapEditorView extends View {
 		paint.setColor(Color.argb(70, 0, 0, 0));
 		for (nObject obj : rooms) {
 			canvas.drawRect(obj.x1, obj.y1, obj.x2, obj.y2, paint);
-			canvas.drawText("" + obj.id, obj.x2, obj.y1, paint);
-
-			if (obj.id == selectedRoomId)
-				canvas.drawText("Room selected", obj.x2, obj.y1 + 10, paint);
+			canvas.drawText(""+obj.name, obj.x2, obj.y1, paint);
 		}
 
 		if (selectionBorder != null) {
@@ -279,20 +282,24 @@ public class MapEditorView extends View {
 				case FREE:
 					(new AlertDialog.Builder(context))
 						.setTitle("Obj id is " + selectedRoomId)
-						.setItems(new String[]{"Edit this room","Pull new room","Clear selection"}, new AlertDialog.OnClickListener(){
+						.setItems(new String[]{"Name this room","Pull new room","Reserved"}, new AlertDialog.OnClickListener(){
 
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
 								switch (p2) {
+									case 0:
+										syncToDB();
+										Intent i = new Intent(context,ObjectEditorActivity.class);
+										i.putExtra("room_id",selectedRoomId);
+										context.startActivity(i);
+										break;
 									case 1:
 										mode = PULL_NEW_ROOM;
 										toAdd = null;
 										invalidate();
 										break;
 									case 2:
-										selectedRoomId = -1;
-										selectionBorder = null;
-										invalidate();
+										
 										break;
 								}
 							}

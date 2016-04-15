@@ -4,12 +4,12 @@ package com.iillyyaa2033.mud.editor.logic;
 public class nObject{
 	public int id;
 	public int x1, x2, y1, y2, xc, yc;
-	public String[][] qualitys;
+	public String name;
 	
-	public nObject(int id, int[] coords, String[][] qualitys){
+	public nObject(int id, int[] coords, String name){
 		this.id = id;
 		setCoords(coords);
-		this.qualitys = qualitys;
+		this.name = name;
 	}
 	
 	public void setCoords(int coords[]){

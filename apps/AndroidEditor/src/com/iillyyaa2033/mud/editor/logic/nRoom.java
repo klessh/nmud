@@ -7,13 +7,13 @@ public class nRoom extends nObject{
 	public ArrayList<nObject> objects;
 	
 	public nRoom(nObject obj, int[] walls){
-		super(obj.id,new int[]{obj.x1,obj.y1,obj.x2,obj.y2},obj.qualitys);
+		super(obj.id,new int[]{obj.x1,obj.y1,obj.x2,obj.y2},obj.name);
 		
 		this.walls = walls;
 	}
 	
-	public nRoom(int id, int[] coords, String[][] qualitys, int[] walls){
-		super(id, coords, qualitys);
+	public nRoom(int id, int[] coords, String name, int[] walls){
+		super(id, coords, name);
 		
 		this.walls = walls;
 		objects = new ArrayList<nObject>();
