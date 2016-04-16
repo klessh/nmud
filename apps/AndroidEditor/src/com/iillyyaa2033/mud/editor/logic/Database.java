@@ -14,7 +14,7 @@ public class Database{
 		return instance;
 	}
 	
-	public ArrayList<nRoom> rooms = new ArrayList<nRoom>();
+	public static ArrayList<nRoom> rooms = new ArrayList<nRoom>();
 	
 	// TODO: dict here
 }

@@ -256,7 +256,7 @@ public class MapEditorView extends View {
 					invalidate();
 					break;
 				case OBJECT_ADDING:
-					rooms.add(new nRoom(rooms.size(), toAdd, null, null));
+					rooms.add(new nRoom(rooms.size(), toAdd, "untamed", null));
 					mode = FREE;
 					invalidate();
 					break;
