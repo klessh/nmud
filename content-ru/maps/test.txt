@@ -1,2 +1,1 @@
-[room]0|330|182|390|242|unnamed room
-[room]1|565|127|625|187|unnamed room
+[room]0|23|29|83|89|untamed

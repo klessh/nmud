@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import com.iillyyaa2033.mud.editor.activity.ObjectEditorActivity;
+import android.util.Log;
 
 public class MapEditorView extends View {
 
@@ -26,7 +27,7 @@ public class MapEditorView extends View {
 
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
-    private float canvasSize;
+    public float canvasSize;
     private float mScaleFactor;
 	private Paint paint, rootPaint, selectionPaint;
 
@@ -56,7 +57,7 @@ public class MapEditorView extends View {
 
 	void init(Context c) {
 		context = c;
-		canvasSize = 5000;		// Сторона квадрата
+		canvasSize = 2500;		// Сторона квадрата
         mScaleFactor = 1f;		// Значение зума по умолчанию
 
 		scaleGestureDetector = new ScaleGestureDetector(c, new MyScaleGestureListener());
@@ -83,6 +84,8 @@ public class MapEditorView extends View {
 
 		rooms = new ArrayList<nRoom>();
 		mode = FREE;
+		
+		scrollTo(0,((int)canvasSize) - 500);
 	}
 
 	public void setSelectionToRoom(int room_id) {
@@ -125,12 +128,17 @@ public class MapEditorView extends View {
 
 		// DRAWING GRID
 		rootPaint.setColor(Color.argb(50, 0, 0, 0));
-		for (int stepx = 0; stepx < 51; stepx++) {
-			canvas.drawLine(stepx * 100, 0, stepx * 100, canvasSize, rootPaint);
+		int side = 100;
+		
+	//	float umsf = 1/mScaleFactor;
+	//	side *= (int) (umsf>=1 ? umsf : 1-umsf);
+		
+		for (int stepx = 0; stepx <= canvasSize/side; stepx++) {
+			canvas.drawLine(stepx * side, 0, stepx * side, canvasSize, rootPaint);
 		}
 
-		for (int stepy = 0; stepy < 51; stepy++) {
-			canvas.drawLine(0, stepy * 100, canvasSize, stepy * 100, rootPaint);
+		for (int stepy = 0; stepy <= canvasSize/side; stepy++) {
+			canvas.drawLine(0, stepy * side, canvasSize, stepy * side, rootPaint);
 		}
 
 		if (mode == OBJECT_ADDING || mode == OBJECT_EDITING) {

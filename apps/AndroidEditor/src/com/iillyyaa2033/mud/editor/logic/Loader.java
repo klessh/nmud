@@ -88,18 +88,18 @@ public class Loader{
 			sb.append("[room]");
 			sb.append(room.id+"|");
 			sb.append(room.x1+"|"); 
-			sb.append(room.y1+"|"); 
+			sb.append(((int)map.canvasSize) - room.y2+"|"); 
 			sb.append(room.x2+"|"); 
-			sb.append(room.y2+"|");
-			sb.append("unnamed room");
+			sb.append(((int)map.canvasSize) - room.y1+"|");
+			sb.append(room.name);
 			sb.append("\n");
 			for(nObject object : room.objects){
 				sb.append(object.id+"|");
 				sb.append(object.x1+"|"); 
-				sb.append(object.y1+"|"); 
+				sb.append(((int)map.canvasSize) - object.y2+"|"); 
 				sb.append(object.x2+"|"); 
-				sb.append(object.y2+"|");
-				sb.append("unnamed item");
+				sb.append(((int)map.canvasSize)- object.y1+"|");
+				sb.append(object.name);
 				sb.append("\n");
 			}
 			writer.write(sb.toString());
