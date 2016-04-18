@@ -1,1 +1,1 @@
-[room]0|23|29|83|89|untamed
+[room]0|2|99|595|600|untamed

@@ -1,23 +1,19 @@
 package com.iillyyaa2033.mud.editor.activity;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
-import android.widget.ArrayAdapter;
-import com.iillyyaa2033.mud.editor.R;
-import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
-import com.iillyyaa2033.mud.editor.fragment.EditorListFragment;
-import android.app.Fragment;
-import android.app.ListFragment;
-import java.util.ArrayList;
-import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.iillyyaa2033.mud.editor.R;
+import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
+import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
 import com.iillyyaa2033.mud.editor.logic.Loader;
-import android.preference.PreferenceManager;
 import java.io.IOException;
-import android.app.AlertDialog;
 
 public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
 	

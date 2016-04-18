@@ -20,4 +20,8 @@ public class nObject{
 		xc = x2-((x2-x1)/2);
 		yc = y2-((y2-y1)/2);
 	}
+	
+	public int[] getCoords(){
+		return new int[]{x1,y1,x2,y2};
+	}
 }
