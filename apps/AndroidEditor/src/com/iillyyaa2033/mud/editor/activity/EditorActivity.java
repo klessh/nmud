@@ -14,6 +14,8 @@ import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
 import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import java.io.IOException;
+import java.io.File;
+import com.iillyyaa2033.mud.editor.logic.Database;
 
 public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
 	
@@ -41,7 +43,9 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0,0,0,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(0,0,0,"Load map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(1,1,1,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		
 		return true;
 	}
 
@@ -49,6 +53,14 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 			case 0:
+				try {
+					Database.rooms = Loader.loadMap(this,PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/Download/nmud/content-ru")+"/maps/");
+					map.updateFromDB();
+				} catch (Exception e) {
+					new AlertDialog.Builder(this).setMessage(e.toString()).show();
+				}
+				break;
+			case 1:
 				try {
 					Loader.saveMap(PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/Download/nmud/content-ru")+"/maps/test.txt", map.get());
 				} catch (IOException e) {

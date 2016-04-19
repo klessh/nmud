@@ -51,7 +51,7 @@ public class EditorMapFragment extends Fragment {
 		return mapview;
 	}
 	
-	void updateFromDB(){
+	public void updateFromDB(){
 		mapview.rooms = Database.rooms;
 	}
 	

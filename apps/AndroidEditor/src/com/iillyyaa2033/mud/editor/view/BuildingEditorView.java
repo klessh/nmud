@@ -18,7 +18,6 @@ public class BuildingEditorView extends View{
 	
 //	public BuildingEditorActivity parent;
 	private Context context;
-	Loader loader;
 	private Paint wallpaint;
 	
 	public ArrayList<nRoom> rooms;
@@ -40,7 +39,6 @@ public class BuildingEditorView extends View{
 	public BuildingEditorView(Context c){
 		super(c);
 		context = c;
-		loader = new Loader(c);
 		
 		rooms = new ArrayList<nRoom>();
 		objs = new ArrayList<nObject>();
