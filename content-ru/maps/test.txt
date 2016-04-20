@@ -1,2 +1,2 @@
-type-room|0|207|2162|1114|2399|untamed
-type-room|1|253|183|690|455|untamed
+type-room|0|2|21|11|23|untamed
+type-room|1|2|1|6|4|untamed

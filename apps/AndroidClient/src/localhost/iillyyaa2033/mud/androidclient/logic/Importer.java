@@ -21,7 +21,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class Importer {
 
 	Core core;
-	
+
 	public Importer(Core c) {
 		core = c;
 	}
@@ -69,10 +69,10 @@ public class Importer {
 				String value = currscript.toString();
 				cmds.put(key, value);
 
-				
-					if (value.contains("server:")) core.send(core.LEVEL_DEBUG_IMPORTER, "Скрипт \"" + key + "\" использует доступ к серверу.");
-					if (value.contains("client:close")) core.send(core.LEVEL_DEBUG_IMPORTER, "Скрипт \"" + key + "\" может закрывать клиенты.");
-				
+
+				if (value.contains("server:")) core.send(core.LEVEL_DEBUG_IMPORTER, "Скрипт \"" + key + "\" использует доступ к серверу.");
+				if (value.contains("client:close")) core.send(core.LEVEL_DEBUG_IMPORTER, "Скрипт \"" + key + "\" может закрывать клиенты.");
+
 
 				currscript.setLength(0);
 				bufferedreader.close();
@@ -120,12 +120,12 @@ public class Importer {
 	public void saveUsers(HashMap<String, String> users) {
 		// TODO: Implement this method
 	}
-	
+
 	public ArrayList<WorldObject> importObjects() {
-		File workfile = new File(core.db.datapath, "/maps/testmap.txt");
+		File workfile = new File(core.db.datapath, "/maps/test.txt");
 
 		if (!workfile.exists()) {
-			core.send(core.LEVEL_DEBUG_IMPORTER,"Importer: нету файла с акками");
+			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла с акками");
 			return null;
 		}
 
@@ -139,16 +139,23 @@ public class Importer {
 			ArrayList<WorldObject> objs = new ArrayList<WorldObject>();
 
 			while ((buffer = bufferedreader.readLine()) != null) {
+				if (buffer.contains("type-room")) buffer = buffer.replace("type-room|", "");
 				token = new StringTokenizer(buffer, "|");
-				if (token.countTokens() == 5) {
-					WorldObject obj = new WorldObject();
-					obj.x = new Integer(token.nextToken());
-					obj.y = new Integer(token.nextToken());
-					obj.x2 = new Integer(token.nextToken());
-					obj.y2 = new Integer(token.nextToken());
-					obj.name = token.nextToken();
-
-					objs.add(obj);
+				if (token.countTokens() == 6) {
+					try {
+						WorldObject obj = new WorldObject();
+						obj.id = new Integer(token.nextToken());
+						obj.x = new Integer(token.nextToken());
+						obj.y = new Integer(token.nextToken());
+						obj.x2 = new Integer(token.nextToken());
+						obj.y2 = new Integer(token.nextToken());
+						obj.name = token.nextToken();
+						objs.add(obj);
+					} catch (Exception e) {
+						core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: ошибка импорта объекта");
+					}
+				} else {
+					core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: Malformed line: " + buffer.substring(30) + "...");
 				}
 			}
 
@@ -160,23 +167,23 @@ public class Importer {
 		}
 	}
 
-	
+
 	String[][] forms = new String[][]{
 		new String[]{"",	"а",	"у",	"",		"ом",	"е"},
 		new String[]{"а",	"и",	"е",	"у",	"ей",	"е"},
 		new String[]{"а",	"ы",	"е",	"у",	"ой",	"е"},
 		new String[]{"й",	"я",	"ю",	"й",	"ем",	"е"}
 	};
-	
-	public HashMap<Integer, String[]> importWords(String endfilename){
-		
-		File workfile = new File(core.db.datapath, "/dict/"+endfilename+".txt");
+
+	public HashMap<Integer, String[]> importWords(String endfilename) {
+
+		File workfile = new File(core.db.datapath, "/dict/" + endfilename + ".txt");
 
 		if (!workfile.exists()) {
-			core.send(core.LEVEL_DEBUG_IMPORTER,"Importer: нету файла с со словарем ("+workfile.getAbsolutePath()+").");
+			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла с со словарем (" + workfile.getAbsolutePath() + ").");
 			return null;
 		}
-		
+
 		try {
 			InputStream inputstream = new FileInputStream(workfile);
 			InputStreamReader reader = new InputStreamReader(inputstream, "UTF-8");
@@ -188,22 +195,22 @@ public class Importer {
 
 			while ((buffer = bufferedreader.readLine()) != null) {
 				token = new StringTokenizer(buffer, "|");
-				
+
 				if (token.countTokens() == 3) {
 					int id = new Integer(token.nextToken());
 					String base = token.nextToken();
 					int end = new Integer(token.nextToken());
 					String[] word = new String[6];
-					
-					core.send(core.LEVEL_DEBUG_IMPORTER,""+id);
-					
-					for(int i = 0; i < 6; i++){
-						word[i] = base+forms[end][i];
-						if(core.debug_importer) core.append(" "+word[i]);
+
+//					core.send(core.LEVEL_DEBUG_IMPORTER, "" + id);
+
+					for (int i = 0; i < 6; i++) {
+						word[i] = base + forms[end][i];
+//						if (core.debug_importer) core.append(" " + word[i]);
 					}
-					objs.put(id,word);
+					objs.put(id, word);
 				} else {
-					core.send(core.LEVEL_DEBUG_IMPORTER, "Malformed line; "+token.countTokens());
+					core.send(core.LEVEL_DEBUG_IMPORTER, "Malformed line; " + token.countTokens());
 				}
 			}
 
@@ -214,13 +221,13 @@ public class Importer {
 			return null;
 		}
 	}
-	
+
 	public void extractContent(Context c) {
 		File f = new File(c.getCacheDir() + "/content-base.zip");
-		
+
 		core.send(core.LEVEL_DEBUG_IMPORTER, "Importing content... ");
-		
-		if (!f.exists()){
+
+		if (!f.exists()) {
 			try {
 
 				InputStream is = c.getAssets().open("content-base.zip");
@@ -228,14 +235,14 @@ public class Importer {
 				byte[] buffer = new byte[size];
 				is.read(buffer);
 				is.close();
-				
+
 				FileOutputStream fos = new FileOutputStream(f);
 				fos.write(buffer);
 				fos.close();
 				core.append(core.LEVEL_DEBUG_IMPORTER, "Successfully.");
 			} catch (Exception e) {
 				core.append(core.LEVEL_DEBUG_IMPORTER, "Failed.");
-				core.send(core.LEVEL_DEBUG_IMPORTER,e.getMessage());
+				core.send(core.LEVEL_DEBUG_IMPORTER, e.getMessage());
 			}
 		}
 	}
