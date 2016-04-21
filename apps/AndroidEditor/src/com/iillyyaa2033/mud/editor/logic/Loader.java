@@ -122,22 +122,22 @@ public class Loader {
 		OutputStream outputstream = new FileOutputStream(f);
 		OutputStreamWriter writer = new OutputStreamWriter(outputstream, "UTF-8");
 
-		for (nRoom room: map.rooms) {
+		for (nRoom room: map.root.rooms) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("type-room|");
 			sb.append(room.id + "|");
 			sb.append(room.x1 + "|"); 
-			sb.append(((int)map.canvasSize) - room.y2 + "|"); 
+			sb.append(((int)map.canvasY) - room.y2 + "|"); 
 			sb.append(room.x2 + "|"); 
-			sb.append(((int)map.canvasSize) - room.y1 + "|");
+			sb.append(((int)map.canvasY) - room.y1 + "|");
 			sb.append(room.name);
 			sb.append("\n");
 			for (nObject object : room.objects) {
 				sb.append(object.id + "|");
 				sb.append(object.x1 + "|"); 
-				sb.append(((int)map.canvasSize) - object.y2 + "|"); 
+				sb.append(((int)map.canvasY) - object.y2 + "|"); 
 				sb.append(object.x2 + "|"); 
-				sb.append(((int)map.canvasSize) - object.y1 + "|");
+				sb.append(((int)map.canvasY) - object.y1 + "|");
 				sb.append(object.name);
 				sb.append("\n");
 			}

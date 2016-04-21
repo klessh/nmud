@@ -52,10 +52,10 @@ public class EditorMapFragment extends Fragment {
 	}
 	
 	public void updateFromDB(){
-		mapview.rooms = Database.rooms;
+		mapview.root.rooms = Database.rooms;
 	}
 	
 	void saveToDB(){
-		Database.rooms = mapview.rooms;
+		Database.rooms = mapview.root.rooms;
 	}
 }
