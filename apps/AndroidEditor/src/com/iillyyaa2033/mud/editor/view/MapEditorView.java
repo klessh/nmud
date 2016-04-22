@@ -131,18 +131,17 @@ public class MapEditorView extends View {
 
 		// DRAWING GRID
 		rootPaint.setColor(Color.argb(50, 0, 0, 0));
-		int side = 100;
+		int cellside = 100;
 		
-	//	float umsf = 1/mScaleFactor;
-	//	side *= (int) (umsf>=1 ? umsf : 1-umsf);
-		
-		for (int stepx = 0; stepx <= canvasX/side; stepx++) {
-			canvas.drawLine(stepx * side, 0, stepx * side, canvasY, rootPaint);
+		for (int stepx = 0; stepx <= canvasX/cellside; stepx++) {
+			canvas.drawLine(stepx * cellside, 0, stepx * cellside, canvasY, rootPaint);
 		}
 
-		for (int stepy = 0; stepy <= canvasY/side; stepy++) {
-			canvas.drawLine(0, stepy * side, canvasX, stepy * side, rootPaint);
+		for (int stepy = 0; stepy <= canvasY/cellside; stepy++) {
+			canvas.drawLine(0, stepy * cellside, canvasX, stepy * cellside, rootPaint);
 		}
+		
+		canvas.drawRect(-5,-5,canvasX+5,canvasY+5,rootPaint);
 
 		if (mode == ROOM_ADDING || mode == ROOM_EDITING) {
 			paint.setStyle(Paint.Style.STROKE);
@@ -210,8 +209,8 @@ public class MapEditorView extends View {
 
         @Override	// При движении пальцем
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			int constant = 1;
-			int point_const = 50;
+			int constant = 1;	// константа скорости перетаскивания (больше единицы - медленнее);
+			int point_const = 50;	// константа чувствительности кругов, за которые растягиваем
 			float x1 = (e2.getX() + getScrollX()) / mScaleFactor;
             float y1 = (e2.getY() + getScrollY()) / mScaleFactor;
 
@@ -228,10 +227,29 @@ public class MapEditorView extends View {
 						toAdd[2] -= distanceX / (mScaleFactor * constant);
 						toAdd[3] -= distanceY / (mScaleFactor * constant);
 					} else {
-						toAdd[0] -= distanceX / (mScaleFactor * constant);
-						toAdd[2] -= distanceX / (mScaleFactor * constant);
-						toAdd[1] -= distanceY / (mScaleFactor * constant);
-						toAdd[3] -= distanceY / (mScaleFactor * constant);
+						if(distanceX < 0){
+							if(toAdd[2] - distanceX / (mScaleFactor * constant) > root.x2){
+								toAdd[0] -= distanceX / (mScaleFactor * constant);
+								toAdd[2] -= distanceX / (mScaleFactor * constant);
+							}
+						}else{
+					//		if(toAdd[0] - distanceX / (mScaleFactor * constant) > root.x1){
+								toAdd[0] -= distanceX / (mScaleFactor * constant);
+								toAdd[2] -= distanceX / (mScaleFactor * constant);
+					//		}
+						}
+						
+						if(distanceY < 0){
+							if(toAdd[3] - distanceY / (mScaleFactor * constant) > root.y2){
+								toAdd[1] -= distanceY / (mScaleFactor * constant);
+								toAdd[3] -= distanceY / (mScaleFactor * constant);
+							}
+						}else{
+							if(toAdd[1] - distanceY / (mScaleFactor * constant) > root.y1){
+								toAdd[1] -= distanceY / (mScaleFactor * constant);
+								toAdd[3] -= distanceY / (mScaleFactor * constant);
+							}
+						}
 					}
 					invalidate();
 					break;
