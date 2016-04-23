@@ -1,6 +1,9 @@
 package com.iillyyaa2033.mud.editor.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,15 +13,10 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import com.iillyyaa2033.mud.editor.activity.EditorActivity;
-import com.iillyyaa2033.mud.editor.logic.nObject;
-import java.util.ArrayList;
-import com.iillyyaa2033.mud.editor.logic.nRoom;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import com.iillyyaa2033.mud.editor.activity.ObjectEditorActivity;
-import android.util.Log;
 import com.iillyyaa2033.mud.editor.logic.nBuilding;
+import com.iillyyaa2033.mud.editor.logic.nObject;
+import com.iillyyaa2033.mud.editor.logic.nRoom;
 
 public class MapEditorView extends View {
 

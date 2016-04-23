@@ -1,19 +1,11 @@
 package com.iillyyaa2033.mud.editor.fragment;
 
-import android.app.Fragment;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.widget.ListView;
 import android.app.ListFragment;
-import android.widget.Toast;
 import android.content.Intent;
+import android.view.View;
+import android.widget.ListView;
 import com.iillyyaa2033.mud.editor.activity.EditorActivity;
 import com.iillyyaa2033.mud.editor.activity.Preferences;
-import com.iillyyaa2033.mud.editor.activity.HelpActivity;
-import com.iillyyaa2033.mud.editor.activity.EditorActivity;
-import android.view.MenuItem;
 
 public class MainListFragment extends ListFragment {
 
@@ -27,9 +19,6 @@ public class MainListFragment extends ListFragment {
 				break;
 			case 1:
 				startActivity(new Intent(getActivity(),Preferences.class));
-				break;
-			case 2:
-				startActivity(new Intent(getActivity(),HelpActivity.class));
 				break;
 		}
 	}
