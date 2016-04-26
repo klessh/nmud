@@ -1,0 +1,92 @@
+// The Everchanging Book of Names v2.1
+// Stored names will be appended to the end of this file.
+
+[Drow (Dark Elven) - December 14, 2020 5:27:00 pm]
+Liirr
+Solithra
+Selin
+Meld
+Kryrn
+Sarn
+Gaussra
+Varaun
+Rieldra
+Shi'nay
+Zilanida
+Altanin
+Shyrrin
+Elithra
+Kri-Nin
+Tesriina
+Ghaniss
+Lesstra
+Nikniira
+Namraun
+Riruit
+Haerlin
+Mounyld
+Andrar
+Halvrar
+Kruzzt
+Krelymmar
+Mourn
+Ninar
+Balviir
+Drirn
+Sirahc
+Tlanreer
+Qilaste
+Jerdarra
+Angeriror
+Rieklorn
+
+[Khuzdul (Dwarvish) - December 14, 2020 5:47:33 pm]
+Gudam
+Thûlum
+Zarag
+Sharbilak
+Andul
+Rabil
+Khazar
+Dabul
+
+[Latin - December 14, 2020 5:49:35 pm]
+Cussis
+Allenis
+Seius
+Lispinia
+Nico
+Aulens
+Canenian
+Selania
+Calmucus
+Callis
+Cipirian
+Vasinis
+Gasius
+Regiun
+Serins
+
+[Quenya (High Elven) - December 14, 2020 5:55:03 pm]
+Arturil
+Entur
+Arquar
+
+[Viking - December 14, 2020 5:57:07 pm]
+Gurd
+Staf
+Idrod
+Harvid
+Beitrek
+Throlf
+Engi
+Rynd
+Frotlod
+Frongar
+
+[Welsh - December 14, 2020 5:58:18 pm]
+Gwalar
+Ceidwydd
+Tanon
+Brydas
+Lydno
