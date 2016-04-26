@@ -32,10 +32,9 @@ public class Core extends Thread {
 	private ArrayList<String> scriptsnames;
 
 	public boolean debug = true, debug_importer = false, debug_descr = false, debug_scripts = false;
-	private boolean canScripts = false;
-	private boolean isScriptRunning = false;
-	private boolean updRequested = false;
-
+	private boolean canScripts = false, isScriptRunning = false, updRequested = false;
+	private boolean deadend = false;
+	
 	public String cmdstr;
 
 	ArrayList<String> report;
@@ -86,15 +85,14 @@ public class Core extends Thread {
 		doFunction("onClientConnected", "on", null);
 
 		String cmd = "";
-		while (!(cmd = read()).equals("") && !Thread.currentThread().isInterrupted()) {
+		while ((!(cmd = read()).equals("")) && (!deadend)) {
 			if (updRequested) update();
+			
 			comms(cmd);
 		}
 
-		if (interrupted()) {
-			send("Finish.");
-			close();
-		}
+		send("Finishing.");
+		close();
 	}
 
 	public void requestUpdate() {
@@ -629,16 +627,16 @@ public class Core extends Thread {
 	}
 
 	public synchronized boolean close() {
+		
 		if (isScriptRunning) {
-			Thread.currentThread().interrupt();
+			deadend = true;
 			return false;
 		}
-
+		
 		try {
 			if (canScripts) L.close();
-			Thread.currentThread().interrupt();
-			send("Socket closed");
-			wait(3000);
+			
+			wait(250);
 			activity.finish();
 		} catch (Exception e) {
 			send("Ошибка закрытия." + e.toString());

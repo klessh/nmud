@@ -125,7 +125,7 @@ public class Importer {
 		File workfile = new File(core.db.datapath, "/maps/test.txt");
 
 		if (!workfile.exists()) {
-			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла с акками");
+			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла карт");
 			return null;
 		}
 
@@ -135,12 +135,14 @@ public class Importer {
 			BufferedReader bufferedreader = new BufferedReader(reader);
 
 			String buffer = "";
-			StringTokenizer token;
+			StringTokenizer token = new StringTokenizer("");
 			ArrayList<WorldObject> objs = new ArrayList<WorldObject>();
-
+			
 			while ((buffer = bufferedreader.readLine()) != null) {
 				if (buffer.contains("type-room")) buffer = buffer.replace("type-room|", "");
+				
 				token = new StringTokenizer(buffer, "|");
+				
 				if (token.countTokens() == 6) {
 					try {
 						WorldObject obj = new WorldObject();
@@ -155,14 +157,15 @@ public class Importer {
 						core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: ошибка импорта объекта");
 					}
 				} else {
-					core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: Malformed line: " + buffer.substring(30) + "...");
+					core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: Malformed line: " + buffer.substring(buffer.length() > 30 ? 30 : buffer.length()));
 				}
 			}
 
 			bufferedreader.close();
 			return objs;
 		} catch (Exception e) {
-			core.send("Importer: ошибка импорта акков" + e);
+			core.send("Importer: ошибка импорта объектов:\n" + e.toString());
+			e.printStackTrace();
 			return null;
 		}
 	}
