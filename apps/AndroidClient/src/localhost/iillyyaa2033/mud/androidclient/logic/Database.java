@@ -1,9 +1,9 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
 import android.preference.PreferenceManager;
+import com.iillyyaa2033.nmud.abstractserver.model.ChunkManager;
+import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
 import java.util.ArrayList;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.ChunkManager;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 
 public class Database{
 	

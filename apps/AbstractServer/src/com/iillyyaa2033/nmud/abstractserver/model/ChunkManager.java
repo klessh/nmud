@@ -1,4 +1,4 @@
-package localhost.iillyyaa2033.mud.androidclient.logic.model;
+package com.iillyyaa2033.nmud.abstractserver.model;
 
 public class ChunkManager extends Thread{
 	

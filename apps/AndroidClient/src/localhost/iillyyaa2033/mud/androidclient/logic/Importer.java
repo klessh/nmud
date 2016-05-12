@@ -1,6 +1,7 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
 import android.content.Context;
+import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +15,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 

@@ -1,6 +1,8 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
 import android.preference.PreferenceManager;
+import com.iillyyaa2033.nmud.abstractserver.model.DescribedWorldObject;
+import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,8 +11,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.DescribedWorldObject;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
 
