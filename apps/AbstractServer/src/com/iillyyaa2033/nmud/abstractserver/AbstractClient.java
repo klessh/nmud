@@ -2,9 +2,9 @@ package com.iillyyaa2033.nmud.abstractserver;
 
 import org.keplerproject.luajava.LuaException;
 
-public abstract class AbstractClient extends Thread {
+public interface AbstractClient{
 	
-	abstract void comms(String message);
+	public abstract void comms(String message);
 	
 	public abstract String read();
 	

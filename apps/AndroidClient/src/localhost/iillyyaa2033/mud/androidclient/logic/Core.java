@@ -1,6 +1,7 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
 import android.preference.PreferenceManager;
+import com.iillyyaa2033.nmud.abstractserver.AbstractCore;
 import com.iillyyaa2033.nmud.abstractserver.model.DescribedWorldObject;
 import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
 import java.io.File;
@@ -13,8 +14,22 @@ import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
+import com.iillyyaa2033.nmud.abstractserver.AbstractClient;
+import org.keplerproject.luajava.LuaException;
 
-public class Core extends Thread {
+public class Core extends Thread implements AbstractCore, AbstractClient {
+
+	@Override
+	public void initLua() throws LuaException {
+		// TODO: Implement this method
+	}
+	
+
+	@Override
+	public void addScript(String name, String scripts) {
+		// TODO: Implement this method
+	}
+	
 
 	public static final int LEVEL_CLIENT = 0, 
 							LEVEL_DEBUG = 1, 
@@ -98,7 +113,8 @@ public class Core extends Thread {
 	public void requestUpdate() {
 		updRequested = true;
 	}
-
+	
+	@Override
 	public synchronized void update() {
 		debug = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG", true);
 		debug_importer = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("FLAG_DEBUG_IMPORTER", false);
@@ -113,6 +129,14 @@ public class Core extends Thread {
 			importer.unzip(activity.getCacheDir() + "/content-base.zip", db.datapath);
 		}
 
+		updateScripts();
+
+		dict.update();
+		updRequested = false;
+	}
+
+	@Override
+	public void updateScripts() {
 		scriptsmap = importer.importChatScripts();
 		scriptsnames = new ArrayList<String>();
 
@@ -124,16 +148,25 @@ public class Core extends Thread {
 
 			Collections.sort(scriptsnames);
 		}
-
-		dict.update();
-		updRequested = false;
+	}
+	
+	@Override
+	public void save() {
+		// TODO: Implement this method
 	}
 
-
+	@Override
+	public void saveScripts() {
+		// TODO: Implement this method
+	}
+	
+	
+	
 	private String[] haventcmd = {"Команды не существует.","Нет такой команды.","Похоже, такой команды нет.",
 		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Ничего не случилось","Команда отсутствует."};
 
-	private synchronized void comms(String message) {
+	@Override
+	public void comms(String message) {
 		message = message.toLowerCase();
 
 		StringTokenizer token = new StringTokenizer(message);
@@ -286,10 +319,12 @@ public class Core extends Thread {
 			});
 	}
 
+	@Override
 	public String doFunction(String script, String func) {
 		return doFunction(script, func, null);
 	}
 
+	@Override
 	public String doFunction(String scriptName, String funcName, String[] args) {
 		long time_start = System.currentTimeMillis();
 		
@@ -616,6 +651,7 @@ public class Core extends Thread {
 		return "";
 	}
 	
+	@Override
 	public String listScripts() {
 		StringBuilder sb = new StringBuilder();
 
@@ -626,6 +662,7 @@ public class Core extends Thread {
 		return sb.toString();
 	}
 
+	@Override
 	public synchronized boolean close() {
 		
 		if (isScriptRunning) {
