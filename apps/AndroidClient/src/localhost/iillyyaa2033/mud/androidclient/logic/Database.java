@@ -4,8 +4,9 @@ import android.preference.PreferenceManager;
 import com.iillyyaa2033.nmud.abstractserver.model.ChunkManager;
 import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
 import java.util.ArrayList;
+import com.iillyyaa2033.nmud.abstractserver.AbstractDatabase;
 
-public class Database{
+public class Database implements AbstractDatabase {
 	
 	private Core c;
 	public ArrayList<WorldObject> objects;
@@ -23,6 +24,21 @@ public class Database{
 	
 	public void update(){
 		objects = c.importer.importObjects();
+	}
+	
+	@Override
+	public void addUser(String name, String password) {
+		// TODO: Implement this method
+	}
+
+	@Override
+	public void updateUsers() {
+		// TODO: Implement this method
+	}
+
+	@Override
+	public void saveUsers() {
+		// TODO: Implement this method
 	}
 	
 	public int getChunkId(int x, int y){

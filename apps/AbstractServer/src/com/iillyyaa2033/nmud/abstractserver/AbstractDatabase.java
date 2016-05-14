@@ -1,6 +1,6 @@
 package com.iillyyaa2033.nmud.abstractserver;
 
-public abstract class AbstractDatabase {
+public interface AbstractDatabase {
 
 	public abstract void addUser(String name, String password);
 	

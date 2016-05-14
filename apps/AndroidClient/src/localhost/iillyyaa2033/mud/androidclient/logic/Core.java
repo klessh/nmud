@@ -1,6 +1,7 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
 import android.preference.PreferenceManager;
+import com.iillyyaa2033.nmud.abstractserver.AbstractClient;
 import com.iillyyaa2033.nmud.abstractserver.AbstractCore;
 import com.iillyyaa2033.nmud.abstractserver.model.DescribedWorldObject;
 import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
@@ -12,24 +13,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
+import org.keplerproject.luajava.LuaException;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
-import com.iillyyaa2033.nmud.abstractserver.AbstractClient;
-import org.keplerproject.luajava.LuaException;
 
 public class Core extends Thread implements AbstractCore, AbstractClient {
-
-	@Override
-	public void initLua() throws LuaException {
-		// TODO: Implement this method
-	}
-	
-
-	@Override
-	public void addScript(String name, String scripts) {
-		// TODO: Implement this method
-	}
-	
 
 	public static final int LEVEL_CLIENT = 0, 
 							LEVEL_DEBUG = 1, 
@@ -80,15 +68,8 @@ public class Core extends Thread implements AbstractCore, AbstractClient {
 			canScripts = false;
 		} else {
 			try{
-			L = LuaStateFactory.newLuaState();
-			L.openLibs();
-
-			L.pushJavaObject(Core.this);	
-			L.setGlobal("client");
-			L.pushJavaObject(Core.this);
-			L.setGlobal("server");
-
-			canScripts = true;
+				initLua();
+				canScripts = true;
 			} catch(Throwable t){
 				canScripts = false;
 				send(t.toString());
@@ -151,6 +132,11 @@ public class Core extends Thread implements AbstractCore, AbstractClient {
 	}
 	
 	@Override
+	public void addScript(String name, String script) {
+		scriptsmap.put(name,script);
+	}
+	
+	@Override
 	public void save() {
 		// TODO: Implement this method
 	}
@@ -160,7 +146,18 @@ public class Core extends Thread implements AbstractCore, AbstractClient {
 		// TODO: Implement this method
 	}
 	
-	
+	@Override
+	public void initLua() throws LuaException {
+		L = LuaStateFactory.newLuaState();
+		L.openLibs();
+
+		L.pushJavaObject(Core.this);	
+		L.setGlobal("client");
+		L.pushJavaObject(Core.this);
+		L.setGlobal("server");
+		L.pushJavaObject(db);
+		L.setGlobal("database");
+	}
 	
 	private String[] haventcmd = {"Команды не существует.","Нет такой команды.","Похоже, такой команды нет.",
 		"Во славу Ктулху!", "Протеряли все полимеры.","Команду съели.","Ничего не случилось","Команда отсутствует."};
