@@ -2,11 +2,12 @@ package com.iillyyaa2033.nmud.abstractserver.model;
 
 public class WorldObject {
 
+	public String type;
 	public int id;
 	public int x,y,x2,y2;
 	public String name;
 	
-	public WorldObject(){;
+	public WorldObject(){
 		id = -1;
 	}
 	

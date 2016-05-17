@@ -122,7 +122,7 @@ public class Importer {
 	}
 
 	public ArrayList<WorldObject> importObjects() {
-		File workfile = new File(core.db.datapath, "/maps/test.txt");
+		File workfile = new File(core.db.datapath, "/maps/sample.txt");
 
 		if (!workfile.exists()) {
 			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла карт");
@@ -137,16 +137,18 @@ public class Importer {
 			String buffer = "";
 			StringTokenizer token = new StringTokenizer("");
 			ArrayList<WorldObject> objs = new ArrayList<WorldObject>();
+			int i = 0;
 			
 			while ((buffer = bufferedreader.readLine()) != null) {
 				if (buffer.contains("type-room")) buffer = buffer.replace("type-room|", "");
 				
-				token = new StringTokenizer(buffer, "|");
-				
+				token = new StringTokenizer(buffer, "|;");
+			// todo: fix tokens	
 				if (token.countTokens() == 6) {
 					try {
 						WorldObject obj = new WorldObject();
-						obj.id = new Integer(token.nextToken());
+						obj.id = ++i;
+						obj.type = token.nextToken();
 						obj.x = new Integer(token.nextToken());
 						obj.y = new Integer(token.nextToken());
 						obj.x2 = new Integer(token.nextToken());
