@@ -2,163 +2,240 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Main{
-	
+public class Main {
+
 	static boolean debug_descr = true;
 	static ArrayList<WorldObject> objects;
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		objects = new ArrayList<WorldObject>();
-		objects.add(new WorldObject("room",1,1,18,18,"Кладовка"));
-		objects.add(new WorldObject("obj",5,5,6,6,"Столб"));
-		objects.add(new WorldObject("obj",7,7,9,9,"Коробка"));
-		objects.add(new WorldObject("obj",8,4,11,7,"Колодец"));
-	//	System.out.println(getDescription(0,0,0)+"\n\n");
-		System.out.println(altDescription(10,10,0));
+		objects.add(new WorldObject("room", 1, 1, 18, 18, "РљР»Р°РґРѕРІРєР°"));
+		objects.add(new WorldObject("obj", 5, 5, 6, 6, "РЎС‚РѕР»Р±", new Material("С‡РµСЂРЅС‹Р№","РґРµСЂРµРІРѕ")));
+		objects.add(new WorldObject("obj", 7, 7, 9, 9, "РљРѕСЂРѕР±РєР°", new Material("СЃРµСЂР°СЏ","РєР°СЂС‚РѕРЅ")));
+		objects.add(new WorldObject("obj", 8, 4, 11, 7, "РљРѕР»РѕРґРµС†", new Material("РїСЂРѕР·СЂР°С‡РЅС‹Р№","СЃС‚РµРєР»Рѕ")));
+
+		System.out.println(altDescription(10, 10, 0));
 	}
-	
+
 	static ArrayList<DescribedObject> objs;
 	static ArrayList<DescribedZone> zones;
 	static HashMap<Integer, Integer[]> links;
-	
-	static String altDescription(int x0, int y0, int deg){
+
+	static String altDescription(int x0, int y0, int deg) {
 		objs = new ArrayList<DescribedObject>();
 		zones = new ArrayList<DescribedZone>();
-		links = new HashMap<Integer,Integer[]>();	// связь между id комнаты и id объектов в ней
-		
-		for(int i = 0; i < objects.size(); i++){
+		links = new HashMap<Integer,Integer[]>();	// СЃРІСЏР·СЊ РјРµР¶РґСѓ id РєРѕРјРЅР°С‚С‹ Рё id РѕР±СЉРµРєС‚РѕРІ РІ РЅРµР№
+
+		for (int i = 0; i < objects.size(); i++) {
 			WorldObject obj = objects.get(i);
-			
-			if(obj.type == null){
-				System.out.println("Object haven't type "+obj.name);
-			}else if (obj.type.toLowerCase().equals("zone") || obj.type.toLowerCase().equals("room")){
-				DescribedZone object = new DescribedZone(i,obj);
-				object.area = getDistance(object.x,object.y,object.x,object.y2) * getDistance(object.x,object.y,object.x2,object.y);
+
+			if (obj.type == null) {
+				log("Object haven't type " + obj.name);
+			} else if (obj.type.toLowerCase().equals("zone") || obj.type.toLowerCase().equals("room")) {
+				DescribedZone object = new DescribedZone(i, obj);
+				object.area = getDistance(object.x, object.y, object.x, object.y2) * getDistance(object.x, object.y, object.x2, object.y);
 				zones.add(object);
-				System.out.println("Added zone "+i);
+				log("Added zone " + i + " " + object.name + " " + object.x + ":" + object.y + " " + object.x2 + ":" + object.y2);
 			} else {
-				DescribedObject object = new DescribedObject(i,obj);
-				object.area = getDistance(object.x,object.y,object.x,object.y2) * getDistance(object.x,object.y,object.x2,object.y);
+				DescribedObject object = new DescribedObject(i, obj);
+				object.area = getDistance(object.x, object.y, object.x, object.y2) * getDistance(object.x, object.y, object.x2, object.y);
 				objs.add(object);
-				System.out.println("Added object "+i);
+				log("Added object " + i + " " + object.name + " " + object.x + ":" + object.y + " " + object.x2 + ":" + object.y2);
 			}
 		}
-		
-		// заполняем связи зона - ее элементы
-		for(DescribedObject obj : objs){
-			for(DescribedZone zone : zones){
-				if(obj.x >= zone.x && obj.y >= zone.y && obj.x2 <= zone.x2 && obj.y2 <= zone.y2){
+
+		// Р·Р°РїРѕР»РЅСЏРµРј СЃРІСЏР·Рё Р·РѕРЅР° - РµРµ СЌР»РµРјРµРЅС‚С‹
+		for (DescribedObject obj : objs) {
+			for (DescribedZone zone : zones) {
+				if (obj.x >= zone.x && obj.y >= zone.y && obj.x2 <= zone.x2 && obj.y2 <= zone.y2) {
 					Integer[] ids;
-					
-					if(links.get(zone.id) == null) ids = new Integer[1];
-					else ids = Arrays.copyOf(links.get(zone.id),links.get(zone.id).length+1);
-					
-					ids[ids.length-1] = obj.id;
-					links.put(zone.id,ids);
-					System.out.println("Added link "+zone.id+"->"+obj.id);
+
+					if (links.get(zone.id) == null) ids = new Integer[1];
+					else ids = Arrays.copyOf(links.get(zone.id), links.get(zone.id).length + 1);
+
+					ids[ids.length - 1] = obj.id;
+					links.put(zone.id, ids);
+					log("Added link " + zone.id + "->" + obj.id);
 					break;
 				}
 			}
 		}
-		
+
 		String result = "\n\n";
 		result += "YOU_ARE_IN ";
-		
+
 		int whereAmI;
-		
-		try{
-			whereAmI = getZoneOf(x0,y0);
+
+		try {
+			whereAmI = getZoneOf(x0, y0);
+			result += getTextualKeyKode(getPositionCode(x0,y0,zones.get(whereAmI)));
+			result += " OF ";
 			result += zones.get(whereAmI).name;
-		} catch(MudException e){
+		} catch (MudException e) {
 			result += "UNKNOWN_ZONE";
 			return result;
 		}
 		result += ". THERE_ARE ";
-		
+
 		String[] names = new String[links.get(whereAmI).length];
 		int i = 0;
-		for(int j : links.get(whereAmI)){
-			names[i] = objs.get(j-1).name;
+		for (int j : links.get(whereAmI)) {
+			names[i] = objs.get(j - 1).name;
 			i++;
 		}
 		result += describeArray(names, true) + ".";
-		
-		
-		for(int objId : links.get(whereAmI)){
+
+
+		for (int objId : links.get(whereAmI)) {
 			result += "\n\t";
-			result += describeObjectInZone(objId-1, whereAmI);
+			result += describeObjectInZone(objId - 1, whereAmI);
+			result += ". ";
+			result += describeObject(objId - 1);
+			result += ". ";
 		}
-		
+
 		return result;
 	}
-	
-	// перебираем все описанные зоны, чтобы получить ту, в которой сейчас игрок
-	static int getZoneOf(int x, int y) throws MudException{
-		// TODO: рассчеты для многоугольных зон
+
+	// РїРµСЂРµР±РёСЂР°РµРј РІСЃРµ РѕРїРёСЃР°РЅРЅС‹Рµ Р·РѕРЅС‹, С‡С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ С‚Сѓ, РІ РєРѕС‚РѕСЂРѕР№ СЃРµР№С‡Р°СЃ РёРіСЂРѕРє
+	static int getZoneOf(int x, int y) throws MudException {
+		// TODO: СЂР°СЃСЃС‡РµС‚С‹ РґР»СЏ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅС‹С… Р·РѕРЅ
 		int id = -1, deepness = -1;
-		
-		for(DescribedZone zone : zones){
-			if(zone.x < x && zone.x2 > x && zone.y < y && zone.y2 > y && zone.deepness > deepness){
+
+		for (DescribedZone zone : zones) {
+			if (zone.x < x && zone.x2 > x && zone.y < y && zone.y2 > y && zone.deepness > deepness) {
 				id = zone.id;
 			}
 		}
-		
-		if(id == -1) throw new MudException();
+
+		if (id == -1) throw new MudException();
 		return id;
 	}
-	
-	static String describeArray(Object[] list, boolean toLowerCase){
+
+	static String describeArray(Object[] list, boolean toLowerCase) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append(toLowerCase ? list[0].toString().toLowerCase() : list[0].toString());
-		
-		for(int i = 1; i < list.length - 1; i++){
+
+		for (int i = 1; i < list.length - 1; i++) {
 			sb.append(", ");
 			sb.append(toLowerCase ? list[i].toString().toLowerCase() : list[i].toString());
 		}
-		
+
 		sb.append(" AND ");
-		sb.append(toLowerCase ? list[list.length-1].toString().toLowerCase() : list[list.length-1].toString());
+		sb.append(toLowerCase ? list[list.length - 1].toString().toLowerCase() : list[list.length - 1].toString());
 		return sb.toString();
 	}
-	
-	static <T> String describeArrayList(ArrayList<T> list){
-		StringBuilder sb = new StringBuilder();
-		
-		for(int i = 0; i < list.size() - 1; i++){
-			sb.append(list.get(i).toString());
-		}
-		sb.append(" AND ");
-		sb.append(list.get(list.size()-1));
-		sb.append(".");
-		return sb.toString();
-	}
-	
-	static String describeObject(int index){
+
+	static String describeObject(int index) {
 		String result = "";
 		DescribedObject object = objs.get(index);
 		result += object.name;
+		
+		try{
+			result += " IS " + object.material.color;
+			result += " AND";
+		} catch (NullPointerException e){
+			log("describeObject(), NPE");
+		}
+		
+		try{
+			result += " MADE_FROM " + object.material.madeFrom;
+		} catch (NullPointerException e){
+			log("describeObject(), NPE");
+		}
 		return result;
 	}
-	
-	static String describeZone(int index){
+
+	static String describeZone(int index) {
 		return "";
 	}
-	
-	static String describeObjectInZone(int objId, int zoneId){
+
+	static String describeObjectInZone(int objId, int zoneId) {
+		// todo: РїСЂРёРЅРёРјР°С‚СЊ РЅР° РІС…РѕРґ РїРѕСЂСЏРґРѕРє СЃР»РѕРІ Рё РїСЂРѕС‡РёР№ РєР°СЃС‚РѕРјР°Р№Р·
 		DescribedObject object = objs.get(objId);
 		DescribedZone zone = zones.get(zoneId);
-		
+
+
 		String result = "";
 		result += object.name;
-		result += " LOCATED_IN ";
-		
+		result += " LOCATED_NEAR ";
+		result += getTextualKeyKode(getPositionCode(object, zone));
+
+		return result;
+	}
+
+	static int getPositionCode(int x, int y, DescribedZone zone) {
+		int stepX = getDistance(zone.x, zone.y, zone.x2, zone.y) / 5;
+		int stepY = getDistance(zone.x, zone.y, zone.x, zone.y2) / 5;
+
+		int result = 0;
+		if (x < zone.x + stepX) result = 1000;
+		else if (x > zone.x + stepX * 2) result = 3000;
+		else result = 2000;
+
+		if (y < zone.y + stepY) result += 10;
+		else if (y > zone.y + stepY * 2) result += 30;
+		else result += 20;
 		return result;
 	}
 	
-	static StringBuilder recursiveDescr(StringBuilder sb, HashMap<Integer,DescribedObject> objsm, int[] pie, int deep, DescribedObject starter){
-		if(deep > 10) return sb;
-		if(!starter.included) return sb;
+	static int getPositionCode(DescribedObject object, DescribedZone zone) {
+		int stepX = getDistance(zone.x, zone.y, zone.x2, zone.y) / 5;
+		int stepY = getDistance(zone.x, zone.y, zone.x, zone.y2) / 5;
+
+		int result = 0;
+		if (object.xc < zone.x + stepX) result = 1000;
+		else if (object.xc > zone.x + stepX * 2) result = 3000;
+		else result = 2000;
+
+		if (object.yc < zone.y + stepY) result += 10;
+		else if (object.yc > zone.y + stepY * 2) result += 30;
+		else result += 20;
+		return result;
+	}
+
+	static String getTextualKeyKode(int code){
+		String result = "";
+		// TODO: С‚СѓС‚ РЅРµРїСЂР°РІРёР»СЊРЅРѕ. РЁСѓСЂРёРє, СЌС‚Рѕ РЅРµ РЅР°С€ РјРµС‚РѕРґ!
+		// РљР°Рє РїСЂР°РІРёР»СЊРЅРѕ - РїРѕРєР° РЅРµ Р·РЅР°СЋ.
+		switch (code) {
+			case 1010:
+				result += "DOWN_LEFT_CORNER";
+				break;
+			case 1020:
+				result += "DOWN_WALL";
+				break;
+			case 1030:
+				result += "DOWN_RIGHT_CORNER";
+				break;
+			case 2010:
+				result += "LEFT_WALL";
+				break;
+			case 2020:
+				result += "CENTER";
+				break;
+			case 2030:
+				result += "RIGHT_WALL";
+				break;
+			case 3010:
+				result += "TOP_LEFT_CORNER";
+				break;
+			case 3020:
+				result += "TOP_WALL";
+				break;
+			case 3030:
+				result += "TOP_RIGHT_CORNER";
+				break;
+			default:
+				result += "ERROR";
+		}
+		return result;
+	}
+	
+	static StringBuilder recursiveDescr(StringBuilder sb, HashMap<Integer,DescribedObject> objsm, int[] pie, int deep, DescribedObject starter) {
+		if (deep > 10) return sb;
+		if (!starter.included) return sb;
 		deep++;
 
 		DescribedObject left2 = objsm.get(starter.obj_left2);
@@ -166,24 +243,24 @@ public class Main{
 		DescribedObject right = objsm.get(starter.obj_right);
 		DescribedObject right2 = objsm.get(starter.obj_right2);
 
-		sb.append(left.included ? "Слева от "+starter.name.toLowerCase()+"а находится "+left.name.toLowerCase()+"; " : "");
-		sb.append(right.included ? "Справа от "+starter.name.toLowerCase()+"а находится "+right.name.toLowerCase()+"; " : "");
+		sb.append(left.included ? "РЎР»РµРІР° РѕС‚ " + starter.name.toLowerCase() + "Р° РЅР°С…РѕРґРёС‚СЃСЏ " + left.name.toLowerCase() + "; " : "");
+		sb.append(right.included ? "РЎРїСЂР°РІР° РѕС‚ " + starter.name.toLowerCase() + "Р° РЅР°С…РѕРґРёС‚СЃСЏ " + right.name.toLowerCase() + "; " : "");
 		starter.included = false;
 
-		if(left.included) recursiveDescr(sb,objsm,pie,deep,left);
-		if(right.included) recursiveDescr(sb,objsm,pie,deep,right);
+		if (left.included) recursiveDescr(sb, objsm, pie, deep, left);
+		if (right.included) recursiveDescr(sb, objsm, pie, deep, right);
 
 		return sb;
 	}
 
 	static private int getDistance(int x1, int y1, int x2, int y2) {
-		// расстояние между точками x и у.
+		// СЂР°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ С‚РѕС‡РєР°РјРё x Рё Сѓ.
 		double dist = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		return new Double(dist).intValue();
 	}
 
 	static private int getDegree(int x_B, int y_B, int x_C, int y_C) {
-		// треуг ABC, где А - север, В - центр, С - точка
+		// С‚СЂРµСѓРі ABC, РіРґРµ Рђ - СЃРµРІРµСЂ, Р’ - С†РµРЅС‚СЂ, РЎ - С‚РѕС‡РєР°
 		int x_A = x_B, y_A = y_B + 10;
 
 		double l_AB = Math.sqrt((x_B - x_A) * (x_B - x_A) + (y_B - y_A) * (y_B - y_A));
@@ -214,16 +291,16 @@ public class Main{
 		else if (waka(bl, fl, obj)) mark = 4;
 		else mark = 5;
 
-		String[] straight = {"Перед вами","Прямо перед вами"};
-		String[] right = {"Справа","Справа от вас","По правую руку"};
-		String[] left = {"Слева","Слева от вас"};
-		String[] back = {"Позади","Позади вас"};
-		String[] verb = {"виднеется","находится"};
+		String[] straight = {"РџРµСЂРµРґ РІР°РјРё","РџСЂСЏРјРѕ РїРµСЂРµРґ РІР°РјРё"};
+		String[] right = {"РЎРїСЂР°РІР°","РЎРїСЂР°РІР° РѕС‚ РІР°СЃ","РџРѕ РїСЂР°РІСѓСЋ СЂСѓРєСѓ"};
+		String[] left = {"РЎР»РµРІР°","РЎР»РµРІР° РѕС‚ РІР°СЃ"};
+		String[] back = {"РџРѕР·Р°РґРё","РџРѕР·Р°РґРё РІР°СЃ"};
+		String[] verb = {"РІРёРґРЅРµРµС‚СЃСЏ","РЅР°С…РѕРґРёС‚СЃСЏ"};
 
 		switch (mark) {
 			case 1:
 				sb.append(straight[(int)(Math.random() * (straight.length))]);
-				//	sb.append("Впереди ");
+				//	sb.append("Р’РїРµСЂРµРґРё ");
 				break;
 			case 2:
 				sb.append(right[(int)(Math.random() * (right.length))]);
@@ -236,7 +313,7 @@ public class Main{
 				break;
 			case 5:
 			default:
-				send(0, "Пофэйлили марку.");
+				send(0, "РџРѕС„СЌР№Р»РёР»Рё РјР°СЂРєСѓ.");
 		}
 		sb.append(" ").append(verb[(int) (Math.random() * verb.length)]).append(" ").append(obj.name.toLowerCase());
 
@@ -255,93 +332,15 @@ public class Main{
 
 		return false;
 	}
-	
-	void send(int i, String s){
+
+	void send(int i, String s) {
 		System.out.println(s);
 	}
-}
-
-class WorldObject {
-
-	public String type;
-	public int id;
-	public int x,y,x2,y2;
-	public String name;
-
-	public WorldObject(){
-		id = -1;
-	}
-
-	public WorldObject(int x, int y, int x2, int y2, String name){
-		id = -1;
-		this.x = x;
-		this.y = y;
-		this.x2 = x2;
-		this.y2 = y2;
-		this.name = name;
-	}
 	
-	public WorldObject(String type, int x, int y, int x2, int y2, String name){
-		id = -1;
-		this.type = type;
-		this.x = x;
-		this.y = y;
-		this.x2 = x2;
-		this.y2 = y2;
-		this.name = name;
-	}
-
-	public int getId(){
-		return id;
-	}
-
-	public void setId(int id){
-		this.id = id;
-	}
-
-	public void replaceUsingCenter(int x, int y){
-		int wx = (x2 - this.x)/2;
-		int wy = (y2 -this.y)/2;
-		this.x = x - wx;
-		this.y = y - wy;
-		this.x2 = x + wx;
-		this.y2 = y + wy;
+	static void log(String message){
+		if(debug_descr) System.out.println("# " + message);
 	}
 }
 
-class DescribedObject extends WorldObject{
-	// TODO: многоугольник
-	public int id;
-	public int xc, yc, distance, area;
-	public int deg_min, deg_max, deg_center;
-	public int priority;
-	public int obj_left, obj_left2, obj_right, obj_right2;
-	public boolean included = false, fullview = true;
+class MudException extends Exception {}
 
-	public DescribedObject(int id, WorldObject obj){
-		this.id = id;
-		super.name = obj.name;
-		super.x = obj.x;
-		super.y=obj.y;
-		super.x2=obj.x2;
-		super.y2=obj.y2;
-	}
-}
-
-class DescribedZone extends WorldObject{
-	// TODO: многоугольник
-	public int id;
-	public int xc, yc, distance, area;
-	public int deepness;	// глубина вложенности зоны
-	
-	public DescribedZone(int id, WorldObject parent){
-		this.id  =  id;
-		super.name = parent.name;
-		super.x  =  parent.x;
-		super.y  =  parent.y;
-		super.x2 = parent.x2;
-		super.y2 = parent.y2;
-	}
-}
-
-class MudException extends Exception{}
