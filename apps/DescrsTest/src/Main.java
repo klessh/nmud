@@ -6,13 +6,16 @@ public class Main {
 
 	static boolean debug_descr = true;
 	static ArrayList<WorldObject> objects;
-
+	static Dictionary dict;
+	
 	public static void main(String[] args) {
+		dict = new Dictionary();
+		
 		objects = new ArrayList<WorldObject>();
-		objects.add(new WorldObject("room", 1, 1, 18, 18, "Кладовка"));
-		objects.add(new WorldObject("obj", 5, 5, 6, 6, "Столб", new Material("черный","дерево")));
-		objects.add(new WorldObject("obj", 7, 7, 9, 9, "Коробка", new Material("серая","картон")));
-		objects.add(new WorldObject("obj", 8, 4, 11, 7, "Колодец", new Material("прозрачный","стекло")));
+		objects.add(new WorldObject("room", 1, 1, 18, 18, 0));
+		objects.add(new WorldObject("obj", 5, 5, 6, 6, 1, new Material("черный","дерево")));
+		objects.add(new WorldObject("obj", 7, 7, 9, 9, 2, new Material("серая","картон")));
+		objects.add(new WorldObject("obj", 8, 4, 11, 7, 3, new Material("прозрачный","стекло")));
 
 		System.out.println(altDescription(10, 10, 0));
 	}
@@ -80,7 +83,7 @@ public class Main {
 		String[] names = new String[links.get(whereAmI).length];
 		int i = 0;
 		for (int j : links.get(whereAmI)) {
-			names[i] = objs.get(j - 1).name;
+			names[i] = dict.getNounForm(objs.get(j - 1).name,0);
 			i++;
 		}
 		result += describeArray(names, true) + ".";
@@ -97,6 +100,27 @@ public class Main {
 		return result;
 	}
 
+	static String toNativeLang(int noun, int verb){
+		return "";
+	}
+	
+	static String toNativeLang(Integer noun, Integer[] nounAttrs, Integer verb, Integer[] verbAttrs){
+		int nounType = noun/10;	// часть речи подлежащего
+		int nounGen; // род подлежащего
+		int nounCou; // число подлежащего
+		String formedNoun;	// просклоненное подлежащее
+		
+		if(nounType == 0){
+			nounCou = (int) noun/100;
+			formedNoun = dict.getNounForm((int)noun/1000, 0);
+		} else{
+			nounCou = (int) noun/100;
+			formedNoun = dict.getNounForm((int)noun/1000, 0);
+		}
+		
+		return formedNoun;
+	}
+	
 	// перебираем все описанные зоны, чтобы получить ту, в которой сейчас игрок
 	static int getZoneOf(int x, int y) throws MudException {
 		// TODO: рассчеты для многоугольных зон
@@ -243,8 +267,8 @@ public class Main {
 		DescribedObject right = objsm.get(starter.obj_right);
 		DescribedObject right2 = objsm.get(starter.obj_right2);
 
-		sb.append(left.included ? "Слева от " + starter.name.toLowerCase() + "а находится " + left.name.toLowerCase() + "; " : "");
-		sb.append(right.included ? "Справа от " + starter.name.toLowerCase() + "а находится " + right.name.toLowerCase() + "; " : "");
+	//	sb.append(left.included ? "Слева от " + starter.name.toLowerCase() + "а находится " + left.name.toLowerCase() + "; " : "");
+	//	sb.append(right.included ? "Справа от " + starter.name.toLowerCase() + "а находится " + right.name.toLowerCase() + "; " : "");
 		starter.included = false;
 
 		if (left.included) recursiveDescr(sb, objsm, pie, deep, left);
@@ -315,7 +339,7 @@ public class Main {
 			default:
 				send(0, "Пофэйлили марку.");
 		}
-		sb.append(" ").append(verb[(int) (Math.random() * verb.length)]).append(" ").append(obj.name.toLowerCase());
+	//	sb.append(" ").append(verb[(int) (Math.random() * verb.length)]).append(" ").append(obj.name.toLowerCase());
 
 		return sb.toString();
 	}

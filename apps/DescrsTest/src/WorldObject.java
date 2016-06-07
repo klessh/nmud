@@ -3,14 +3,14 @@ public class WorldObject {
 	public String type;
 	public int id;
 	public int x,y,x2,y2;
-	public String name;
+	public int name;
 	public Material material;
 	
 	public WorldObject(){
 		id = -1;
 	}
 
-	public WorldObject(int x, int y, int x2, int y2, String name){
+	public WorldObject(int x, int y, int x2, int y2, int name){
 		id = -1;
 		this.x = x;
 		this.y = y;
@@ -19,7 +19,7 @@ public class WorldObject {
 		this.name = name;
 	}
 
-	public WorldObject(String type, int x, int y, int x2, int y2, String name){
+	public WorldObject(String type, int x, int y, int x2, int y2, int name){
 		id = -1;
 		this.type = type;
 		this.x = x;
@@ -29,7 +29,7 @@ public class WorldObject {
 		this.name = name;
 	}
 	
-	public WorldObject(String type, int x, int y, int x2, int y2, String name, Material mat){
+	public WorldObject(String type, int x, int y, int x2, int y2, int name, Material mat){
 		id = -1;
 		this.type = type;
 		this.x = x;
