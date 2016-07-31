@@ -2,22 +2,22 @@ package localhost.iillyyaa2033.mud.androidclient.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import localhost.iillyyaa2033.mud.androidclient.R;
-import localhost.iillyyaa2033.mud.androidclient.logic.Core;
-import android.preference.PreferenceManager;
-import android.content.SharedPreferences;
-import android.os.Environment;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View.OnLongClickListener;
+import localhost.iillyyaa2033.mud.androidclient.clientserver.LocalClient;
+import localhost.iillyyaa2033.mud.androidclient.clientserver.Server;
+import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 
 public class MainActivity extends Activity {
 
@@ -27,7 +27,8 @@ public class MainActivity extends Activity {
 
 	ArrayAdapter<String> adapter;
 
-	Core core;
+	Server server;
+	LocalClient client;
 	public Handler handler;
 
     @Override
@@ -40,6 +41,9 @@ public class MainActivity extends Activity {
 		if(prefs.getString("DATAPATH","").equals(""))
 			prefs.edit().remove("DATAPATH").putString("DATAPATH",Environment.getExternalStorageDirectory()+"/Download/nMud/").apply();
 		
+		GlobalValues.datapath = PreferenceManager.getDefaultSharedPreferences(this).getString("DATAPATH","");
+		
+			
 		list = (ListView) findViewById(R.id.main_ListView);
   		textfield = (EditText) findViewById(R.id.main_EditText);
 		button = (ImageButton) findViewById(R.id.main_Button);
@@ -57,7 +61,7 @@ public class MainActivity extends Activity {
 
 					if(command.equals("")) return;
 
-					core.cmdstr = (command);
+					client.cmdstr = (command);
 					textfield.setText("");
 				}
 			});
@@ -71,27 +75,23 @@ public class MainActivity extends Activity {
 				}
 			});
 			
+		GlobalValues.debug = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG",true);
+		GlobalValues.debug_importer = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_IMPORTER",false);
+		GlobalValues.debug_descr = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_DESCR",false);
+		GlobalValues.debug_scripts = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_SCRIPTS",false);
+		GlobalValues.debug_graph = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_GRAPH",false);	
+			
 		handler = new Handler();
-		core = new Core(this);
-		core.setDaemon(true);
-		core.start();
+		server = new Server();
+		client = new LocalClient(this);
+		client.setDaemon(true);
+		client.start();
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		core.saveReport();
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		switch(requestCode){
-			case 0:
-				core.requestUpdate();
-				break;
-		}
+//		client.saveReport();
 	}
 	
 	public void addItem(String text){

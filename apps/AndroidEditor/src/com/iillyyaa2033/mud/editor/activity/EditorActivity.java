@@ -12,15 +12,18 @@ import android.view.MenuItem;
 import com.iillyyaa2033.mud.editor.R;
 import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
 import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
+import com.iillyyaa2033.mud.editor.fragment.GraphVisFrag;
+import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import java.io.IOException;
-import java.io.File;
-import com.iillyyaa2033.mud.editor.logic.Database;
+import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 
 public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
 	
 	EditorMapFragment map;
+	UsercommandsFragment uce;
 	EditorDictionaryFragment dictionary;
+	GraphVisFrag grvf;
 	ActionBar actionBar;
 	
 	@Override
@@ -33,10 +36,14 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
 		map = new EditorMapFragment();
+		uce = new UsercommandsFragment();
+		grvf = new GraphVisFrag();
 		
 		actionBar.addTab(actionBar.newTab().setText("MapEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
+		actionBar.addTab(actionBar.newTab().setText("UserCommandsEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
+		actionBar.addTab(actionBar.newTab().setText("Graph Vis").setTabListener(this));
 		
 		dictionary = new EditorDictionaryFragment();
 	}
@@ -94,7 +101,13 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,map).commit();
 				break;
 			case 2:
+				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,uce).commit();
+				break;	
+			case 3:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,dictionary).commit();
+				break;
+			case 4:
+				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,grvf).commit();
 				break;
 			default:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map,new Fragment()).commit();

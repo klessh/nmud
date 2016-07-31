@@ -1,7 +1,6 @@
 package localhost.iillyyaa2033.mud.androidclient.logic;
 
 import android.content.Context;
-import com.iillyyaa2033.nmud.abstractserver.model.WorldObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,20 +14,23 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Dictionary;
+import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 
 public class Importer {
 
-	Core core;
+	UglyClient core;
 
-	public Importer(Core c) {
+	public Importer(UglyClient c) {
 		core = c;
 	}
 
 	public synchronized HashMap<String, String> importChatScripts() {
 
-		File work = new File(core.db.datapath, "scripts");
+		File work = new File(GlobalValues.datapath, "scripts");
 		if (!work.exists()) {
 			/**/ core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: путь скриптов не существует.\n\nПроверь правильность:" + work.getAbsolutePath());
 			return null;
@@ -85,7 +87,7 @@ public class Importer {
 
 	public HashMap<String, String> importUsers() {
 
-		File workfile = new File(core.db.datapath, "users.csv");
+		File workfile = new File(GlobalValues.datapath, "users.csv");
 		if (!workfile.exists()) {
 			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла с акками");
 			return null;
@@ -122,7 +124,7 @@ public class Importer {
 	}
 
 	public ArrayList<WorldObject> importObjects() {
-		File workfile = new File(core.db.datapath, "/maps/sample.txt");
+		File workfile = new File(GlobalValues.datapath, "/maps/sample.txt");
 
 		if (!workfile.exists()) {
 			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла карт");
@@ -153,7 +155,7 @@ public class Importer {
 						obj.y = new Integer(token.nextToken());
 						obj.x2 = new Integer(token.nextToken());
 						obj.y2 = new Integer(token.nextToken());
-						obj.name = token.nextToken();
+						obj.name = Dictionary.getWord(new Integer(token.nextToken()));
 						objs.add(obj);
 					} catch (Exception e) {
 						core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: ошибка импорта объекта");
@@ -182,7 +184,7 @@ public class Importer {
 
 	public HashMap<Integer, String[]> importWords(String endfilename) {
 
-		File workfile = new File(core.db.datapath, "/dict/" + endfilename + ".txt");
+		File workfile = new File(GlobalValues.datapath, "/dict/" + endfilename + ".txt");
 
 		if (!workfile.exists()) {
 			core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: нету файла с со словарем (" + workfile.getAbsolutePath() + ").");
@@ -256,7 +258,7 @@ public class Importer {
 
 		try {
 			ZipFile zipFile = new ZipFile(source);
-			zipFile.setFileNameCharset(core.db.encoding_contentarchive);
+			zipFile.setFileNameCharset(GlobalValues.encoding_contentarchive);
 			if (zipFile.isEncrypted()) {
 				core.send(core.LEVEL_DEBUG_IMPORTER, "Архив зашифрован. Распаковка отменена.");
 				return;
@@ -269,7 +271,7 @@ public class Importer {
 
 	void saveReport(ArrayList<String> report) {
 		long time = System.currentTimeMillis() / 1000;
-		File workfile = new File(core.db.datapath, "/report_" + time + ".txt");
+		File workfile = new File(GlobalValues.datapath, "/report_" + time + ".txt");
 		try {
 			workfile.createNewFile();
 			OutputStream stream = new FileOutputStream(workfile);

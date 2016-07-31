@@ -30,6 +30,12 @@
 			android:summary="Отладочные данные скриптов"   
 			android:defaultValue="false" />
 		
+		<CheckBoxPreference
+			android:key="FLAG_DEBUG_GRAPH" 
+			android:title="FLAG_DEBUG_GRAPH" 
+			android:summary="Отладочные данные графов"   
+			android:defaultValue="false" />
+		
 	</PreferenceScreen>
 	
 

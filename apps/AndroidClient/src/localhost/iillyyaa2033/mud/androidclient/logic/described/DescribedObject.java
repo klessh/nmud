@@ -1,6 +1,6 @@
-package localhost.iillyyaa2033.descrstest.described;
+package localhost.iillyyaa2033.mud.androidclient.logic.described;
 
-import localhost.iillyyaa2033.descrstest.model.WorldObject;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 
 public class DescribedObject extends WorldObject {
 	// TODO: многоугольник

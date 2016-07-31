@@ -1,17 +1,16 @@
-package localhost.iillyyaa2033.descrstest.graph;
+package localhost.iillyyaa2033.mud.androidclient.logic.graph;
 
-import localhost.iillyyaa2033.descrstest.dictionary.Dictionary;
-import localhost.iillyyaa2033.descrstest.dictionary.Word;
-import localhost.iillyyaa2033.descrstest.dictionary.words.Adjective;
-import java.util.ArrayList;
 import java.util.HashMap;
+import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Dictionary;
+import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Word;
+import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.Adjective;
 
 public class GraphUtils {
 
 	public static final int rootId = -1;
 	
 	// Соединяет графы за счет общих частей длиной в deepness
-	public static Graph appendAuto(int deepness, Graph... graphs) {	// TODO: нормальное имя функции
+/*	public static Graph appendAuto(int deepness, Graph... graphs) {	// TODO: нормальное имя функции
 		if (graphs.length < 1) return new Graph();
 		else if (graphs.length == 1) return graphs[0];
 		else if (graphs.length > 2) {
@@ -28,21 +27,21 @@ public class GraphUtils {
 			HashMap<Integer, Integer> gr1offset = new HashMap<Integer,Integer>();
 			HashMap<Integer, Integer> gr2offset = new HashMap<Integer,Integer>();
 
-			for (int i = 0; i < graphs[0].words.length; i++) {
-				if (!result.contains((graphs[0].words[i]))) {
-					int addedWordId = result.addWord(graphs[0].words[i]);
+			for (int i = 0; i < graphs[0].nodes.length; i++) {
+				if (!result.contains((graphs[0].nodes[i]))) {
+					int addedWordId = result.addNode(graphs[0].nodes[i]);
 					gr1offset.put(i, addedWordId);
 				} else if (!gr1offset.containsKey(i)) {
-					gr1offset.put(i, result.getId(graphs[0].words[i]));
+					gr1offset.put(i, result.getId(graphs[0].nodes[i]));
 				}
 			}
 
-			for (int i = 0; i < graphs[1].words.length; i++) {
-				if (!result.contains((graphs[1].words[i]))) {
-					int addedWordId = result.addWord(graphs[1].words[i]);
+			for (int i = 0; i < graphs[1].nodes.length; i++) {
+				if (!result.contains((graphs[1].nodes[i]))) {
+					int addedWordId = result.addNode(graphs[1].nodes[i]);
 					gr2offset.put(i, addedWordId);
 				} else if (!gr2offset.containsKey(i)) {
-					gr2offset.put(i, result.getId(graphs[1].words[i]));
+					gr2offset.put(i, result.getId(graphs[1].nodes[i]));
 				}
 			}
 
@@ -64,7 +63,7 @@ public class GraphUtils {
 
 			return result;
 		}
-	}
+	} */
 
 	// Возвращает true, если можно склеить данныe графы (т.е. если
 	// достаточно общей части)
@@ -81,7 +80,7 @@ public class GraphUtils {
 	// from - граф, с которым работаем
 	// id - id узла, с которым работаем
 	// ending - окончание, которое надо привязать к текущему узлу
-	public static String graphToText(Graph graph, int id, int requestedEnding) {
+	public static String graphToText(Graph<Word> graph, int id, int requestedEnding) {
 
 		String result = "";
 		

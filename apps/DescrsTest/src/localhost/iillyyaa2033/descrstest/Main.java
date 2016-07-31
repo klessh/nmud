@@ -15,26 +15,27 @@ import localhost.iillyyaa2033.descrstest.model.WorldObject;
 public class Main {
 
 	static boolean debug_descr = !true;
+	static boolean debug_graph = true;
 	static ArrayList<WorldObject> objects;
 	static Dictionary dict;
-	
+
 	static ArrayList<DescribedObject> objs;
 	static ArrayList<DescribedZone> zones;
 	static HashMap<Integer, Integer[]> links;
-	
+
 	static long start = 0, last = 0;
-	
+
 	public static void main(String[] args) {
 		start = last = System.currentTimeMillis();
-		
+
 		dict = new Dictionary();
-		
+
 		objects = new ArrayList<WorldObject>();
-		objects.add(new WorldObject("room", 1, 1, 18, 18, new Word(1,0,1)));
-		objects.add(new WorldObject("obj", 5, 5, 6, 6, new Word(1,0,2), new Material(new Word(Dictionary.CH_R.ADJECTIVE,5),"дерево")));
-		objects.add(new WorldObject("obj", 7, 7, 9, 9, new Word(1,0,3), new Material(new Word(Dictionary.CH_R.ADJECTIVE,6),"картон")));
-		objects.add(new WorldObject("obj", 16, 2, 17, 3, new Word(1,0,4), new Material(new Word(Dictionary.CH_R.ADJECTIVE,7),"стекло")));
-		
+		objects.add(new WorldObject("room", 1, 1, 18, 18, new Word(1, 1)));
+		objects.add(new WorldObject("obj", 5, 5, 6, 6, new Word(1, 2), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 5), "дерево")));
+		objects.add(new WorldObject("obj", 7, 7, 9, 9, new Word(1, 3), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 6), "картон")));
+		objects.add(new WorldObject("obj", 16, 2, 17, 3, new Word(1, 4), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 7), "стекло")));
+
 		objs = new ArrayList<DescribedObject>();
 		zones = new ArrayList<DescribedZone>();
 		links = new HashMap<Integer,Integer[]>();	// связь между id комнаты и id объектов в ней
@@ -69,10 +70,10 @@ public class Main {
 
 					ids[ids.length - 1] = obj.id;
 					links.put(zone.id, ids);
-					obj.dirCode = getDirectionCode(obj,zone);
-					
+					obj.dirCode = getDirectionCode(obj, zone);
+
 					log("Added link " + zone.id + "->" + obj.id + " with dircode " + obj.dirCode);
-					
+
 					break;
 				}
 			}
@@ -86,39 +87,72 @@ public class Main {
 
 	static void altDescription(int x0, int y0, int deg) {
 		// TODO: положение и описание объектов
-		
-		// Версия со сложением графов
+
 		ArrayList<Graph> graphs = new ArrayList<Graph>();
-		
-		for(DescribedObject obj : objs){
+
+		// Версия со сложением графов
+
+
+//	/*
+		for (DescribedObject obj : objs) {
 			Graph current = describePosition(obj);
-			
-	/*		for(int i = 0; i < graphs.size(); i++){
+
+			for (int i = 0; i < graphs.size(); i++) {
 				Graph other = graphs.get(i);
-				if(GraphUtils.canAppendAuto(3,current,other)){
-					GraphUtils.appendAuto(3,current,other);
-				} else { */
+				if (GraphUtils.canAppendAuto(3, current, other)) {
+					GraphUtils.appendAuto(3, current, other);
+				} else { 
 					graphs.add(current);
-/*				}
+				}
 				break;
 			}
-			
-			if(graphs.size()==0) graphs.add(current);	*/
+
+			if (graphs.size() == 0) graphs.add(current);
 		}
-			
-		for(Graph gr : graphs){
+
+//		 */
+
+		/*
+		 // Версия с выбором по dirCode
+		 HashMap<Integer, Integer[]> map = new HashMap<Integer, Integer[]>();
+		 for (int i = 0; i < objs.size(); i++) {
+		 DescribedObject bj = objs.get(i);
+		 Integer[] newList;
+		 if (map.containsKey(bj.dirCode)) {
+		 newList = Arrays.copyOf(map.get(bj.dirCode), map.get(bj.dirCode).length + 1);
+		 map.remove(bj.dirCode);
+		 } else {
+		 newList = new Integer[1];
+		 }
+		 newList[newList.length - 1] = i;
+		 map.put(bj.dirCode, newList);
+		 }
+
+		 Integer[] keys = new Integer[map.size()];
+		 keys = map.keySet().toArray(keys);
+
+		 for (int key : keys) {
+		 Graph subject = describeObjectsWithArrayOfIds(map.get(key));
+		 int areId = subject.add(0, new Word(Dictionary.CH_R.VERB, 9, 1));
+		 Graph place = getDirectionGraph(key,zones.get(0));
+		 subject.append(areId,GraphUtils.rootId,place);
+		 graphs.add(subject);
+		 }
+		 //		 */
+
+		for (Graph gr : graphs) {
 			System.out.println(GraphUtils.graphToText(gr));
 		}
-		
-		// Версия с выбором по dirCode
-		// HE PAБOTAET
-/*		ArrayList<Word>[] name = new ArrayList[9];
-		for (DescribedObject obj : objs) {
-			int i = obj.dirCode;
-		}	*/
+
+		if (debug_graph) {System.out.println("\n\n#### GRAPHS ####");
+			for (Graph gr : graphs) {
+				printGraph(gr);
+				System.out.println();
+			}
+		}
 	}
-	
-	
+
+
 	static int getZoneOf(int x, int y) throws MudException {
 		// TODO: рассчеты для многоугольных зон
 		int id = -1, deepness = -1;
@@ -132,24 +166,24 @@ public class Main {
 		if (id == -1) throw new MudException();
 		return id;
 	}
-	
+
 	//
 	//	ЦИФРЫ -> ГРАФ
 	//
-	static Graph describePosition(DescribedObject object){
-		Word ARE = new Word(Dictionary.CH_R.VERB, 9,1);
-		
+	static Graph describePosition(DescribedObject object) {
+		Word ARE = new Word(Dictionary.CH_R.VERB, 9, 1);
+
 		Graph result = new Graph();
-		int nameId= result.add(GraphUtils.rootId,object.name);		// starting with object's name
-		
+		int nameId= result.add(GraphUtils.rootId, object.name);		// starting with object's name
+
 		int areId = result.add(nameId, ARE); 		// obj's name -> are
-		result.add(nameId,object.material.color);	// obj's name -> color
-		Graph place = getDirectionGraph(object,zones.get(0));	// are -> place
-		result.append(GraphUtils.rootId,areId,place);
+		result.add(nameId, object.material.color);	// obj's name -> color
+		Graph place = getDirectionGraph(getDirectionCode(object, zones.get(0)), zones.get(0));	// are -> place
+		result.append(GraphUtils.rootId, areId, place);
 		return result;
 	}
 
-	static int getDirectionCode(DescribedObject object, DescribedZone zone){
+	static int getDirectionCode(DescribedObject object, DescribedZone zone) {
 		int stepX = getDistance(zone.x, zone.y, zone.x2, zone.y) / 5;
 		int stepY = getDistance(zone.x, zone.y, zone.x, zone.y2) / 5;
 
@@ -162,89 +196,93 @@ public class Main {
 		if (object.xc < (zone.x + stepX)) code += 10;
 		else if (object.xc > (zone.x + stepX * 4)) code += 30;
 		else code += 20;
-		
+
 		return code;
 	}
-	
-	static Graph getDirectionGraph(DescribedObject object, DescribedZone zone) {
-		int code = getDirectionCode(object,zone);
-		
-		Graph result = new Graph();
-		Word DOWN = new Word(Dictionary.CH_R.ADJECTIVE,1);
-		Word TOP  = new Word(Dictionary.CH_R.ADJECTIVE,4);
-		Word LEFT = new Word(Dictionary.CH_R.ADJECTIVE,2);
-		Word RIGHT= new Word(Dictionary.CH_R.ADJECTIVE,3);
-		Word CORNER=new Word(Dictionary.CH_R.NOUN,5);
-		Word WALL = new Word(Dictionary.CH_R.NOUN,6);
-		Word CENTER=new Word(Dictionary.CH_R.NOUN,7);
 
-		Word IN = new Word(Dictionary.CH_R.PREPOSITION,1);
-		Word NEAR = new Word(Dictionary.CH_R.PREPOSITION,2);
-		
+	static Graph getDirectionGraph(int code, DescribedZone zone) {
+
+		Graph result = new Graph();
+		Word DOWN = new Word(Dictionary.CH_R.ADJECTIVE, 1);
+		Word TOP  = new Word(Dictionary.CH_R.ADJECTIVE, 4);
+		Word LEFT = new Word(Dictionary.CH_R.ADJECTIVE, 2);
+		Word RIGHT= new Word(Dictionary.CH_R.ADJECTIVE, 3);
+		Word CORNER=new Word(Dictionary.CH_R.NOUN, 5);
+		Word WALL = new Word(Dictionary.CH_R.NOUN, 6);
+		Word CENTER=new Word(Dictionary.CH_R.NOUN, 7);
+
+		Word IN = new Word(Dictionary.CH_R.PREPOSITION, 1);
+		Word NEAR = new Word(Dictionary.CH_R.PREPOSITION, 2);
+
 		int prepId = -1;
 		int wordId = -1;
 
 		switch (code) {
 			case DirCode.LEFT_DOWN_CORNER:
 				prepId = result.add(GraphUtils.rootId, IN);
-				wordId = result.add(prepId,CORNER);
-				result.add(wordId,LEFT);
-				result.add(wordId,DOWN);
+				wordId = result.add(prepId, CORNER);
+				result.add(wordId, LEFT);
+				result.add(wordId, DOWN);
 				break;
 			case DirCode.DOWN_WALL:
 				prepId = result.add(GraphUtils.rootId, NEAR);
-				wordId = result.add(prepId,WALL);
-				result.add(wordId,DOWN);
+				wordId = result.add(prepId, WALL);
+				result.add(wordId, DOWN);
 				break;
 			case DirCode.RIGHT_DOWN_CORNER:	
 				prepId = result.add(GraphUtils.rootId, IN);
-				wordId = result.add(prepId,CORNER);
-				result.add(wordId,RIGHT);
-				result.add(wordId,DOWN);
+				wordId = result.add(prepId, CORNER);
+				result.add(wordId, RIGHT);
+				result.add(wordId, DOWN);
 				break;
 			case DirCode.LEFT_WALL:
 				prepId = result.add(GraphUtils.rootId, NEAR);
-				wordId = result.add(prepId,WALL);
-				result.add(wordId,LEFT);
+				wordId = result.add(prepId, WALL);
+				result.add(wordId, LEFT);
 				break;
 			case DirCode.CENTER:	
 				prepId = result.add(GraphUtils.rootId, NEAR);
-				wordId = result.add(prepId,CENTER);
+				wordId = result.add(prepId, CENTER);
 				break;
 			case DirCode.RIGHT_WALL:	
 				prepId = result.add(GraphUtils.rootId, NEAR);
-				wordId = result.add(prepId,WALL);
-				result.add(wordId,RIGHT);
+				wordId = result.add(prepId, WALL);
+				result.add(wordId, RIGHT);
 				break;
 			case DirCode.LEFT_TOP_CORNER:
 				prepId = result.add(GraphUtils.rootId, IN);
-				wordId = result.add(prepId,CORNER);
-				result.add(wordId,LEFT);
-				result.add(wordId,TOP);
+				wordId = result.add(prepId, CORNER);
+				result.add(wordId, LEFT);
+				result.add(wordId, TOP);
 				break;
 			case DirCode.TOP_WALL:	
 				prepId = result.add(GraphUtils.rootId, NEAR);
-				wordId = result.add(prepId,WALL);
-				result.add(wordId,TOP);
+				wordId = result.add(prepId, WALL);
+				result.add(wordId, TOP);
 				break;
 			case DirCode.RIGHT_TOP_CORNER:	
 				prepId = result.add(GraphUtils.rootId, IN);
-				wordId = result.add(prepId,CORNER);
-				result.add(wordId,RIGHT);
-				result.add(wordId,TOP);
+				wordId = result.add(prepId, CORNER);
+				result.add(wordId, RIGHT);
+				result.add(wordId, TOP);
 				break;
 		}
 
-		result.add(wordId,zone.name);
-		
+		result.add(wordId, zone.name);
+
 		return result;
 	}
-	
-	static Graph describeArray(ArrayList array){
+
+	static Graph describeObjectsWithArrayOfIds(Integer[] array) {
 		Graph gr = new Graph();
+
+		int lastId = GraphUtils.rootId;
+		for (Integer i : array) {
+			lastId = gr.add(lastId, objs.get(i).name);
+		}
 		return gr;
 	}
-	
+
 	//
 	//	ГЕОМЕТРИЧЕСКИЕ МЕТОДЫ
 	//
@@ -274,21 +312,33 @@ public class Main {
 	//
 	//	МЕТОДЫ ВВОДА-ВВЫВОДА
 	//
-	
-	static void log(String message){
-		if(debug_descr) System.out.println("# " + message);
+
+	static void log(String message) {
+		if (debug_descr) System.out.println("# " + message);
 	}
-	
-	static void logTime(){
+
+	static void logTime() {
 		long current = System.currentTimeMillis();
-		System.out.println("# Last step: "+(current-last) + "ms; in total: "+(current-start)+"ms.");
-		last = current;
+		System.out.println("# Last step: " + (current - last) + "ms; in total: " + (current - start) + "ms.");
+		last = System.currentTimeMillis();
 	}
-	
+
+	static void printGraph(Graph gr) {
+		String divider = " ";
+		for (int i =0; i < gr.words.length; i++) {
+			System.out.print(gr.words[i] + divider);
+		}
+		System.out.println();
+
+		for (int i = 0; i < gr.links.length; i++) {
+			System.out.println(gr.links[i] + divider + gr.links[++i] + divider + gr.links[++i]);
+		}
+	}
+
 	//
 	//	ПРОЧЕЕ
 	//
-	class DirCode{
+	class DirCode {
 		final static int LEFT_DOWN_CORNER 	= 1010;
 		final static int DOWN_WALL 			= 1020;
 		final static int RIGHT_DOWN_CORNER 	= 1030;
