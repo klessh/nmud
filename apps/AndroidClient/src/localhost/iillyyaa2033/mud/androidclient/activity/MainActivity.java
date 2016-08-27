@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -18,12 +19,15 @@ import localhost.iillyyaa2033.mud.androidclient.R;
 import localhost.iillyyaa2033.mud.androidclient.clientserver.LocalClient;
 import localhost.iillyyaa2033.mud.androidclient.clientserver.Server;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
+import android.app.AlertDialog;
 
 public class MainActivity extends Activity {
 
 	ListView list;
 	EditText textfield;
 	ImageButton button;
+	ImageButton exceptions;
 
 	ArrayAdapter<String> adapter;
 
@@ -42,7 +46,7 @@ public class MainActivity extends Activity {
 			prefs.edit().remove("DATAPATH").putString("DATAPATH",Environment.getExternalStorageDirectory()+"/Download/nMud/").apply();
 		
 		GlobalValues.datapath = PreferenceManager.getDefaultSharedPreferences(this).getString("DATAPATH","");
-		
+		GlobalValues.updatePrefs(this);
 			
 		list = (ListView) findViewById(R.id.main_ListView);
   		textfield = (EditText) findViewById(R.id.main_EditText);
@@ -74,18 +78,33 @@ public class MainActivity extends Activity {
 					return false;
 				}
 			});
-			
-		GlobalValues.debug = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG",true);
-		GlobalValues.debug_importer = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_IMPORTER",false);
-		GlobalValues.debug_descr = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_DESCR",false);
-		GlobalValues.debug_scripts = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_SCRIPTS",false);
-		GlobalValues.debug_graph = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("FLAG_DEBUG_GRAPH",false);	
-			
+		
+		exceptions = (ImageButton) findViewById(R.id.main_Btn_Exceptions);
+		if(!GlobalValues.debug) exceptions.setVisibility(View.GONE);
+		exceptions.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View p1) {
+					ListView view = new ListView(MainActivity.this);
+					ArrayAdapter a = new ArrayAdapter(MainActivity.this,android.R.layout.simple_list_item_1);
+					a.addAll(ExceptionsStorage.exceptions);
+					view.setAdapter(a);
+					new AlertDialog.Builder(MainActivity.this).setTitle("Debug: Exceptions").setView(view).show();
+				}
+			});
+		
 		handler = new Handler();
 		server = new Server();
 		client = new LocalClient(this);
 		client.setDaemon(true);
 		client.start();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		GlobalValues.updatePrefs(this);
+		exceptions.setVisibility(GlobalValues.debug ? View.VISIBLE : View.GONE);
 	}
 	
 	@Override

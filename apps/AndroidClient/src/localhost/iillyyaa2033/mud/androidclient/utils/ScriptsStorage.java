@@ -7,10 +7,13 @@ import java.util.Arrays;
 
 public class ScriptsStorage{
 	
-	public static String[] commandsNames;
-	private static HashMap<String, String> commands;
+	public static String[] commandsNames = new String[]{};
+	private static HashMap<String, String> commands = new HashMap<String, String>();
 	
 	public static void putCommands(HashMap<String, String> _commands){
+		if(_commands == null){
+			return;
+		}
 		commands = _commands;
 		commandsNames = new String[commands.size()];
 		commandsNames = commands.keySet().toArray(commandsNames);

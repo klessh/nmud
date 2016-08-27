@@ -72,7 +72,7 @@ public class GraphUtils {
 		return !false;
 	}
 
-	public static String graphToText(Graph from) {
+	public static String graphToText(Graph<Word> from) {
 		return graphToText(from, 0, 0);
 	}
 
@@ -90,14 +90,16 @@ public class GraphUtils {
 		result += " " + Dictionary.getWord(currentWord);
 
 		for (int i : graph.getTos(id)) {
-			int neededForm = Dictionary.getNeededForm(currentWord, graph.getWord(i));
+			// TODO: Dictionary.agree
+			// int neededForm = Dictionary.getNeededForm(currentWord, graph.getWord(i));
 
 			// TODO: порядок слов делается примернр так, но нужно прикрутить инструкции
-			if (graph.getWord(i).ch_r == Dictionary.CH_R.ADJECTIVE) {
+		/*	if (graph.getWord(i).ch_r == Dictionary.CH_R.ADJECTIVE) {
 				neededForm = Adjective.getEnding(Dictionary.getGenderCount(currentWord), currentWord.form);
 				result = graphToText(graph, i, neededForm) + result;
 			} else 
 				result += graphToText(graph, i, neededForm);
+				*/
 		}
 
 		return result;

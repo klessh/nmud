@@ -1,14 +1,18 @@
 package localhost.iillyyaa2033.mud.androidclient.clientserver;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
+import localhost.iillyyaa2033.mud.androidclient.exceptions.NoSuchCommandException;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.Creature;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
+import localhost.iillyyaa2033.mud.androidclient.utils.DescriptionFactory;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
+import localhost.iillyyaa2033.mud.androidclient.utils.ScriptsStorage;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
-import localhost.iillyyaa2033.mud.androidclient.utils.ScriptsStorage;
-import localhost.iillyyaa2033.mud.androidclient.exceptions.NoSuchCommandException;
 
 // В этом классе держим только клиентскую часть
 public class LocalClient extends Thread {
@@ -22,6 +26,10 @@ public class LocalClient extends Thread {
 	// TODO: решить, что делать с cmdstr
 	public volatile String cmdstr;	// Сюда MainActivity вбивает команду
 
+	// Логика, которую надо будет вынести в модель, в сервер, или еще куда-нибудь
+	Zone currentZone;
+	Creature player;
+	
 	public LocalClient(MainActivity activity) {
 		this.activity = activity;
 	}
@@ -35,13 +43,14 @@ public class LocalClient extends Thread {
 
 				L.pushJavaObject(LocalClient.this);	
 				L.setGlobal("client");
-				//		L.pushJavaObject(UglyClient.this);
-				//		L.setGlobal("server");
 			} catch (Throwable t) {
 				send(t.toString());
 			}
 		}
-
+		
+		if(World.zones.size()>0) currentZone = World.zones.get(0);
+		else currentZone = null;
+		
 		String cmd = "";
 		while ((!(cmd = read()).equals("")) && (!deadend)) {
 			comms(cmd);
@@ -188,6 +197,10 @@ public class LocalClient extends Thread {
 	}	
 		
 	public String doCommand(String cmdName, String[] args){
+		return doFunction(cmdName, "main", args);
+	}
+	
+	public String doFunction(String cmdName, String function, String... args){
 		long time_start = System.currentTimeMillis();
 
 		if (!GlobalValues.canScripts) return "Скрипты не работают.";
@@ -210,10 +223,10 @@ public class LocalClient extends Thread {
 			L.setTop(0);
 			int ok = L.LdoString(command);
 			if (ok == 0) {
-				L.getGlobal("main");
+				L.getGlobal(function);
 
 				if (L.isNil(-1)) {
-					send(Level.DEBUG_SCRIPTS, "У польз. скрипта " + cmdName + " нет функции main.");
+					send(Level.DEBUG_SCRIPTS, "У польз. скрипта " + cmdName + " нет функции "+function + ".");
 				} else if (args == null) {
 					L.pcall(0, 1, -2);
 				} else {
@@ -256,8 +269,35 @@ public class LocalClient extends Thread {
 		static final int DEBUG_SCRIPTS = 4;
 	}
 	
-	// Scripting interface
+	// ==================== //
+	// Scripting interfaces //
+	// ==================== //
 	public String getDescription(){
-		return "В течение всей зимы 1927-28 годов официальные представители федерального правительства проводили довольно необычное и строго секретное изучение состояния находящегося в Массачусетсе старого иннсмаутского порта. Широкая общественность впервые узнала обо всем этом лишь в феврале, когда была проведена широкая серия облав и арестов, за которыми последовало полное уничтожение -- посредством осуществленных с соблюдением необходимых мер безопасности взрывов и поджогов -- громадного числа полуразвалившихся, пришедших в почти полную негодность и, по всей видимости, опустевших зданий, стоявших вдоль береговой линии. Не отличающиеся повышенным любопытством граждане отнеслись к данной акции всего лишь как к очередной, пусть даже и достаточно массированной, но все же совершенно спонтанной попытке властей поставить заслон на пути контрабандной поставки в страну спиртных напитков. Более же любознательные люди обратили внимание на небывало широкие масштабы проведенных арестов, многочисленность задействованных в них сотрудников полиции, а также на обстановку секретности, в которой проходил вывоз арестованных.";
+		DescriptionFactory factory = new DescriptionFactory(currentZone);
+		try{
+			factory.prepare();
+		} catch(NullPointerException e){
+			ExceptionsStorage.addException(e);
+		}
+		
+		return factory.getSampleDescr();
+	}
+	
+	public String getDescriptionOf(String objName){
+		return ";"+objName;
+	}
+	
+	public String listScripts(){
+		StringBuilder b = new StringBuilder();
+		for(String s : ScriptsStorage.commandsNames){
+			b.append(s).append("\t\t");
+		}
+		return b.toString();
+	}
+	
+	public ArrayList<String> listVisibleObjNames(){
+		ArrayList<String> l = new ArrayList<String>();
+		// TODO: this
+		return l;
 	}
 }

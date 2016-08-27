@@ -1,17 +1,20 @@
 package localhost.iillyyaa2033.mud.androidclient.logic.model;
 
 import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Word;
+import java.util.HashMap;
 
 public class WorldObject {
 
-	public String type;
 	public int id;
 	public int x,y,x2,y2;
 	public Word name;
 	public Material material;
 	
+	public HashMap<String, String> params;
+	
 	public WorldObject(){
 		id = -1;
+		params = new HashMap<String, String>();
 	}
 
 	public WorldObject(int x, int y, int x2, int y2, Word name){
@@ -21,27 +24,7 @@ public class WorldObject {
 		this.x2 = x2;
 		this.y2 = y2;
 		this.name = name;
-	}
-
-	public WorldObject(String type, int x, int y, int x2, int y2, Word name){
-		id = -1;
-		this.type = type;
-		this.x = x;
-		this.y = y;
-		this.x2 = x2;
-		this.y2 = y2;
-		this.name = name;
-	}
-	
-	public WorldObject(String type, int x, int y, int x2, int y2, Word name, Material mat){
-		id = -1;
-		this.type = type;
-		this.x = x;
-		this.y = y;
-		this.x2 = x2;
-		this.y2 = y2;
-		this.name = name;
-		this.material =  mat;
+		params = new HashMap<String, String>();
 	}
 	
 	public void replaceUsingCenter(int x, int y){

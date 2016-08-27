@@ -26,6 +26,11 @@
 		</activity>
 		
 		<activity 
+			android:name=".activity.DictionaryEditorActivity" 
+			android:label="DictionaryEditorActivity">
+		</activity>
+		
+		<activity 
 			android:name=".activity.Preferences" 
 			android:label="Настройки">
 		</activity>

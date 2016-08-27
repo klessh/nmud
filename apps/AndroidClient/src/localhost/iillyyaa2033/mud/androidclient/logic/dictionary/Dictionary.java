@@ -1,59 +1,65 @@
 package localhost.iillyyaa2033.mud.androidclient.logic.dictionary;
 
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.Adjective;
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.LM;
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.Noun;
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.Preposition;
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.V2;
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.words.Verb;
+import java.util.ArrayList;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
+import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
+import org.keplerproject.luajava.LuaState;
+import org.keplerproject.luajava.LuaStateFactory;
+import localhost.iillyyaa2033.mud.androidclient.exceptions.MudException;
 
 public class Dictionary {
-
-	public static Word getWord(int id){
-		return null;
+	
+	public static LuaState L;
+	public static ArrayList<WordScript> scripts;
+	
+	public static void initializeDictionary(ArrayList<WordScript> _scripts){
+		if (GlobalValues.canScripts) {
+			try {
+				L = LuaStateFactory.newLuaState();
+				L.openLibs();
+			} catch (Throwable t) {
+				ExceptionsStorage.exceptions.add(t);
+			}
+		} 
+		
+		scripts = _scripts;
+		checkAndReport();
 	}
 	
 	public static String getWord(Word w){
-		return getWord(w.ch_r, w.form, w.wordId);
+		return scripts.get(w.ch_r).getWord(L,w);
 	}
 	
-	public static String getWord(int ch_r, int form, int wordID) {
-		switch (ch_r) {
-			case CH_R.NOUN:			return Noun.getWord(wordID, (form != 0 ? form : form + 1));
-			case CH_R.ADJECTIVE:	return Adjective.getWord(wordID, (form != 0 ? form : form + 1));
-			case CH_R.VERB:			return Verb.getWord(wordID, (form != 0 ? form : form + 1));
-			case CH_R.V2:			return V2.getWord(wordID, (form != 0 ? form : form + 1));
-			case CH_R.LM:			return LM.getWord(wordID, (form != 0 ? form : form + 1));
-			case CH_R.PREPOSITION:	return Preposition.getWord(wordID, (form != 0 ? form : form + 1));
-				
-			default:	return "[NOT_WORD]";
+	public static Word agree(Word from, Word to){
+		return scripts.get(to.ch_r).agree(L,to,from);
+	}
+	
+	public static int getGender(Word word){
+		return scripts.get(word.ch_r).getGender(L,word);
+	}
+	
+	public static int getCount(Word word){
+		return scripts.get(word.ch_r).getCount(L,word);
+	}
+	
+	public static boolean checkAndReport(){
+		boolean result = true;
+		
+		if(L == null){
+			ExceptionsStorage.addException(new Exception("Dictionary: LuaState is null"));
+			result = !true;
+			
 		}
-	}
-	
-	public static int getNeededForm(Word from, Word to){
-		switch(from.ch_r){
-			case CH_R.NOUN:			return Noun.getNeededForm(from,to.ch_r);
-			case CH_R.ADJECTIVE:	return Adjective.getNeededForm(from,to.ch_r);
-			case CH_R.VERB:			return Verb.getNeededForm(from,to.ch_r);
-			case CH_R.V2:			return V2.getNeededForm(from,to.ch_r);
-			case CH_R.LM:			return LM.getNeededForm(from,to.ch_r);
-			case CH_R.PREPOSITION:	return Preposition.getNeededForm(from,to.ch_r);
+		
+		if(scripts == null){
+			ExceptionsStorage.addException(new Exception("Dictionary: scripts are null"));
+			result = !true;
 		}
-		return 0;
+		
+		return result;
 	}
 	
-	public static int getGenderCount(Word word){
-		switch(word.ch_r){
-			case CH_R.NOUN:			return Noun.getGenderCount(word);
-			case CH_R.ADJECTIVE:	return Adjective.getGenderCount(word);
-			case CH_R.VERB:			return Verb.getGenderCount(word);
-			case CH_R.V2:			return V2.getGenderCount(word);
-			case CH_R.LM:			return LM.getGenderCount(word);
-			case CH_R.PREPOSITION:	return Preposition.getGenderCount(word);
-		}
-		return 0;
-	}
-	
+	// TODO: remove all from this line to end of file
 	public static class CH_R{
 		public static final int NOUN = 1;
 		public static final int ADJECTIVE = 2;

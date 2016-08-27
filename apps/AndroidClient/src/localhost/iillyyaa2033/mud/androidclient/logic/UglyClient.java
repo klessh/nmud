@@ -67,10 +67,10 @@ public class UglyClient extends Thread {
 
 	void filling() {
 		objects = new ArrayList<WorldObject>();
-		objects.add(new WorldObject("room", 1, 1, 18, 18, new Word(1, 1)));
-		objects.add(new WorldObject("obj", 5, 5, 6, 6, new Word(1, 2), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 5), "дерево")));
-		objects.add(new WorldObject("obj", 7, 7, 9, 9, new Word(1, 3), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 6), "картон")));
-		objects.add(new WorldObject("obj", 16, 2, 17, 3, new Word(1, 4), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 7), "стекло")));
+	//	objects.add(new WorldObject("room", 1, 1, 18, 18, new Word(1, 1)));
+	//	objects.add(new WorldObject("obj", 5, 5, 6, 6, new Word(1, 2), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 5), "дерево")));
+	//	objects.add(new WorldObject("obj", 7, 7, 9, 9, new Word(1, 3), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 6), "картон")));
+	//	objects.add(new WorldObject("obj", 16, 2, 17, 3, new Word(1, 4), new Material(new Word(Dictionary.CH_R.ADJECTIVE, 7), "стекло")));
 
 		objs = new ArrayList<DescribedObject>();
 		zones = new ArrayList<DescribedZone>();
@@ -80,7 +80,7 @@ public class UglyClient extends Thread {
 		for (int i = 0; i < objects.size(); i++) {
 			WorldObject obj = objects.get(i);
 
-			if (obj.type == null) {
+	/*		if (obj.type == null) {
 				send(LEVEL_DEBUG_DESCR, "Object haven't any type: " + Dictionary.getWord(obj.name));
 			} else if (obj.type.toLowerCase().equals("zone") || obj.type.toLowerCase().equals("room")) {
 				DescribedZone object = new DescribedZone(i, obj);
@@ -92,7 +92,7 @@ public class UglyClient extends Thread {
 				object.area = getDistance(object.x, object.y, object.x, object.y2) * getDistance(object.x, object.y, object.x2, object.y);
 				objs.add(object);
 				send(LEVEL_DEBUG_DESCR, "Added object " + i + " " + Dictionary.getWord(object.name) + " " + object.x + ":" + object.y + " " + object.x2 + ":" + object.y2);
-			}
+			}	*/
 		}
 
 		// заполняем связи зона - ее элементы

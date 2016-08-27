@@ -36,6 +36,12 @@
 		<ImageButton
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
+			android:src="@android:drawable/ic_menu_close_clear_cancel"
+			android:id="@+id/main_Btn_Exceptions"/>
+		
+		<ImageButton
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
 			android:src="@android:drawable/ic_menu_send"
 			android:id="@+id/main_Button"/>
 

@@ -13,38 +13,24 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.Adapter;
 import java.util.ArrayList;
+import android.widget.TabHost;
+import com.iillyyaa2033.mud.editor.logic.Database;
+import android.content.Intent;
+import com.iillyyaa2033.mud.editor.activity.DictionaryEditorActivity;
 
-public class EditorDictionaryFragment extends Fragment{
-	
-	ListView view;
-	ArrayList<String> wordlist;
-	ArrayAdapter<String> adapter;
+public class DictionaryFragment extends Fragment{
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = new ListView(getActivity());
-		
-		TextView header = new TextView(getActivity());
-		header.setText("Add word to dictionary");
-		header.setOnClickListener(new OnClickListener(){
-
-				@Override
-				public void onClick(View p1) {
-					// TODO: launch add word activity/dialog
-				}
-			});
-		view.addHeaderView(header);
-		
-		wordlist = new ArrayList<String>();
-		wordlist.add("Sample word");
-			
-		adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, wordlist);
-		view.setAdapter(adapter);
+		ListView view = new ListView(getActivity());
+		view.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,Database.dictNames));
 		view.setOnItemClickListener(new OnItemClickListener(){
 
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
-					// TODO: launch wordeditor activity/fragment
+					Intent i = new Intent(getActivity(),DictionaryEditorActivity.class);
+					i.putExtra("wID",p3);
+					startActivity(i);
 				}
 			});
 		return view;

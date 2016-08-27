@@ -149,13 +149,13 @@ public class Importer {
 				if (token.countTokens() == 6) {
 					try {
 						WorldObject obj = new WorldObject();
-						obj.id = ++i;
-						obj.type = token.nextToken();
+					//	obj.id = ++i;
+					//	obj.type = token.nextToken();
 						obj.x = new Integer(token.nextToken());
 						obj.y = new Integer(token.nextToken());
 						obj.x2 = new Integer(token.nextToken());
 						obj.y2 = new Integer(token.nextToken());
-						obj.name = Dictionary.getWord(new Integer(token.nextToken()));
+					//	obj.name = Dictionary.getWordById(new Integer(token.nextToken()));
 						objs.add(obj);
 					} catch (Exception e) {
 						core.send(core.LEVEL_DEBUG_IMPORTER, "Importer: ошибка импорта объекта");

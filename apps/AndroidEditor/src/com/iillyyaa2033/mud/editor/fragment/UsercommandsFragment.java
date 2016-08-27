@@ -18,39 +18,68 @@ import android.widget.TextView;
 import java.util.Comparator;
 import java.util.HashMap;
 import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
+import java.io.FileNotFoundException;
+import android.widget.Button;
+import android.view.View.OnClickListener;
 
 public class UsercommandsFragment extends Fragment{
 	
 	HashMap<String, String> map;
 	ArrayAdapter<String> adapter;
 	
+	boolean canSave = true;
+	boolean needSave = false;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
-		map = ImportUtil.loadUsecommands();
-		
+		try {
+			map = ImportUtil.loadUsercommands();
+		} catch (FileNotFoundException e) {
+			map = new HashMap<String,String>();
+			canSave = false;
+		}
+
 		LinearLayout ll = new LinearLayout(getActivity());
 		ll.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
-		ListView view = new ListView(getActivity());
-		view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
-	//	view.set;
-		ll.addView(view);
-		adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1);
-		adapter.addAll(map.keySet());
-		adapter.sort(new Comparator<String>(){
+		
+		Button addBtn = new Button(getActivity());
+		addBtn.setText("New cmd");
+		addBtn.setOnClickListener(new OnClickListener(){
 
 				@Override
-				public int compare(String p1, String p2) {
-					return p1.compareTo(p2);
+				public void onClick(View p1) {
+					final EditText t = new EditText(getActivity());
+					new AlertDialog.Builder(getActivity())
+						.setTitle("Name?")
+						.setView(t)
+						.setNegativeButton("Cnl",null)
+						.setPositiveButton("Ok", new AlertDialog.OnClickListener(){
+
+							@Override
+							public void onClick(DialogInterface p1, int p2) {
+								adapter.add(t.getText().toString());
+								dialogue(t.getText().toString(),false);
+							}
+						})
+						.show();
 				}
-				
 			});
+		
+		ListView view = new ListView(getActivity());
+		view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+		view.addHeaderView(addBtn);
+		
+		adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1);
+		adapter.addAll(map.keySet());
+		resort();
+		
 		view.setAdapter(adapter);
 		view.setOnItemClickListener(new OnItemClickListener(){
 
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
-					String key = adapter.getItem(p3);
+					String key = adapter.getItem(p3-1);
 					dialogue(key,true);
 					
 				}
@@ -59,18 +88,37 @@ public class UsercommandsFragment extends Fragment{
 
 				@Override
 				public boolean onItemLongClick(AdapterView<?> p1, View p2, int p3, long p4) {
-					String key = adapter.getItem(p3);
+					String key = adapter.getItem(p3-1);
 					dialogue(key,false);
 					return true;
 				}
 				
 			
 		});
+		
+		ll.addView(view);
 		return ll;
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if(canSave && needSave){
+			try {
+				ImportUtil.saveUsercommands(map);
+			} catch (FileNotFoundException e) {
+				
+			}
+		}
 	}
 	
 	void dialogue(final String key, final boolean isPreview){
 		String val = map.get(key);
+		if(val == null){
+			val = "function main(...)\n\tclient:send(\"Auto-generated answer\")\nend";
+			map.put(key,val);
+			resort();
+		}
 		
 		final TextView edit;
 		
@@ -88,11 +136,25 @@ public class UsercommandsFragment extends Fragment{
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					if(!isPreview){
-						map.remove(key);
-						map.put(key,edit.getText().toString());
+						if(!map.get(key).equals(edit.getText().toString())){
+							map.remove(key);
+							map.put(key,edit.getText().toString());
+							needSave = true;
+						}
 					}
 				}
 			});
 		ab.show();
+	}
+	
+	void resort(){
+		adapter.sort(new Comparator<String>(){
+
+				@Override
+				public int compare(String p1, String p2) {
+					return p1.compareTo(p2);
+				}
+
+			});
 	}
 }

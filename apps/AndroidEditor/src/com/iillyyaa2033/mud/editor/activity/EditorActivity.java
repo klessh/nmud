@@ -10,19 +10,19 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.iillyyaa2033.mud.editor.R;
-import com.iillyyaa2033.mud.editor.fragment.EditorDictionaryFragment;
+import com.iillyyaa2033.mud.editor.fragment.DictionaryFragment;
 import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
 import com.iillyyaa2033.mud.editor.fragment.GraphVisFrag;
+import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import java.io.IOException;
-import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 
 public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
 	
 	EditorMapFragment map;
 	UsercommandsFragment uce;
-	EditorDictionaryFragment dictionary;
+	DictionaryFragment dictionary;
 	GraphVisFrag grvf;
 	ActionBar actionBar;
 	
@@ -30,28 +30,35 @@ public class EditorActivity extends FragmentActivity implements ActionBar.TabLis
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mapeditor);
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
 		
 		actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+	//	actionBar.setHideOffset(100);
 		
 		map = new EditorMapFragment();
 		uce = new UsercommandsFragment();
 		grvf = new GraphVisFrag();
+		dictionary = new DictionaryFragment();
 		
 		actionBar.addTab(actionBar.newTab().setText("MapEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("UserCommandsEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("Graph Vis").setTabListener(this));
-		
-		dictionary = new EditorDictionaryFragment();
-	}
 
+		Database.uploadDict(Loader.loadDictionary());
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0,0,0,"Load map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		menu.add(1,1,1,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+	//	menu.add(0,0,0,"Load map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+	//	menu.add(1,1,1,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		
 		return true;
 	}
