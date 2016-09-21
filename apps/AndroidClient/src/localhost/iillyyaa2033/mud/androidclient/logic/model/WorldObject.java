@@ -10,11 +10,10 @@ public class WorldObject {
 	public Word name;
 	public Material material;
 	
-	public HashMap<String, String> params;
+	public HashMap<String, String> params = new HashMap<String, String>();
 	
 	public WorldObject(){
 		id = -1;
-		params = new HashMap<String, String>();
 	}
 
 	public WorldObject(int x, int y, int x2, int y2, Word name){
@@ -24,7 +23,6 @@ public class WorldObject {
 		this.x2 = x2;
 		this.y2 = y2;
 		this.name = name;
-		params = new HashMap<String, String>();
 	}
 	
 	public void replaceUsingCenter(int x, int y){

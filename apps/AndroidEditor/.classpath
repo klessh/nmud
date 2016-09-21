@@ -6,4 +6,5 @@
 <classpathentry kind="output" path="bin/classes"/>
 <classpathentry kind="lib" path="/storage/emulated/0/AppProjects/nmud/apps/libs/luajava-android.jar"/>
 <classpathentry kind="lib" path="/storage/sdcard0/AppProjects/nmud/apps/libs/android-support-v4.jar"/>
+<classpathentry kind="lib" path="/storage/emulated/0/AppProjects/_MyGITHUB/nmud/apps/libs/luajava-android.jar"/>
 </classpath>

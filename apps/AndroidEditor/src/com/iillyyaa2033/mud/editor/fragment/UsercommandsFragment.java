@@ -6,21 +6,21 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.HashMap;
-import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
-import java.io.FileNotFoundException;
-import android.widget.Button;
-import android.view.View.OnClickListener;
+import com.iillyyaa2033.mud.editor.logic.ImportUtil;
 
 public class UsercommandsFragment extends Fragment{
 	

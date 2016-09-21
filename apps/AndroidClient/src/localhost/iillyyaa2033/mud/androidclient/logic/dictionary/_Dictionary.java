@@ -1,4 +1,5 @@
 package localhost.iillyyaa2033.mud.androidclient.logic.dictionary;
+
 import java.util.ArrayList;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaException;

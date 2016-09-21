@@ -1,12 +1,12 @@
 package com.iillyyaa2033.mud.editor.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.iillyyaa2033.mud.editor.R;
@@ -18,7 +18,7 @@ import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import java.io.IOException;
 
-public class EditorActivity extends FragmentActivity implements ActionBar.TabListener {
+public class EditorActivity extends Activity implements ActionBar.TabListener {
 	
 	EditorMapFragment map;
 	UsercommandsFragment uce;

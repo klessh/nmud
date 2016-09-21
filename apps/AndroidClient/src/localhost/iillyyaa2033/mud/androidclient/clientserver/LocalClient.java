@@ -13,6 +13,7 @@ import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 import localhost.iillyyaa2033.mud.androidclient.utils.ScriptsStorage;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
+import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 
 // В этом классе держим только клиентскую часть
 public class LocalClient extends Thread {
@@ -49,8 +50,15 @@ public class LocalClient extends Thread {
 		}
 		
 		if(World.zones.size()>0) currentZone = World.zones.get(0);
-		else currentZone = null;
+		else currentZone = new Zone();
 		
+		player = new Creature();
+		try {
+			currentZone.addObject(player);
+		} catch (IncorrectPositionException e) {
+			ExceptionsStorage.addException(e);
+		}
+
 		String cmd = "";
 		while ((!(cmd = read()).equals("")) && (!deadend)) {
 			comms(cmd);
@@ -273,18 +281,24 @@ public class LocalClient extends Thread {
 	// Scripting interfaces //
 	// ==================== //
 	public String getDescription(){
-		DescriptionFactory factory = new DescriptionFactory(currentZone);
+		DescriptionFactory factory = new DescriptionFactory(currentZone, player);
 		try{
 			factory.prepare();
 		} catch(NullPointerException e){
 			ExceptionsStorage.addException(e);
 		}
 		
-		return factory.getSampleDescr();
+		return factory.getSampleDescr()+"\n"+factory.getAutoDescription();
 	}
 	
 	public String getDescriptionOf(String objName){
-		return ";"+objName;
+		DescriptionFactory factory = new DescriptionFactory(currentZone, player);
+		try{
+			factory.prepare();
+		} catch(NullPointerException e){
+			ExceptionsStorage.addException(e);
+		}
+		return factory.getHandDescriptionOf(objName);
 	}
 	
 	public String listScripts(){

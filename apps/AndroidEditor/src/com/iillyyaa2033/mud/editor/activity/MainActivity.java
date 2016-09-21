@@ -1,12 +1,12 @@
 package com.iillyyaa2033.mud.editor.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.widget.ArrayAdapter;
 import com.iillyyaa2033.mud.editor.R;
 import com.iillyyaa2033.mud.editor.fragment.MainListFragment;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends Activity {
 
 	MainListFragment list;
 	

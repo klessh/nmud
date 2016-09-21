@@ -125,6 +125,7 @@ public class ImportUtil{
 					lines.add(line);
 				}
 			}
+			mapWork(zones,lines);
 		}catch(IOException e){
 			e(e);
 		}
@@ -133,7 +134,7 @@ public class ImportUtil{
 	
 	private static void mapWork(ArrayList<Zone> zones, ArrayList<String> lines){
 		
-		Zone currentZone;
+		Zone currentZone = null;
 		WorldObject currentObject;
 		
 		if(lines.get(0).startsWith("zone")){
@@ -144,12 +145,26 @@ public class ImportUtil{
 			currentObject = new WorldObject();
 		}
 		
-		for(int i = 1; i < lines.size(); i++){
+		for(int i = 0; i < lines.size(); i++){
 			String line = lines.get(i);
 			int div = line.indexOf(": ");
 			String key = line.substring(0,div);
-			String val = line.substring(div+1);
+			String val = line.substring(div+2);
 			currentObject.params.put(key,val);
+		}
+		
+		if(currentZone == null && currentObject != null){
+			try{
+				String bigId = currentObject.params.get("object");
+		//		String objId = bigId.substring(bigId.indexOf('-'));
+				String zonId = "1";//bigId.substring(0,bigId.indexOf('-'));
+				for(Zone zone : zones){
+					if(zone.params.get("zone").equals(zonId))
+						zone.addObject(currentObject);
+				}
+			} catch (Exception e){
+				e(e);
+			}
 		}
 	}
 	

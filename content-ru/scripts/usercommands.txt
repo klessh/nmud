@@ -104,18 +104,9 @@ function main(...)
 	if #arg == 0 then
       descr = client:getDescription();
    else
-      local u = toCnc(arg);
-      descr = client:getDescriptionOf(u);
+      descr = client:getDescriptionOf(arg[1])
    end
    client:send(descr);
-end
-
-function toCnc(...)
-   local str = " "..#arg;
-   for i=1, #arg do
-      str = str.." "..arg[i];
-   end
-   return r;
 end
 
 function help(...)
