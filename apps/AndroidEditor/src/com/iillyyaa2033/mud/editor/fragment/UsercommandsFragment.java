@@ -20,7 +20,6 @@ import android.widget.TextView;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.HashMap;
-import com.iillyyaa2033.mud.editor.logic.ImportUtil;
 
 public class UsercommandsFragment extends Fragment{
 	
@@ -33,12 +32,13 @@ public class UsercommandsFragment extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
-		try {
-			map = ImportUtil.loadUsercommands();
-		} catch (FileNotFoundException e) {
+	//	try {
+	//		map = ImportUtil.loadUsercommands();
+	map = new HashMap<String,String>();
+	/*	} catch (FileNotFoundException e) {
 			map = new HashMap<String,String>();
 			canSave = false;
-		}
+		}*/
 
 		LinearLayout ll = new LinearLayout(getActivity());
 		ll.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
@@ -103,13 +103,13 @@ public class UsercommandsFragment extends Fragment{
 	@Override
 	public void onStop() {
 		super.onStop();
-		if(canSave && needSave){
+	/*	if(canSave && needSave){
 			try {
 				ImportUtil.saveUsercommands(map);
 			} catch (FileNotFoundException e) {
 				
 			}
-		}
+		}*/
 	}
 	
 	void dialogue(final String key, final boolean isPreview){

@@ -23,24 +23,6 @@ public class EditorMapFragment extends Fragment {
 	}
 
 	@Override
-	public void onStart() {
-		updateFromDB();
-		super.onStart();
-	}
-
-	@Override
-	public void onResume() {
-		updateFromDB();
-		super.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		saveToDB();
-		super.onPause();
-	}
-
-	@Override
 	public void onStop() {
 		// TODO: Implement this method
 		super.onStop();
@@ -49,13 +31,5 @@ public class EditorMapFragment extends Fragment {
 	public MapEditorView get(){
 		// TODO: get
 		return mapview;
-	}
-	
-	public void updateFromDB(){
-		mapview.root.rooms = Database.rooms;
-	}
-	
-	void saveToDB(){
-		Database.rooms = mapview.root.rooms;
 	}
 }

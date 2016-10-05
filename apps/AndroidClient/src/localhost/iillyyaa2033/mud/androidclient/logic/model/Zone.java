@@ -6,7 +6,6 @@ import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionExce
 public class Zone extends WorldObject{
 	
 	public ArrayList<WorldObject> objects = new ArrayList<WorldObject>();
-//	public ArrayList<WorldObject> objects = new ArrayList<WorldObject>();
 	
 	public void addObject(WorldObject obj) throws IncorrectPositionException{
 		if(obj == null) throw new IncorrectPositionException("Null object");

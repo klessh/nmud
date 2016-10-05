@@ -17,6 +17,11 @@ import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import java.io.IOException;
+import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
+import java.io.FileNotFoundException;
+import android.widget.Toast;
+import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 
 public class EditorActivity extends Activity implements ActionBar.TabListener {
 	
@@ -53,6 +58,13 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		actionBar.addTab(actionBar.newTab().setText("Graph Vis").setTabListener(this));
 
 		Database.uploadDict(Loader.loadDictionary());
+		
+		try {
+			GlobalValues.datapath = "/storage/emulated/0/AppProjects/_MyGITHUB/nmud/content-ru";
+			World.zones = ImportUtil.importZones();
+		} catch (FileNotFoundException e) {
+			Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	@Override
@@ -67,19 +79,10 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 			case 0:
-				try {
-					Database.rooms = Loader.loadMap(this,PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/Download/nmud/content-ru")+"/maps/");
-					map.updateFromDB();
-				} catch (Exception e) {
-					new AlertDialog.Builder(this).setMessage(e.toString()).show();
-				}
+				// load map
 				break;
 			case 1:
-				try {
-					Loader.saveMap(PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/Download/nmud/content-ru")+"/maps/test.txt", map.get());
-				} catch (IOException e) {
-					new AlertDialog.Builder(this).setMessage(e.toString()).show();
-				}
+				// save map
 		}
 		return super.onOptionsItemSelected(item);
 	}
