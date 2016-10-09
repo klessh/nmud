@@ -9,27 +9,47 @@ import android.widget.LinearLayout;
 import com.iillyyaa2033.mud.editor.view.MapEditorView;
 import java.util.ArrayList;
 import com.iillyyaa2033.mud.editor.logic.Database;
+import android.widget.ListView;
+import com.iillyyaa2033.mud.editor.R;
+import android.widget.ArrayAdapter;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView;
+import android.widget.Adapter;
 
 public class EditorMapFragment extends Fragment {
 
 	MapEditorView mapview;
+	ListView list;
+	ArrayAdapter<WorldObject> adapter;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		adapter = new ArrayAdapter<WorldObject>(getActivity(),android.R.layout.simple_list_item_1);
+		for (Zone zone : World.zones) {
+			adapter.add(zone);
+			for (WorldObject object : zone.objects) {
+				adapter.add(object);
+			}
+		}
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		LinearLayout ll = new LinearLayout(getActivity());
-		mapview = new MapEditorView(getActivity());
-		ll.addView(mapview);
-		return ll;
-	}
+		View root = inflater.inflate(R.layout.fragment_mapeditor,container,false);
+		mapview = (MapEditorView) root.findViewById(R.id.map);
+		list = (ListView) root.findViewById(R.id.list);
+		list.setAdapter(adapter);
+		list.setOnItemClickListener(new OnItemClickListener(){
 
-	@Override
-	public void onStop() {
-		// TODO: Implement this method
-		super.onStop();
-	}
-	
-	public MapEditorView get(){
-		// TODO: get
-		return mapview;
+				@Override
+				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
+					mapview.selectObject(adapter.getItem(p3));
+				}
+			});
+		return root;
 	}
 }

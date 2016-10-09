@@ -61,4 +61,11 @@ public class WorldObject {
 			return shape;
 		}
 	}
+
+	@Override
+	public String toString() {
+		String name = params.get("string-name");
+		if(name == null) name = "unknown";
+		return name;
+	}
 }

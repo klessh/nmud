@@ -3,13 +3,26 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:orientation="vertical"
+	android:orientation="horizontal"
 	android:id="@+id/fragment_mapeditor_LinearLayout1">
 
 	<com.iillyyaa2033.mud.editor.view.MapEditorView
 		android:layout_height="match_parent"
 		android:background="?android:attr/dividerVertical"
-		android:layout_width="match_parent"/>
+		android:layout_width="match_parent"
+		android:layout_weight="1.0"
+		android:id="@+id/map"/>
+
+	<View
+		android:background="?android:attr/dividerHorizontal"
+		android:layout_height="match_parent"
+		android:layout_width="1dp"/>
+
+	<ListView
+		android:background="?android:attr/dividerVertical"
+		android:layout_height="wrap_content"
+		android:layout_width="250dp"
+		android:id="@+id/list"/>
 
 </LinearLayout>
 
