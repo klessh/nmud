@@ -15,22 +15,18 @@ public class LM extends AbstractWord {
 		new String[]{"они",	"их",	"им",	"их",	"ими",	"них"},
 	};
 	
-	@Override
 	public static int getEnding(int word) {
 		return 0;
 	}
 
-	@Override
 	public static String getWord(int gen, int form) {
 		return m[gen - 1][form - 1];
 	}
 	
-	@Override
 	public static int getNeededForm(Word word, int ch_r){
 		return 0;
 	}
 	
-	@Override
 	public static int getGenderCount(Word form) {
 		return 0;
 	}

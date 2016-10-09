@@ -25,7 +25,7 @@ public class Points extends AbstractWord {
 		return 0;
 	}
 	
-	@Override
+	
 	public static int getGenderCount(Word w) {
 		return 0;
 	}

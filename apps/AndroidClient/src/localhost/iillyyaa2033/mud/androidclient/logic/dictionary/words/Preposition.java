@@ -16,17 +16,17 @@ public class Preposition extends AbstractWord {
 		new int[]{2,    0,    0}
 	};
 	
-	@Override
+	
 	public static int getEnding(int word) {
 		return 0;
 	}
 
-	@Override
+	
 	public static String getWord(int word, int form) {
 		return prep[word-1];
 	}
 	
-	@Override
+	
 	public static int getNeededForm(Word word, int ch_r){
 		int id = word.wordId-1;
 		
@@ -41,7 +41,7 @@ public class Preposition extends AbstractWord {
 		return -1;
 	}
 	
-	@Override
+	
 	public static int getGenderCount(Word form) {
 		return 0;
 	}

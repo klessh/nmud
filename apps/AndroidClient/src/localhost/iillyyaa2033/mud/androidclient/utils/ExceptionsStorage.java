@@ -1,4 +1,5 @@
 package localhost.iillyyaa2033.mud.androidclient.utils;
+
 import java.util.ArrayList;
 
 public class ExceptionsStorage{

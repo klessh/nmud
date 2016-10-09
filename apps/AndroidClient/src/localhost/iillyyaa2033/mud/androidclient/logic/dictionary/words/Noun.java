@@ -39,17 +39,17 @@ public class Noun extends AbstractWord {
 	static int[] nounEndingsMap = {1,3,1,4,5,2,3};
 	static int[] nounGenderMap = {3,1,3,1,1,3,1};
 	
-	@Override
+	
 	public static int getEnding(int word) {
 		return nounEndingsMap[word];
 	}
 
-	@Override
+	
 	public static String getWord(int word, int form) {
 		return nouns[word - 1] + nounEndings[getEnding(word - 1)][form - 1];
 	}
 	
-	@Override
+	
 	public static int getNeededForm(Word word, int ch_r){
 		int id = word.wordId-1;
 		
@@ -64,7 +64,7 @@ public class Noun extends AbstractWord {
 		return nounGenderMap[noun];
 	}
 	
-	@Override
+	
 	public static int getGenderCount(Word w) {
 		return getGender(w.wordId-1);
 	}

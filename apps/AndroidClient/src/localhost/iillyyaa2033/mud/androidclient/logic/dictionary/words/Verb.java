@@ -24,12 +24,12 @@ public class Verb extends AbstractWord {
 		"будем", "будете", "будут"
 	};
 	
-	@Override
+	
 	public static int getEnding(int word) {
 		return verbEndingsMap[word];
 	}
 
-	@Override
+	
 	public static String getWord(int word, int form) {
 		if (form < 20)	return verbs[word - 1] + verbEndings[getEnding(word - 1)][form - 1];
 		else {
@@ -38,12 +38,12 @@ public class Verb extends AbstractWord {
 		}
 	}
 
-	@Override
+	
 	public static int getNeededForm(Word word, int ch_r){
 		return 0;
 	}
 	
-	@Override
+	
 	public static int getGenderCount(Word form) {
 		// TODO: this
 		return 0;

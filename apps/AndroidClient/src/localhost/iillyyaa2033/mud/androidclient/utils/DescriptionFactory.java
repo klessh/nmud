@@ -20,14 +20,19 @@ public class DescriptionFactory{
 	
 	public String getSampleDescr(){
 		String result = "";
-		result += currentZone.params.get("string-name").toUpperCase()+". ";
+		String name = currentZone.params.get("string-name");
+		if(name != null) result += name.toUpperCase()+". ";
 		result += currentZone.params.get("string-descr");
 		return result;
 	}
 	
 	public String getAutoDescription(){
 		String result = "Авто-описания отключены, выведен список объектов:";
-		for(WorldObject obj : currentZone.objects) result += " \t" + obj.params.get("string-name").toLowerCase();
+		
+		for(WorldObject obj : currentZone.objects){
+			String n = obj.params.get("string-name");
+			if(n != null) result += " \t" + n.toLowerCase();
+		} 
 		result += "\n";
 		return result;
 	}

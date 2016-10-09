@@ -33,7 +33,7 @@ public class Adjective extends AbstractWord {
 
 	static int[] adjectiveEndingsMap = {0,1,1,0,1,1,1};
 	
-	@Override
+	
 	public static int getEnding(int word) {
 		return adjectiveEndingsMap[word];
 	}
@@ -59,17 +59,17 @@ public class Adjective extends AbstractWord {
 		return result;
 	}
 	
-	@Override
+	
 	public static String getWord(int word, int form) {
 		return adjectives[word - 1] + adjectiveEndings[getEnding(word - 1)][form - 1];
 	}
 	
-	@Override
+	
 	public static int getNeededForm(Word word, int ch_r){
 		return 0;
 	}
 	
-	@Override
+	
 	public static int getGenderCount(Word word) {
 		if(word.form < 7) return Dictionary.GenderCount.SINGLE_MALE;
 		if(word.form < 14) return Dictionary.GenderCount.SINGLE_MIDDLE;

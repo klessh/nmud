@@ -19,7 +19,7 @@ public class Word{
 		this.wordId = wordId;
 	}
 
-	@Override
+	
 	public boolean equals(Word other) {
 		if(this.ch_r != other.ch_r) return false;
 		if(this.wordId != other.wordId) return false;
