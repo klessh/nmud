@@ -2,13 +2,13 @@ package com.iillyyaa2033.mud.editor.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.iillyyaa2033.mud.editor.R;
 import com.iillyyaa2033.mud.editor.fragment.DictionaryFragment;
 import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
@@ -16,12 +16,11 @@ import com.iillyyaa2033.mud.editor.fragment.GraphVisFrag;
 import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
-import java.io.IOException;
-import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import java.io.FileNotFoundException;
-import android.widget.Toast;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
+import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
+import android.preference.PreferenceManager;
 
 public class EditorActivity extends Activity implements ActionBar.TabListener {
 	
@@ -60,7 +59,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		Database.uploadDict(Loader.loadDictionary());
 		
 		try {
-			GlobalValues.datapath = "/storage/emulated/0/AppProjects/_MyGITHUB/nmud/content-ru";
+			GlobalValues.datapath = PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT","/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru");
 			World.zones = ImportUtil.importZones();
 		} catch (FileNotFoundException e) {
 			Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
@@ -71,7 +70,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 	//	menu.add(0,0,0,"Load map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	//	menu.add(1,1,1,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		
+		menu.add(2,2,2,"Prefs").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
 
@@ -83,6 +82,8 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 				break;
 			case 1:
 				// save map
+			case 2:
+				startActivity(new Intent(this,Preferences.class));
 		}
 		return super.onOptionsItemSelected(item);
 	}

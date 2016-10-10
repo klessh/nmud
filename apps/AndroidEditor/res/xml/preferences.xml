@@ -7,7 +7,7 @@
 				android:key="PREF_ROOT"   
 				android:title="Рабочая папка"  
 				android:summary="Укажите папку с данными КОНТЕНТА"  
-				android:defaultValue="/storage/emulated/0/Download/nmud/content-ru" />
+				android:defaultValue="/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru" />
 
 
 	</PreferenceScreen>
