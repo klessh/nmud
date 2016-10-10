@@ -148,6 +148,7 @@ public class ImportUtil{
 		for(int i = 0; i < lines.size(); i++){
 			String line = lines.get(i);
 			int div = line.indexOf(": ");
+			if(div<1) continue;
 			String key = line.substring(0,div);
 			String val = line.substring(div+2);
 			currentObject.params.put(key,val);
