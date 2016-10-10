@@ -1,7 +1,7 @@
 zone: 1
 shape: 0:0 3:0 3:4.5 0:4.5
 zone-type: room
-string-name: (Безымянная комната)
+string-name: Кухня
 string-descr: (Описания нет; возможно, это кухня)
 ####
 object: 1-1
@@ -27,8 +27,7 @@ string-descr: Большая бочка с отходами стоит на по
 zone: 2
 shape: 3:0 3:3 5.5:3 5.5:0
 zone-type: room
-string-name: (Безымянная комната)
-string-descr: (Описания нет; возможно, это кухня)
+string-name: Лестницы
 ####
 object: 2-1
 shape: 4.6:1.5 5.3:1.5 5.3:3 4.6:3

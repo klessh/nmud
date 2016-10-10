@@ -7,14 +7,15 @@ import java.util.StringTokenizer;
 
 public class WorldObject {
 
-	public int id;
+	public int id;			// TODO: remove me
 	public int x,y,x2,y2;	// TODO: remove me
-	private double[] shape;
 	public Word name;
 	public Material material;
 
 	public HashMap<String, String> params = new HashMap<String, String>();
-
+	private double[] shape;
+	private String idN;
+	
 	public WorldObject() {
 		id = -1;
 	}
@@ -62,6 +63,17 @@ public class WorldObject {
 		}
 	}
 
+	public String getId(){
+		if(idN == null){
+			idN = params.get("object");
+			if(idN == null) idN = params.get("zone");
+	//		if(idN == null) idN = "no id";
+			return idN;
+		}else{
+			return idN;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		String name = params.get("string-name");
