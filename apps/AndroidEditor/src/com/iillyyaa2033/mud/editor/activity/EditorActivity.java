@@ -60,7 +60,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		Database.uploadDict(Loader.loadDictionary());
 		
 		try {
-			GlobalValues.datapath = "/storage/emulated/0/AppProjects/_MyGITHUB/nmud/content-ru";
+			GlobalValues.datapath = "/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru";
 			World.zones = ImportUtil.importZones();
 		} catch (FileNotFoundException e) {
 			Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
