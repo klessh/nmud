@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import android.widget.TextView;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
+import com.iillyyaa2033.mud.editor.R;
 
 public class ObjectEditorActivity extends Activity {
 	
@@ -17,14 +18,16 @@ public class ObjectEditorActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.activity_objedit);
+		
 		String id = getIntent().getStringExtra("object");
 		if(id!=null){
 			WorldObject[] o = World.searchById(id);
 			if(o.length>0) object = o[0];
 		}
 		
-		TextView view = new TextView(this);
-		if(object!=null)view.setText(object.toString());
-		setContentView(view);
+		if(object != null){
+			getActionBar().setTitle(object.toString());
+		}
 	}
 }

@@ -12,6 +12,7 @@ import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Dictionary;
 import localhost.iillyyaa2033.mud.androidclient.exceptions.MudException;
 import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.WordScript;
 import java.util.ArrayList;
+import java.io.File;
 
 public class Server extends Thread {
 // Принимаем клиенты, выполняем работу с ФС
@@ -53,12 +54,7 @@ public class Server extends Thread {
 		ArrayList<WordScript> a = ImportUtil.importWords();
 		Dictionary.initializeDictionary(a);
 
-		try {
-			World.zones = ImportUtil.importZones();
-		} catch (FileNotFoundException e) {
-			// TODO: correct handling
-			ExceptionsStorage.addException(e);
-		}
+		ImportUtil.importToWorld(new File(GlobalValues.datapath, "maps/root.xml"));
 	}
 	
 	public void doFunction(String script, String function, String[] args) {

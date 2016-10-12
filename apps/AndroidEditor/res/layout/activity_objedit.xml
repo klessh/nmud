@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="horizontal">
+
+	<LinearLayout
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			android:layout_height="400dp"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="400dp"
+			android:text="Карта"/>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_height="1dp"
+			android:layout_width="match_parent"/>
+
+		<ScrollView
+			android:layout_height="match_parent"
+			android:layout_width="match_parent">
+
+			<TextView
+				android:layout_height="match_parent"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="match_parent"
+				android:text="Габариты: 2м х 0.8м\nКоординаты, центр: 120 х 80"/>
+
+		</ScrollView>
+
+	</LinearLayout>
+
+	<View
+		android:background="?android:attr/dividerHorizontal"
+		android:layout_height="match_parent"
+		android:layout_width="1dp"/>
+
+	<TextView
+		android:layout_height="match_parent"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="match_parent"
+		android:text="Список параметров"/>
+
+</LinearLayout>
+
