@@ -69,6 +69,12 @@ public class EditorMapFragment extends Fragment {
 		
 		return root;
 	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		adapter.notifyDataSetChanged();
+	}
 	
 	void startAdd(){
 		startActivity(new Intent(getActivity(),ObjectEditorActivity.class));

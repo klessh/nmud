@@ -52,9 +52,9 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		dictionary = new DictionaryFragment();
 
 		actionBar.addTab(actionBar.newTab().setText("MapEditor").setTabListener(this));
-		actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
+	//	actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("UserCommandsEditor").setTabListener(this));
-		actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
+	//	actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("Graph Vis").setTabListener(this));
 
 		Database.uploadDict(Loader.loadDictionary());
@@ -62,11 +62,22 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		GlobalValues.datapath = PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru");
 		ImportUtil.importToWorld(new File(GlobalValues.datapath + "/maps/root.xml"));
 	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		saveTheWorld();
+	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		//	menu.add(0,0,0,"Load map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		//	menu.add(1,1,1,"Save map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(1,1,1,"Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		menu.add(2, 2, 2, "Prefs").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
@@ -78,15 +89,15 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 				// load map
 				break;
 			case 1:
-				// save map
+				saveTheWorld();
+				break;
 			case 2:
 				startActivity(new Intent(this, Preferences.class));
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-
-
+	
 	@Override
 	public void onTabSelected(ActionBar.Tab p1, FragmentTransaction p2) {
 		selectTab(p1.getPosition());
@@ -120,5 +131,9 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 			default:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map, new Fragment()).commit();
 		}
+	}
+	
+	void saveTheWorld(){
+		Toast.makeText(this,"World save will be here",Toast.LENGTH_SHORT).show();
 	}
 }
