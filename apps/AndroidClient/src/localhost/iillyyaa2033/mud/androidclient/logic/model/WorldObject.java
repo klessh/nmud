@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 public class WorldObject {
 
-	public int id;			// TODO: remove me
+//	public int id;			// TODO: remove me
 	public int x,y,x2,y2;	// TODO: remove me
 	public Word name;
 	public Material material;
@@ -17,11 +17,11 @@ public class WorldObject {
 	private String idN;
 	
 	public WorldObject() {
-		id = -1;
+//		id = -1;
 	}
 
 	public WorldObject(int x, int y, int x2, int y2, Word name) {
-		id = -1;
+//		id = -1;
 		this.x = x;
 		this.y = y;
 		this.x2 = x2;
@@ -65,9 +65,7 @@ public class WorldObject {
 
 	public String getId(){
 		if(idN == null){
-			idN = params.get("object");
-			if(idN == null) idN = params.get("zone");
-	//		if(idN == null) idN = "no id";
+			idN = params.get("id");
 			return idN;
 		}else{
 			return idN;

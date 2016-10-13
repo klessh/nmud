@@ -14,7 +14,9 @@
 			android:layout_height="400dp"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_width="400dp"
-			android:text="Карта"/>
+			android:text="Карта"
+			android:gravity="center"
+			android:background="#BABABA"/>
 
 		<View
 			android:background="?android:attr/dividerVertical"
@@ -29,7 +31,11 @@
 				android:layout_height="match_parent"
 				android:textAppearance="?android:attr/textAppearanceMedium"
 				android:layout_width="match_parent"
-				android:text="Габариты: 2м х 0.8м\nКоординаты, центр: 120 х 80"/>
+				android:text="13:43\n\t Мы уже незнамо сколько бредем по этому лесу. Комары загрызли. Мясо надоело. Хочется овощей и фруктов. Бив немногословен, как всегда! Блин, как же меня все это бесит."
+				android:paddingLeft="10dp"
+				android:paddingRight="10dp"
+				android:paddingTop="10dp"
+				android:paddingBottom="10dp"/>
 
 		</ScrollView>
 
@@ -40,11 +46,10 @@
 		android:layout_height="match_parent"
 		android:layout_width="1dp"/>
 
-	<TextView
+	<ListView
 		android:layout_height="match_parent"
-		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:layout_width="match_parent"
-		android:text="Список параметров"/>
+		android:id="@+id/activity_objedit_list"/>
 
 </LinearLayout>
 

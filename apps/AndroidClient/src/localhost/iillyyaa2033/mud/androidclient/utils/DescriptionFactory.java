@@ -42,8 +42,15 @@ public class DescriptionFactory{
 		objectName = objectName.toLowerCase();
 		
 		for(WorldObject obj : currentZone.objects){
-			if(objectName.equals(obj.params.get("string-name").toLowerCase()))
+			String name = obj.params.get("string-name");
+			if(name == null){
+				ExceptionsStorage.addException(new NullPointerException("DecriptionFactory - no 'string-name' for object in zone "+currentZone.getId()));
+				continue;
+			}
+			
+			if(objectName.equals(name.toLowerCase())){
 				result = obj.params.get("string-descr");
+			}
 		}
 		
 		return result;

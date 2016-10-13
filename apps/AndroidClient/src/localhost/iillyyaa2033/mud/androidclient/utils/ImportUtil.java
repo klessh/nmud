@@ -1,18 +1,23 @@
 package localhost.iillyyaa2033.mud.androidclient.utils;
 
-import java.io.*;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.WordScript;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
-import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 
 public class ImportUtil {
 
@@ -61,34 +66,6 @@ public class ImportUtil {
 		}
 
 		return cmds;
-	}
-
-	public static void saveUsercommands(HashMap<String, String> cmds) throws FileNotFoundException {
-		File work = new File(GlobalValues.datapath, "scripts/usercommands.txt");
-
-		if (!work.exists()) {
-			throw new FileNotFoundException("ImportUtil - saveUsercommands - 404");
-		}
-
-		try {
-			OutputStream stream = new FileOutputStream(work);
-			OutputStreamWriter writer = new OutputStreamWriter(stream, GlobalValues.encoding);
-			BufferedWriter bufferedwriter = new BufferedWriter(writer);
-
-			Set<String> set = cmds.keySet();
-			for (String cmd : set) {
-				writer.write("##### " + cmd + " #####\n");
-				writer.write(cmds.get(cmd) + "\n");
-			}
-
-			bufferedwriter.close();
-			writer.close();
-			stream.close();
-		} catch (UnsupportedEncodingException e) {
-			e(e);
-		} catch (IOException e) {
-			e(e);
-		}
 	}
 
 	public static ArrayList<WordScript> importWords() {

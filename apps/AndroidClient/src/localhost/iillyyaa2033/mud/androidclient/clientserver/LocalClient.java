@@ -3,6 +3,7 @@ package localhost.iillyyaa2033.mud.androidclient.clientserver;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
+import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 import localhost.iillyyaa2033.mud.androidclient.exceptions.NoSuchCommandException;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Creature;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
@@ -13,7 +14,6 @@ import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 import localhost.iillyyaa2033.mud.androidclient.utils.ScriptsStorage;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
-import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 
 // В этом классе держим только клиентскую часть
 public class LocalClient extends Thread {
