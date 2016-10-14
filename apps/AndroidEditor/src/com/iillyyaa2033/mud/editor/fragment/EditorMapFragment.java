@@ -28,13 +28,7 @@ public class EditorMapFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new ArrayAdapter<WorldObject>(getActivity(),android.R.layout.simple_list_item_1);
-		for (Zone zone : World.zones) {
-			adapter.add(zone);
-			for (WorldObject object : zone.objects) {
-				adapter.add(object);
-			}
-		}
+		reloadAdapter();
 	}
 	
 	@Override
@@ -73,7 +67,7 @@ public class EditorMapFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		adapter.notifyDataSetChanged();
+		reloadAdapter();
 	}
 	
 	void startAdd(){
@@ -84,5 +78,15 @@ public class EditorMapFragment extends Fragment {
 		Intent i = new Intent(getActivity(),ObjectEditorActivity.class);
 		i.putExtra("object",o.getId());
 		startActivity(i);
+	}
+	
+	void reloadAdapter(){
+		adapter = new ArrayAdapter<WorldObject>(getActivity(),android.R.layout.simple_list_item_1);
+		for (Zone zone : World.zones) {
+			adapter.add(zone);
+			for (WorldObject object : zone.objects) {
+				adapter.add(object);
+			}
+		}
 	}
 }

@@ -8,6 +8,10 @@
 				android:title="Рабочая папка"  
 				android:summary="Укажите папку с данными КОНТЕНТА"  
 				android:defaultValue="/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru" />
-
+		<CheckBoxPreference
+			android:key="PREF_AUTOSAVE"   
+			android:title="Автосохранение"  
+			android:summary=""  
+			android:defaultValue="true" />
 
 	</PreferenceScreen>

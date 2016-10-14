@@ -23,7 +23,8 @@ import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 public class ObjectEditorActivity extends Activity {
 
 	WorldObject object;
-
+	boolean newelyCreated = false;
+	
 	ArrayAdapter<String> adapter;
 
 	@Override
@@ -43,6 +44,7 @@ public class ObjectEditorActivity extends Activity {
 		} else {
 			getActionBar().setTitle("New object");
 			object = new WorldObject();
+			newelyCreated = true;
 		}
 
 		TextView info = (TextView)findViewById(R.id.activity_objedit_info);
@@ -51,6 +53,14 @@ public class ObjectEditorActivity extends Activity {
 		initializeParamsList();
 	}
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if(newelyCreated){
+			World.autoAddToZone(object);
+		}
+	}
+	
 	void initializeParamsList() {
 		ListView list = (ListView) findViewById(R.id.activity_objedit_list);
 

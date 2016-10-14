@@ -17,11 +17,10 @@ import com.iillyyaa2033.mud.editor.fragment.GraphVisFrag;
 import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
-import java.io.FileNotFoundException;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
+import java.io.File;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
-import java.io.File;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExportUtil;
 
 public class EditorActivity extends Activity implements ActionBar.TabListener {
 
@@ -66,7 +65,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		saveTheWorld();
+		saveTheWorld(true);
 	}
 
 	@Override
@@ -89,7 +88,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 				// load map
 				break;
 			case 1:
-				saveTheWorld();
+				saveTheWorld(false);
 				break;
 			case 2:
 				startActivity(new Intent(this, Preferences.class));
@@ -133,7 +132,11 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		}
 	}
 	
-	void saveTheWorld(){
-		Toast.makeText(this,"World save will be here",Toast.LENGTH_SHORT).show();
+	void saveTheWorld(boolean autosave){
+		if(autosave){
+			
+		}
+		ExportUtil.saveFromWorld();
+		Toast.makeText(this,"Saved",Toast.LENGTH_SHORT).show();
 	}
 }
