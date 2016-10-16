@@ -18,7 +18,7 @@ public class MapEditorView extends View {
 
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
-    private Paint paint, rootPaint, selectionPaint, coords, coordsBold;
+    private Paint paint, rootPaint, selectionPaint, coords, coordsBold, zonePaint;
 
 
 	float scaleFactor = 40;					// коэффициент приближения/удаления
@@ -72,6 +72,12 @@ public class MapEditorView extends View {
 		coordsBold.setStyle(Paint.Style.STROKE);
 		coordsBold.setStrokeWidth(4);
 		coordsBold.setAlpha(100);
+		
+		zonePaint = new Paint();
+		zonePaint.setColor(Color.GRAY);
+		zonePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		zonePaint.setStrokeWidth(4);
+		zonePaint.setAlpha(100);
 	}
 
 	@Override
@@ -95,9 +101,9 @@ public class MapEditorView extends View {
 		}
 
 		for (Zone zone : World.zones) {
-			drawObject(canvas, zone, paint);
+			drawObject(canvas, zone, null);
 			for (WorldObject object : zone.objects) {
-				drawObject(canvas, object, paint);
+				drawObject(canvas, object, null);
 			}
 		}
 
@@ -107,14 +113,19 @@ public class MapEditorView extends View {
 	void drawObject(Canvas canvas, WorldObject object, Paint paint) {
 		double[] objectShape = object.getShape();
 
+		Paint curr = paint;
+		if(object instanceof Zone) curr = zonePaint;
+		if(paint == null) curr = paint;
+		
 		if (objectShape == null) return;
+		if (objectShape.length < 2) return;
 		for (int i = 2; i < objectShape.length - 1; i += 2) {
 			canvas.drawLine(globalToScreenX(objectShape[i - 2]), globalToScreenY(objectShape[i - 1]),
-							globalToScreenX(objectShape[i]), globalToScreenY(objectShape[i + 1]), paint);
+							globalToScreenX(objectShape[i]), globalToScreenY(objectShape[i + 1]), curr);
 			//	canvas.drawPoint(globalToScreenX(++i),globalToScreenY(++i),paint);
 		}
 		canvas.drawLine(globalToScreenX(objectShape[objectShape.length - 2]), globalToScreenY(objectShape[objectShape.length - 1]),
-						globalToScreenX(objectShape[0]), globalToScreenY(objectShape[1]), paint);
+						globalToScreenX(objectShape[0]), globalToScreenY(objectShape[1]), curr);
 
 	}
 

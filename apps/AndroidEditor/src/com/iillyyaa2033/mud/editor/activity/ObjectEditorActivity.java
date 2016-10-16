@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class ObjectEditorActivity extends Activity {
 
@@ -59,6 +61,21 @@ public class ObjectEditorActivity extends Activity {
 		if(newelyCreated){
 			World.autoAddToZone(object);
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,0,0,"Del");
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case 0:
+				
+		}
+		return true;
 	}
 	
 	void initializeParamsList() {

@@ -36,4 +36,8 @@ public class World{
 		}
 		uncat.add(object);
 	}
+	
+	public static void remove(WorldObject obj){
+		
+	}
 }
