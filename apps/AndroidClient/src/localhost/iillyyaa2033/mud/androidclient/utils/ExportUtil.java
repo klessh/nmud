@@ -13,6 +13,7 @@ import java.util.Set;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
+import java.io.ObjectOutputStream;
 
 public class ExportUtil {
 
@@ -45,30 +46,13 @@ public class ExportUtil {
 	}
 
 	public static void saveFromWorld() {
-		StringBuilder sb = new StringBuilder();
-		for (Zone z : World.zones) {
-			sb.append("<zone");
-			for (String key : z.params.keySet()) {
-				sb.append("\n").append(key).append("=\"").append(z.params.get(key)).append("\"");
-			}
-			sb.append(" >");
-			for (WorldObject o : z.objects) {
-				sb.append("\n<object");
-				for (String key : o.params.keySet()) {
-					sb.append("\n").append(key).append("=\"").append(o.params.get(key)).append("\"");
-				}
-				sb.append(" />");
-			}
-			sb.append("\n</zone>\n");
-		}
-		// TODO: save obiects without zones
 		try {
-			File f= new File(GlobalValues.datapath + "/maps/root.xml");
+			File f= new File(GlobalValues.datapath + "/maps/root.bin");
 			if (!f.exists()) {
 				f.createNewFile();
 			}
-			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
-			writer.write(sb.toString());
+			ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(f));
+			writer.writeObject(WorldHolder.getInstance());
 			writer.close();
 		} catch (IOException e) {
 			e(e);

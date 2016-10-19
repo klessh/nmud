@@ -6,12 +6,12 @@ import localhost.iillyyaa2033.mud.androidclient.activity.MainActivity;
 import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 import localhost.iillyyaa2033.mud.androidclient.exceptions.NoSuchCommandException;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Creature;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
 import localhost.iillyyaa2033.mud.androidclient.utils.DescriptionFactory;
 import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 import localhost.iillyyaa2033.mud.androidclient.utils.ScriptsStorage;
+import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
 
@@ -49,7 +49,7 @@ public class LocalClient extends Thread {
 			}
 		}
 		
-		if(World.zones.size()>0) currentZone = World.zones.get(0);
+		if(WorldHolder.getInstance().meta.size()>0) currentZone = WorldHolder.getInstance().meta.get(0);
 		else currentZone = new Zone();
 		
 		player = new Creature();

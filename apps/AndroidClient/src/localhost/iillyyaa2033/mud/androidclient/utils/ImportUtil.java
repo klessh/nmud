@@ -7,17 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.WordScript;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 public class ImportUtil {
 
@@ -72,65 +67,19 @@ public class ImportUtil {
 		return null;
 	}
 
-	public static void importToWorld(File file) {
+	public static void importToWorld(File file){
 
 		try {
-			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-			factory.setNamespaceAware(true);
-			
-			XmlPullParser xpp = factory.newPullParser();
-			xpp.setInput(new FileInputStream(file), "UTF-8");
-			
-			Zone currentZone=null;
-			WorldObject currentObject=null;
-
-			int eventType = xpp.getEventType();
-			while (eventType != XmlPullParser.END_DOCUMENT) {
-				
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					// do nothing
-				} else if (eventType == XmlPullParser.START_TAG) {
-					String name = xpp.getName();	// имя тэга
-
-					if (name.equals("zone")) {
-						currentZone = new Zone();
-						World.zones.add(currentZone);
-
-						int attribs = xpp.getAttributeCount();
-						for (int i =0; i < attribs; i++) {
-							currentZone.params.put(xpp.getAttributeName(i),xpp.getAttributeValue(i));
-						}
-					}
-					
-					if (name.equals("object")) {
-						currentObject = new WorldObject();
-						if (currentZone != null){
-							currentZone.addObject(currentObject);
-
-							int attribs = xpp.getAttributeCount();
-							for (int i =0; i < attribs; i++) {
-								currentObject.params.put(xpp.getAttributeName(i),xpp.getAttributeValue(i));
-							}
-						}
-					}
-				} else if (eventType == XmlPullParser.END_TAG) {
-					xpp.getName();	// имя тэга
-				} else if (eventType == XmlPullParser.TEXT) {
-					//	UNUSED
-					xpp.getText();
-				} else {
-					e("In unknown place");
-				}
-				eventType = xpp.next();
+			ObjectInputStream reader = new ObjectInputStream(new FileInputStream(file));
+			try {
+				World world;
+				world = (World) reader.readObject();
+				if(world != null) WorldHolder.setInstance(world);
+			} catch (ClassNotFoundException e) {
+				e(e);
 			}
-			
-		} catch (XmlPullParserException e) {
-			e(e);
-		} catch (FileNotFoundException e) {
-			e(e);
+			reader.close();
 		} catch (IOException e) {
-			e(e);
-		} catch (IncorrectPositionException e){
 			e(e);
 		}
 	}

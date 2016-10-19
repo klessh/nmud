@@ -1,23 +1,31 @@
 package localhost.iillyyaa2033.mud.androidclient.logic.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import localhost.iillyyaa2033.mud.androidclient.exceptions.IncorrectPositionException;
 
-public class World{
+public class World implements Serializable{
 	
-	public static ArrayList<Zone> zones = new ArrayList<Zone>();
-	public static ArrayList<WorldObject> uncat = new ArrayList<WorldObject>();
+	public World(){};
 	
-	public static WorldObject[] searchById(String id){
+	public ArrayList<Zone> meta = new ArrayList<Zone>();
+	public ArrayList<WorldObject> objects = new ArrayList<WorldObject>();
+	
+	public void tick(){
+		for(Zone z : meta){
+			z.tick();
+		}
+		
+		for(WorldObject o : objects){
+			o.tick();
+		}
+	}
+	
+	public WorldObject[] searchById(String id){
 		ArrayList<WorldObject> obj = new ArrayList<WorldObject>();
 		
-		for(Zone z : zones){
-			if(z.getId()!=null) if(z.getId().equals(id)) obj.add(z);
-			
-			for(WorldObject o : z.objects){
-				if(o.getId()!=null) if(o.getId().equals(id)) obj.add(o);
-			}
+		for(WorldObject o : objects){
+			if(o.getId()!=null) if(o.getId().equals(id)) obj.add(o);
 		}
 		
 		WorldObject[] array = new WorldObject[obj.size()];
@@ -25,8 +33,8 @@ public class World{
 		return array;
 	}
 	
-	public static void autoAddToZone(WorldObject object){
-		for(Zone z : zones){
+	public void autoAddToZone(WorldObject object){
+		for(Zone z : meta){
 			try {
 				z.addObject(object);
 				return;
@@ -34,10 +42,10 @@ public class World{
 				
 			}
 		}
-		uncat.add(object);
+		objects.add(object);
 	}
 	
-	public static void remove(WorldObject obj){
+	public void remove(WorldObject obj){
 		
 	}
 }

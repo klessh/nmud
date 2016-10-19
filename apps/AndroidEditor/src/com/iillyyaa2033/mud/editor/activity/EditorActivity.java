@@ -21,6 +21,8 @@ import java.io.File;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
 import localhost.iillyyaa2033.mud.androidclient.utils.ExportUtil;
+import android.app.AlertDialog;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
 
 public class EditorActivity extends Activity implements ActionBar.TabListener {
 
@@ -59,7 +61,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		Database.uploadDict(Loader.loadDictionary());
 		
 		GlobalValues.datapath = PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru");
-		ImportUtil.importToWorld(new File(GlobalValues.datapath + "/maps/root.xml"));
+		ImportUtil.importToWorld(new File(GlobalValues.datapath + "/maps/root.bin"));
 	}
 	
 	@Override
@@ -75,7 +77,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		//	menu.add(0,0,0,"Load map").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(0,0,0,"Log").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		menu.add(1,1,1,"Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		menu.add(2, 2, 2, "Prefs").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
@@ -85,7 +87,11 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case 0:
-				// load map
+				String[] items = new String[ExceptionsStorage.exceptions.size()];
+				for(int i = 0; i<items.length; i++){
+					items[i]= ExceptionsStorage.exceptions.get(i).toString();
+				}
+				new AlertDialog.Builder(this).setItems(items,null).show();
 				break;
 			case 1:
 				saveTheWorld(false);

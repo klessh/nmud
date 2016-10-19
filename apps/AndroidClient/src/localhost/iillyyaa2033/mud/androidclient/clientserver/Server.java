@@ -54,7 +54,7 @@ public class Server extends Thread {
 		ArrayList<WordScript> a = ImportUtil.importWords();
 		Dictionary.initializeDictionary(a);
 
-		ImportUtil.importToWorld(new File(GlobalValues.datapath, "maps/root.xml"));
+		ImportUtil.importToWorld(new File(GlobalValues.datapath, "maps/root.bin"));
 	}
 	
 	public void doFunction(String script, String function, String[] args) {

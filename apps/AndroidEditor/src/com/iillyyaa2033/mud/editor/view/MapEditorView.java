@@ -11,6 +11,7 @@ import android.view.View;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
+import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 
 public class MapEditorView extends View {
 
@@ -18,7 +19,7 @@ public class MapEditorView extends View {
 
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
-    private Paint paint, rootPaint, selectionPaint, coords, coordsBold, zonePaint;
+    private Paint upaint, rootPaint, selectionPaint, coords, coordsBold, zonePaint;
 
 
 	float scaleFactor = 40;					// коэффициент приближения/удаления
@@ -44,17 +45,17 @@ public class MapEditorView extends View {
 
 		rootPaint = new Paint();
 
-		paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setDither(true);
-		paint.setColor(Color.BLACK);
-        paint.setStrokeWidth(1f);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-		paint.setSubpixelText(true);
-		paint.setLinearText(true);
-		paint.setFilterBitmap(true);
+		upaint = new Paint();
+        upaint.setAntiAlias(true);
+        upaint.setDither(true);
+		upaint.setColor(Color.BLACK);
+        upaint.setStrokeWidth(1f);
+        upaint.setStyle(Paint.Style.FILL);
+        upaint.setStrokeJoin(Paint.Join.ROUND);
+        upaint.setStrokeCap(Paint.Cap.ROUND);
+		upaint.setSubpixelText(true);
+		upaint.setLinearText(true);
+		upaint.setFilterBitmap(true);
 
 		selectionPaint = new Paint();
 		selectionPaint.setColor(Color.RED);
@@ -100,22 +101,20 @@ public class MapEditorView extends View {
 			else canvas.drawLine(0, gY, getWidth(), gY, coords);
 		}
 
-		for (Zone zone : World.zones) {
-			drawObject(canvas, zone, null);
-			for (WorldObject object : zone.objects) {
+		for (WorldObject object: WorldHolder.getInstance().objects) {
 				drawObject(canvas, object, null);
-			}
 		}
 
 		if (selected != null) drawObject(canvas, selected, selectionPaint);
 	}
 
 	void drawObject(Canvas canvas, WorldObject object, Paint paint) {
+		if(object == null) return; // TODO: throw NPE
 		double[] objectShape = object.getShape();
 
 		Paint curr = paint;
 		if(object instanceof Zone) curr = zonePaint;
-		if(paint == null) curr = paint;
+		if(curr == null) curr = upaint;
 		
 		if (objectShape == null) return;
 		if (objectShape.length < 2) return;

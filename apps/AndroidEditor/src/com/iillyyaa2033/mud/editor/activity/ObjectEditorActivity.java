@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -19,8 +21,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
-import android.view.Menu;
-import android.view.MenuItem;
+import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 
 public class ObjectEditorActivity extends Activity {
 
@@ -37,7 +38,7 @@ public class ObjectEditorActivity extends Activity {
 
 		String id = getIntent().getStringExtra("object");
 		if (id != null) {
-			WorldObject[] o = World.searchById(id);
+			WorldObject[] o = WorldHolder.getInstance().searchById(id);
 			if (o.length > 0) object = o[0];
 		}
 
@@ -59,7 +60,7 @@ public class ObjectEditorActivity extends Activity {
 	protected void onStop() {
 		super.onStop();
 		if(newelyCreated){
-			World.autoAddToZone(object);
+			WorldHolder.getInstance().autoAddToZone(object);
 		}
 	}
 

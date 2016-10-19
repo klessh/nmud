@@ -18,6 +18,7 @@ import com.iillyyaa2033.mud.editor.view.MapEditorView;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
+import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 
 public class EditorMapFragment extends Fragment {
 
@@ -82,11 +83,8 @@ public class EditorMapFragment extends Fragment {
 	
 	void reloadAdapter(){
 		adapter = new ArrayAdapter<WorldObject>(getActivity(),android.R.layout.simple_list_item_1);
-		for (Zone zone : World.zones) {
-			adapter.add(zone);
-			for (WorldObject object : zone.objects) {
-				adapter.add(object);
-			}
+		for (WorldObject object: WorldHolder.getInstance().objects) {
+			adapter.add(object);
 		}
 	}
 }

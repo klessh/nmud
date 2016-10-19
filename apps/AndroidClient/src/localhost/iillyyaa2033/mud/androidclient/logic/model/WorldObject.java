@@ -1,11 +1,11 @@
 package localhost.iillyyaa2033.mud.androidclient.logic.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
-import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Word;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
+import localhost.iillyyaa2033.mud.androidclient.logic.dictionary.Word;
 
-public class WorldObject {
+public class WorldObject implements Serializable{
 
 //	public int id;			// TODO: remove me
 	public int x,y,x2,y2;	// TODO: remove me
@@ -29,6 +29,10 @@ public class WorldObject {
 		this.name = name;
 	}
 
+	public void tick(){
+		
+	}
+	
 	public void replaceUsingCenter(int x, int y) {
 		int wx = (x2 - this.x) / 2;
 		int wy = (y2 - this.y) / 2;
