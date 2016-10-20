@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.preference.PreferenceManager;
-import com.iillyyaa2033.mud.editor.view.MapEditorView;
+import com.iillyyaa2033.mud.editor.view.MapView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import com.iillyyaa2033.mud.editor.view.MapEditorView;
+import com.iillyyaa2033.mud.editor.view.MapView;
 import com.iillyyaa2033.mud.editor.view.GrVV;
 import android.widget.Button;
 import android.view.View.OnClickListener;

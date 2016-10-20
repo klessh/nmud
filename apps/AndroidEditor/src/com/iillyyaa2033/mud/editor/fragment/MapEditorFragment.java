@@ -14,15 +14,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.iillyyaa2033.mud.editor.R;
 import com.iillyyaa2033.mud.editor.activity.ObjectEditorActivity;
-import com.iillyyaa2033.mud.editor.view.MapEditorView;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
+import com.iillyyaa2033.mud.editor.view.MapView;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
-import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
 import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 
-public class EditorMapFragment extends Fragment {
+public class MapEditorFragment extends Fragment {
 
-	MapEditorView mapview;
+	MapView mapview;
 	ListView list;
 	ArrayAdapter<WorldObject> adapter;
 
@@ -35,7 +33,7 @@ public class EditorMapFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.fragment_mapeditor,container,false);
-		mapview = (MapEditorView) root.findViewById(R.id.map);
+		mapview = (MapView) root.findViewById(R.id.map);
 		
 		list = (ListView) root.findViewById(R.id.list);
 		list.setAdapter(adapter);
@@ -70,15 +68,20 @@ public class EditorMapFragment extends Fragment {
 		super.onResume();
 		reloadAdapter();
 	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		reloadAdapter();
+	}
 	
 	void startAdd(){
-		startActivity(new Intent(getActivity(),ObjectEditorActivity.class));
+		startActivityForResult(new Intent(getActivity(),ObjectEditorActivity.class),0);
 	}
 	
 	void startEdit(WorldObject o){
 		Intent i = new Intent(getActivity(),ObjectEditorActivity.class);
 		i.putExtra("object",o.getId());
-		startActivity(i);
+		startActivityForResult(i,0);
 	}
 	
 	void reloadAdapter(){

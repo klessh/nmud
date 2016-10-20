@@ -7,7 +7,7 @@
 	android:orientation="horizontal"
 	android:id="@+id/fragment_mapeditor_LinearLayout1">
 
-	<com.iillyyaa2033.mud.editor.view.MapEditorView
+	<com.iillyyaa2033.mud.editor.view.MapView
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
 		android:layout_weight="1.0"

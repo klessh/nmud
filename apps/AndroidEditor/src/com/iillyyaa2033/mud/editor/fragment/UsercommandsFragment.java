@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.HashMap;
+import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
 
 public class UsercommandsFragment extends Fragment{
 	
@@ -32,13 +33,12 @@ public class UsercommandsFragment extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
-	//	try {
-	//		map = ImportUtil.loadUsercommands();
-	map = new HashMap<String,String>();
-	/*	} catch (FileNotFoundException e) {
+		try {
+			map = ImportUtil.loadUsercommands();
+		} catch (FileNotFoundException e) {
 			map = new HashMap<String,String>();
 			canSave = false;
-		}*/
+		}
 
 		LinearLayout ll = new LinearLayout(getActivity());
 		ll.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));

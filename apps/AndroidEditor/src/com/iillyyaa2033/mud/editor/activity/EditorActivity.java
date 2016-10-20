@@ -2,6 +2,7 @@ package com.iillyyaa2033.mud.editor.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -12,21 +13,20 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.iillyyaa2033.mud.editor.R;
 import com.iillyyaa2033.mud.editor.fragment.DictionaryFragment;
-import com.iillyyaa2033.mud.editor.fragment.EditorMapFragment;
+import com.iillyyaa2033.mud.editor.fragment.MapEditorFragment;
 import com.iillyyaa2033.mud.editor.fragment.GraphVisFrag;
 import com.iillyyaa2033.mud.editor.fragment.UsercommandsFragment;
 import com.iillyyaa2033.mud.editor.logic.Database;
 import com.iillyyaa2033.mud.editor.logic.Loader;
 import java.io.File;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
+import localhost.iillyyaa2033.mud.androidclient.utils.ExportUtil;
 import localhost.iillyyaa2033.mud.androidclient.utils.GlobalValues;
 import localhost.iillyyaa2033.mud.androidclient.utils.ImportUtil;
-import localhost.iillyyaa2033.mud.androidclient.utils.ExportUtil;
-import android.app.AlertDialog;
-import localhost.iillyyaa2033.mud.androidclient.utils.ExceptionsStorage;
 
 public class EditorActivity extends Activity implements ActionBar.TabListener {
 
-	EditorMapFragment map;
+	MapEditorFragment map;
 	UsercommandsFragment uce;
 	DictionaryFragment dictionary;
 	GraphVisFrag grvf;
@@ -47,23 +47,23 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		//	actionBar.setHideOffset(100);
 
-		map = new EditorMapFragment();
+		map = new MapEditorFragment();
 		uce = new UsercommandsFragment();
 		grvf = new GraphVisFrag();
 		dictionary = new DictionaryFragment();
 
 		actionBar.addTab(actionBar.newTab().setText("MapEditor").setTabListener(this));
-	//	actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
+		actionBar.addTab(actionBar.newTab().setText("ScriptsEditor").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("UserCommandsEditor").setTabListener(this));
-	//	actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
+		actionBar.addTab(actionBar.newTab().setText("Dictionary").setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText("Graph Vis").setTabListener(this));
 
 		Database.uploadDict(Loader.loadDictionary());
-		
+
 		GlobalValues.datapath = PreferenceManager.getDefaultSharedPreferences(this).getString("PREF_ROOT", "/storage/emulated/0/AppProjects/MyGITHUB/nmud/content-ru");
 		ImportUtil.importToWorld(new File(GlobalValues.datapath + "/maps/root.bin"));
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -74,11 +74,11 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 	protected void onDestroy() {
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0,0,0,"Log").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		menu.add(1,1,1,"Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(0, 0, 0, "Log").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(1, 1, 1, "Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		menu.add(2, 2, 2, "Prefs").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
@@ -88,10 +88,10 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		switch (item.getItemId()) {
 			case 0:
 				String[] items = new String[ExceptionsStorage.exceptions.size()];
-				for(int i = 0; i<items.length; i++){
-					items[i]= ExceptionsStorage.exceptions.get(i).toString();
+				for (int i = 0; i < items.length; i++) {
+					items[i] = ExceptionsStorage.exceptions.get(i).toString();
 				}
-				new AlertDialog.Builder(this).setItems(items,null).show();
+				new AlertDialog.Builder(this).setItems(items, null).show();
 				break;
 			case 1:
 				saveTheWorld(false);
@@ -102,7 +102,7 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onTabSelected(ActionBar.Tab p1, FragmentTransaction p2) {
 		selectTab(p1.getPosition());
@@ -124,6 +124,9 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 			case 0:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map, map).commit();
 				break;
+			case 1:
+				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map, new Fragment()).commit();
+				break;	
 			case 2:
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map, uce).commit();
 				break;	
@@ -137,12 +140,12 @@ public class EditorActivity extends Activity implements ActionBar.TabListener {
 				getFragmentManager().beginTransaction().replace(R.id.activity_mapeditor_map, new Fragment()).commit();
 		}
 	}
-	
-	void saveTheWorld(boolean autosave){
-		if(autosave){
-			
+
+	void saveTheWorld(boolean autosave) {
+		if (autosave) {
+
 		}
 		ExportUtil.saveFromWorld();
-		Toast.makeText(this,"Saved",Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 	}
 }

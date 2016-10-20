@@ -13,7 +13,7 @@ import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
 import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 
-public class MapEditorView extends View {
+public class MapView extends View {
 
 	Context context;
 
@@ -27,12 +27,12 @@ public class MapEditorView extends View {
 
 	WorldObject selected = null;
 
-	public MapEditorView(Context c) {
+	public MapView(Context c) {
 		super(c);
 		init(c);
 	}
 
-	public MapEditorView(android.content.Context context, android.util.AttributeSet attrs) {
+	public MapView(android.content.Context context, android.util.AttributeSet attrs) {
 		super(context, attrs);
 		init(context);
 	}

@@ -46,6 +46,6 @@ public class World implements Serializable{
 	}
 	
 	public void remove(WorldObject obj){
-		
+		objects.remove(obj);
 	}
 }
