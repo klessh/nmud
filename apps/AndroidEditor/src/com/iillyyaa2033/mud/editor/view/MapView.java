@@ -15,18 +15,24 @@ import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
 
 public class MapView extends View {
 
-	Context context;
+	private Context context;
 
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
     private Paint upaint, rootPaint, selectionPaint, coords, coordsBold, zonePaint;
 
+	private float scaleFactor = 40;					// коэффициент приближения/удаления
+	private float[] offset = new float[]{0.2f,0.2f};	// смещение для левого нижнего угла прямоугольника
 
-	float scaleFactor = 40;					// коэффициент приближения/удаления
-	float[] offset = new float[]{0.2f,0.2f};	// смещение для левого нижнего угла прямоугольника
+	private WorldObject selected = null;
 
-	WorldObject selected = null;
-
+	public boolean[] layers = {
+		true,	// objects
+		false,	// meta
+		false,	// ai
+		false,	// other 
+	};
+	
 	public MapView(Context c) {
 		super(c);
 		init(c);

@@ -17,6 +17,9 @@ import com.iillyyaa2033.mud.editor.activity.ObjectEditorActivity;
 import com.iillyyaa2033.mud.editor.view.MapView;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
+import android.widget.Button;
+import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 public class MapEditorFragment extends Fragment {
 
@@ -24,6 +27,8 @@ public class MapEditorFragment extends Fragment {
 	ListView list;
 	ArrayAdapter<WorldObject> adapter;
 
+	int currentLayer = 0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,6 +65,31 @@ public class MapEditorFragment extends Fragment {
 		text.setPadding(20,20,20,20);
 		list.addFooterView(text);
 		
+		Button btnObj = (Button) root.findViewById(R.id.layerObjects);
+		Button btnMeta = (Button) root.findViewById(R.id.layerMeta);
+		Button btnAi = (Button) root.findViewById(R.id.layerAi);
+		
+		btnObj.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View p1) {
+					chooseLayer(0);
+				}
+			});
+		btnMeta.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View p1) {
+					chooseLayer(1);
+				}
+			});
+		btnAi.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View p1) {
+					chooseLayer(2);
+				}
+			});
 		return root;
 	}
 
@@ -89,5 +119,9 @@ public class MapEditorFragment extends Fragment {
 		for (WorldObject object: WorldHolder.getInstance().objects) {
 			adapter.add(object);
 		}
+	}
+	
+	void chooseLayer(int which){
+		Toast.makeText(getActivity(),""+which,Toast.LENGTH_SHORT).show();
 	}
 }

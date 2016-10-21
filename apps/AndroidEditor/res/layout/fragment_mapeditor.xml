@@ -18,10 +18,83 @@
 		android:layout_height="match_parent"
 		android:layout_width="1dp"/>
 
-	<ListView
+	<LinearLayout
 		android:layout_height="wrap_content"
-		android:layout_width="250dp"
-		android:id="@+id/list"/>
+		android:layout_width="300dp"
+		android:orientation="vertical">
+
+		<HorizontalScrollView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:orientation="horizontal">
+
+				<Button
+					style="?android:attr/buttonBarButtonStyle"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Objects"
+					android:id="@+id/layerObjects"/>
+
+				<View
+					android:background="?android:attr/dividerHorizontal"
+					android:layout_height="match_parent"
+					android:layout_width="1dp"/>
+
+				<Button
+					style="?android:attr/buttonBarButtonStyle"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Meta"
+					android:id="@+id/layerMeta"/>
+
+				<View
+					android:background="?android:attr/dividerHorizontal"
+					android:layout_height="match_parent"
+					android:layout_width="1dp"/>
+
+				<Button
+					style="?android:attr/buttonBarButtonStyle"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="AI/mobs"
+					android:id="@+id/layerAi"/>
+
+				<View
+					android:background="?android:attr/dividerHorizontal"
+					android:layout_height="match_parent"
+					android:layout_width="1dp"/>
+
+				<Button
+					style="?android:attr/buttonBarButtonStyle"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Smth else"
+					android:id="@+id/layerOthers"/>
+
+				<View
+					android:background="?android:attr/dividerHorizontal"
+					android:layout_height="match_parent"
+					android:layout_width="1dp"/>
+
+			</LinearLayout>
+
+		</HorizontalScrollView>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_height="1dp"
+			android:layout_width="match_parent"/>
+
+		<ListView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:id="@+id/list"/>
+
+	</LinearLayout>
 
 </LinearLayout>
 
