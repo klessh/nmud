@@ -8,11 +8,16 @@ public class World implements Serializable{
 	
 	public World(){};
 	
-	public ArrayList<Zone> meta = new ArrayList<Zone>();
+	public ArrayList<Zone> nonmeta = new ArrayList<Zone>();
+	public ArrayList<WorldMeta> meta = new ArrayList<WorldMeta>();
 	public ArrayList<WorldObject> objects = new ArrayList<WorldObject>();
 	
 	public void tick(){
-		for(Zone z : meta){
+		for(WorldMeta m : meta){
+			m.tick();
+		}
+		
+		for(Zone z : nonmeta){
 			z.tick();
 		}
 		
@@ -33,8 +38,13 @@ public class World implements Serializable{
 		return array;
 	}
 	
+	public WorldMeta getMetaFor(int x, int y, int maxLvl){
+		// TODO: meta here!
+		return null;
+	}
+	
 	public void autoAddToZone(WorldObject object){
-		for(Zone z : meta){
+		for(Zone z : nonmeta){
 			try {
 				z.addObject(object);
 				return;

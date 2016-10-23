@@ -49,7 +49,7 @@ public class LocalClient extends Thread {
 			}
 		}
 		
-		if(WorldHolder.getInstance().meta.size()>0) currentZone = WorldHolder.getInstance().meta.get(0);
+		if(WorldHolder.getInstance().nonmeta.size()>0) currentZone = WorldHolder.getInstance().nonmeta.get(0);
 		else currentZone = new Zone();
 		
 		player = new Creature();
