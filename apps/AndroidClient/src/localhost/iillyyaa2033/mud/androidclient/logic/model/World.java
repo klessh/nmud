@@ -43,15 +43,7 @@ public class World implements Serializable{
 		return null;
 	}
 	
-	public void autoAddToZone(WorldObject object){
-		for(Zone z : nonmeta){
-			try {
-				z.addObject(object);
-				return;
-			} catch (IncorrectPositionException e) {
-				
-			}
-		}
+	public void add(WorldObject object){
 		objects.add(object);
 	}
 	

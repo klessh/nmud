@@ -12,6 +12,7 @@ import localhost.iillyyaa2033.mud.androidclient.logic.model.World;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldObject;
 import localhost.iillyyaa2033.mud.androidclient.logic.model.Zone;
 import localhost.iillyyaa2033.mud.androidclient.utils.WorldHolder;
+import localhost.iillyyaa2033.mud.androidclient.logic.model.WorldMeta;
 
 public class MapView extends View {
 
@@ -19,7 +20,7 @@ public class MapView extends View {
 
 	private GestureDetector detector;
     private ScaleGestureDetector scaleGestureDetector;
-    private Paint upaint, rootPaint, selectionPaint, coords, coordsBold, zonePaint;
+    private Paint upaint, rootPaint, selectionPaint, coords, coordsBold, metaPaint;
 
 	private float scaleFactor = 40;					// коэффициент приближения/удаления
 	private float[] offset = new float[]{0.2f,0.2f};	// смещение для левого нижнего угла прямоугольника
@@ -32,7 +33,7 @@ public class MapView extends View {
 		false,	// ai
 		false,	// other 
 	};
-	
+
 	public MapView(Context c) {
 		super(c);
 		init(c);
@@ -79,12 +80,12 @@ public class MapView extends View {
 		coordsBold.setStyle(Paint.Style.STROKE);
 		coordsBold.setStrokeWidth(4);
 		coordsBold.setAlpha(100);
-		
-		zonePaint = new Paint();
-		zonePaint.setColor(Color.GRAY);
-		zonePaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		zonePaint.setStrokeWidth(4);
-		zonePaint.setAlpha(100);
+
+		metaPaint = new Paint();
+		metaPaint.setColor(Color.GRAY);
+		metaPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		metaPaint.setStrokeWidth(4);
+		metaPaint.setAlpha(100);
 	}
 
 	@Override
@@ -100,28 +101,35 @@ public class MapView extends View {
 			if (i % 10 == 0) canvas.drawLine(gX, 0, gX, getHeight(), coordsBold);
 			else canvas.drawLine(gX, 0, gX, getHeight(), coords);
 		}
-		
+
 		for (float j = fromY; j <= toY; j += step) {
 			float gY = globalToScreenY(j);
 			if (j % 10 == 0) canvas.drawLine(0, gY, getWidth(), gY, coordsBold);
 			else canvas.drawLine(0, gY, getWidth(), gY, coords);
 		}
 
-		for (WorldObject object: WorldHolder.getInstance().objects) {
-				drawObject(canvas, object, null);
+		if (layers[1] == true) {
+			for (WorldMeta meta : WorldHolder.getInstance().meta) {
+				canvas.drawRect(meta.center[0] - meta.halfside, meta.center[1] - meta.halfside,
+								meta.center[0] + meta.halfside, meta.center[1] + meta.halfside, metaPaint);
+			}
 		}
 
+		if (layers[0] == true) {
+			for (WorldObject object: WorldHolder.getInstance().objects) {
+				drawObject(canvas, object, null);
+			}
+		}
 		if (selected != null) drawObject(canvas, selected, selectionPaint);
 	}
 
 	void drawObject(Canvas canvas, WorldObject object, Paint paint) {
-		if(object == null) return; // TODO: throw NPE
+		if (object == null) return; // TODO: throw NPE
 		double[] objectShape = object.getShape();
 
 		Paint curr = paint;
-		if(object instanceof Zone) curr = zonePaint;
-		if(curr == null) curr = upaint;
-		
+		if (curr == null) curr = upaint;
+
 		if (objectShape == null) return;
 		if (objectShape.length < 2) return;
 		for (int i = 2; i < objectShape.length - 1; i += 2) {

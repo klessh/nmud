@@ -10,7 +10,9 @@ public class WorldMeta implements Serializable{
 	// - используется для физики, ии, описаний
 	
 	public int level = -1; 			// уровень вложенности, -1 == не определен
-	public int[] position = {0,0};	// центр ноды
+	public int halfside = 10;		// половина стороны ноды
+	public int[] center = {0,0};	// центр ноды
+	
 	public WorldMeta[] submeta = new WorldMeta[16];
 	public HashMap<String, String> info = new HashMap<String, String>();
 	

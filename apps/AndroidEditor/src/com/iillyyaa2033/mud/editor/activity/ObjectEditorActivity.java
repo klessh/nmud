@@ -29,7 +29,6 @@ import android.widget.AutoCompleteTextView;
 public class ObjectEditorActivity extends Activity {
 
 	WorldObject object;
-	boolean newelyCreated = false;
 
 	ArrayAdapter<String> adapter;
 	final String[] autocompleteTags = new String[]{"string-name","string-descr","shape"};
@@ -46,6 +45,7 @@ public class ObjectEditorActivity extends Activity {
 			if (o.length > 0) object = o[0];
 		}
 
+		boolean newelyCreated = false;
 		if (object != null) {
 			getActionBar().setTitle(object.toString());
 		} else {
@@ -53,19 +53,20 @@ public class ObjectEditorActivity extends Activity {
 			object = new WorldObject();
 			newelyCreated = true;
 		}
-
+		if (newelyCreated) {
+			WorldHolder.getInstance().add(object);
+			newelyCreated = false;
+		}
+		
 		TextView info = (TextView)findViewById(R.id.activity_objedit_info);
-		info.setText("Стоим с гномом, открыв рот и выпучив глаза. Перед нами возвышается наспех сделанная избушка на пнях-ножках. Убей, не помню, откуда у меня взялась такая идея. Что-то зубастое и мелкое ржет в глубине сознания.\nНамекаю Биву, что теперь это наш транспорт.\nДалеко посылают, отказываются лезть внутрь.\nЯ и сам боюсь: дверь в двух метрах над землей, проем в форме рта с обломками зубов-веток, оно еще скрипит и воет. Н-да-а-а-а…\nКороче, я полез! Ежели что — не поминайте лихом. Бив, кажется, благословил меня напоследок. Хмуро обернулся. Мне ласково улыбнулись и махнули вслед. Ну-ну.");
+	//	info.setText("Стоим с гномом, открыв рот и выпучив глаза. Перед нами возвышается наспех сделанная избушка на пнях-ножках. Убей, не помню, откуда у меня взялась такая идея. Что-то зубастое и мелкое ржет в глубине сознания.\nНамекаю Биву, что теперь это наш транспорт.\nДалеко посылают, отказываются лезть внутрь.\nЯ и сам боюсь: дверь в двух метрах над землей, проем в форме рта с обломками зубов-веток, оно еще скрипит и воет. Н-да-а-а-а…\nКороче, я полез! Ежели что — не поминайте лихом. Бив, кажется, благословил меня напоследок. Хмуро обернулся. Мне ласково улыбнулись и махнули вслед. Ну-ну.");
 
 		initializeParamsList();
 	}
-
+	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (newelyCreated) {
-			WorldHolder.getInstance().autoAddToZone(object);
-		}
 		setResult(Activity.RESULT_OK);
 	}
 
