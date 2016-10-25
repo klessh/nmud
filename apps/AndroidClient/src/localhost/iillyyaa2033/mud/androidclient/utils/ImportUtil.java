@@ -75,7 +75,7 @@ public class ImportUtil {
 				World world;
 				world = (World) reader.readObject();
 				if(world != null) WorldHolder.setInstance(world);
-			} catch (ClassNotFoundException e) {
+			} catch (Exception e) {
 				e(e);
 			}
 			reader.close();

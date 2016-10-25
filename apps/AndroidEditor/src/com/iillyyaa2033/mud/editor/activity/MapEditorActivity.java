@@ -91,12 +91,6 @@ public class MapEditorActivity extends Activity{
 				}
 			});
 	}
-
-	@Override
-	protected void onStart() {
-		ImportUtil.importToWorld(new File(GlobalValues.datapath + "/maps/root.bin"));
-		super.onStart();
-	}
 	
 	@Override
 	public void onResume() {

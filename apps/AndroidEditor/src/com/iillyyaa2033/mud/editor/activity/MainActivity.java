@@ -56,6 +56,12 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
+	protected void onStart() {
+		ImportUtil.importToWorld(new File(GlobalValues.datapath + "/maps/root.bin"));
+		super.onStart();
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 0, 0, "Log").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 //		menu.add(1, 1, 1, "Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);

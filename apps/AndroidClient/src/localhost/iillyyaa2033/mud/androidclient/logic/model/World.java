@@ -8,6 +8,9 @@ public class World implements Serializable{
 	
 	public World(){};
 	
+	@Override
+	public static final long serialVersionUID = -4133332313248907176L;
+	
 	public ArrayList<Zone> nonmeta = new ArrayList<Zone>();
 	public ArrayList<WorldMeta> meta = new ArrayList<WorldMeta>();
 	public ArrayList<WorldObject> objects = new ArrayList<WorldObject>();
